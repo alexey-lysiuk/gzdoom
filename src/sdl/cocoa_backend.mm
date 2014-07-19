@@ -1433,62 +1433,45 @@ void SDL_WM_SetCaption(const char* title, const char* icon)
 	// Window title is set in SDL_SetVideoMode()
 }
 
+static void ResetSoftwareViewport()
+{
+	// For an unknown reason the following call to glClear() is needed
+	// to avoid drawing of garbage in fullscreen mode
+	// when game video resolution's aspect ratio is different from display one
+
+	GLint viewport[2];
+	glGetIntegerv(GL_MAX_VIEWPORT_DIMS, viewport);
+
+	glViewport(0, 0, viewport[0], viewport[1]);
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	glViewport(s_frameBufferParameters.shiftX, s_frameBufferParameters.shiftY,
+			   s_frameBufferParameters.width,  s_frameBufferParameters.height);
+}
+
 int SDL_WM_ToggleFullScreen(SDL_Surface* surface)
 {
-	ZD_UNUSED(surface);
-	
+	if (surface->flags & SDL_FULLSCREEN)
+	{
+		surface->flags &= ~SDL_FULLSCREEN;
+	}
+	else
+	{
+		surface->flags |= SDL_FULLSCREEN;
+	}
+
+	[s_applicationDelegate changeVideoResolution:(SDL_FULLSCREEN & surface->flags)
+										   width:surface->w
+										  height:surface->h];
+	ResetSoftwareViewport();
+
 	return 1;
 }
 
 
-void* SDL_GL_GetProcAddress(const char* name)
-{
-	return dlsym(RTLD_DEFAULT, name);
-}	
-
 void SDL_GL_SwapBuffers()
 {
 	[[NSOpenGLContext currentContext] flushBuffer];
-}
-
-int SDL_GL_SetAttribute(SDL_GLattr attr, int value)
-{
-	if (SDL_GL_MULTISAMPLESAMPLES == attr)
-	{
-		[s_applicationDelegate setMultisample:value];
-	}
-	
-	// Not interested in other attributes
-	
-	return 0;
-}
-
-int SDL_GL_GetAttribute(SDL_GLattr attr, int* value)
-{
-	switch (attr)
-	{
-		case SDL_GL_RED_SIZE:           *value = 8;  break;
-		case SDL_GL_GREEN_SIZE:         *value = 8;  break;
-		case SDL_GL_BLUE_SIZE:          *value = 8;  break;
-		case SDL_GL_ALPHA_SIZE:         *value = 8;  break;
-		case SDL_GL_DEPTH_SIZE:         *value = 24; break;
-		case SDL_GL_STENCIL_SIZE:       *value = 8;  break;
-		case SDL_GL_DOUBLEBUFFER:       *value = 1;  break;
-			
-		case SDL_GL_MULTISAMPLEBUFFERS:
-			*value = 0 == [s_applicationDelegate multisample] ? 0 : 1;
-			break;
-			
-		case SDL_GL_MULTISAMPLESAMPLES:
-			*value = [s_applicationDelegate multisample];
-			break;
-			
-		default:
-			// Not interested in other attributes
-			break;
-	}
-	
-	return 0;
 }
 
 int SDL_LockSurface(SDL_Surface* surface)
@@ -1522,18 +1505,7 @@ static void SetupSoftwareRendering(SDL_Surface* screen)
 	glLoadIdentity();
 	glOrtho(0.0, screen->w, screen->h, 0.0, -1.0, 1.0);
 	
-	// For an unknown reason the following call to glClear() is needed
-	// to avoid drawing of garbage in fullscreen mode 
-	// when game video resolution's aspect ratio is different from display one
-	
-	GLint viewport[2];
-	glGetIntegerv(GL_MAX_VIEWPORT_DIMS, viewport);
-	
-	glViewport(0, 0, viewport[0], viewport[1]);
-	glClear(GL_COLOR_BUFFER_BIT);
-
-	glViewport(s_frameBufferParameters.shiftX, s_frameBufferParameters.shiftY,
-			   s_frameBufferParameters.width,  s_frameBufferParameters.height);
+	ResetSoftwareViewport();
 	
 	glEnable(GL_TEXTURE_2D);
 	
