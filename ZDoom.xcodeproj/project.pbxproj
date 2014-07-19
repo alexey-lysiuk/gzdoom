@@ -1458,14 +1458,9 @@
 		8A80DC9D17ABB57000917483 /* dbigfont.lmp */ = {isa = PBXFileReference; lastKnownFileType = file; path = dbigfont.lmp; sourceTree = "<group>"; };
 		8A80DC9E17ABB57000917483 /* decaldef.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = decaldef.txt; sourceTree = "<group>"; };
 		8A80DC9F17ABB57000917483 /* decorate.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = decorate.txt; sourceTree = "<group>"; };
-		8A80DCA017ABB57000917483 /* decorate.z */ = {isa = PBXFileReference; explicitFileType = text; path = decorate.z; sourceTree = "<group>"; };
 		8A80DCA117ABB57000917483 /* dehsupp.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = dehsupp.txt; sourceTree = "<group>"; };
 		8A80DCA217ABB57000917483 /* etc.h.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = etc.h.txt; sourceTree = "<group>"; };
 		8A80DCA317ABB57000917483 /* fontdefs.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = fontdefs.txt; sourceTree = "<group>"; };
-		8A80DCA517ABB57000917483 /* gllight.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = gllight.png; sourceTree = "<group>"; };
-		8A80DCA617ABB57000917483 /* glpart.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = glpart.png; sourceTree = "<group>"; };
-		8A80DCA717ABB57000917483 /* glpart2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = glpart2.png; sourceTree = "<group>"; };
-		8A80DCA817ABB57000917483 /* mirror.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mirror.png; sourceTree = "<group>"; };
 		8A80DCAA17ABB57000917483 /* -badpatc.lmp */ = {isa = PBXFileReference; lastKnownFileType = file; path = "-badpatc.lmp"; sourceTree = "<group>"; };
 		8A80DCAB17ABB57000917483 /* artibox.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = artibox.png; sourceTree = "<group>"; };
 		8A80DCAC17ABB57000917483 /* bal7scr1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bal7scr1.png; sourceTree = "<group>"; };
@@ -1594,7 +1589,6 @@
 		8A80DD2917ABB57000917483 /* ultdoom_x360.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = ultdoom_x360.txt; sourceTree = "<group>"; };
 		8A80DD2A17ABB57000917483 /* urbanbrawl.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = urbanbrawl.txt; sourceTree = "<group>"; };
 		8A80DD2B17ABB57000917483 /* menudef.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = menudef.txt; sourceTree = "<group>"; };
-		8A80DD2C17ABB57000917483 /* menudef.z */ = {isa = PBXFileReference; explicitFileType = text; path = menudef.z; sourceTree = "<group>"; };
 		8A80DD2D17ABB57000917483 /* netnotch.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = netnotch.dat; sourceTree = "<group>"; };
 		8A80DD2E17ABB57000917483 /* notch.dat */ = {isa = PBXFileReference; lastKnownFileType = file; path = notch.dat; sourceTree = "<group>"; };
 		8A80DD2F17ABB57000917483 /* reverbs.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = reverbs.txt; sourceTree = "<group>"; };
@@ -1604,25 +1598,6 @@
 		8A80DD3417ABB57000917483 /* sbarinfo.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = sbarinfo.txt; sourceTree = "<group>"; };
 		8A80DD3517ABB57000917483 /* sbigfont.lmp */ = {isa = PBXFileReference; lastKnownFileType = file; path = sbigfont.lmp; sourceTree = "<group>"; };
 		8A80DD3917ABB57000917483 /* shaders.ps */ = {isa = PBXFileReference; explicitFileType = text; path = shaders.ps; sourceTree = "<group>"; };
-		8A80DD7A17ABB57000917483 /* fogboundary.fp */ = {isa = PBXFileReference; lastKnownFileType = text; path = fogboundary.fp; sourceTree = "<group>"; };
-		8A80DD7B17ABB57000917483 /* func_brightmap.fp */ = {isa = PBXFileReference; lastKnownFileType = text; path = func_brightmap.fp; sourceTree = "<group>"; };
-		8A80DD7C17ABB57000917483 /* func_normal.fp */ = {isa = PBXFileReference; lastKnownFileType = text; path = func_normal.fp; sourceTree = "<group>"; };
-		8A80DD7D17ABB57000917483 /* func_notexture.fp */ = {isa = PBXFileReference; lastKnownFileType = text; path = func_notexture.fp; sourceTree = "<group>"; };
-		8A80DD7E17ABB57000917483 /* func_warp1.fp */ = {isa = PBXFileReference; lastKnownFileType = text; path = func_warp1.fp; sourceTree = "<group>"; };
-		8A80DD7F17ABB57000917483 /* func_warp2.fp */ = {isa = PBXFileReference; lastKnownFileType = text; path = func_warp2.fp; sourceTree = "<group>"; };
-		8A80DD8017ABB57000917483 /* func_wavex.fp */ = {isa = PBXFileReference; lastKnownFileType = text; path = func_wavex.fp; sourceTree = "<group>"; };
-		8A80DD8117ABB57000917483 /* fuzz_jagged.fp */ = {isa = PBXFileReference; lastKnownFileType = text; path = fuzz_jagged.fp; sourceTree = "<group>"; };
-		8A80DD8217ABB57000917483 /* fuzz_noise.fp */ = {isa = PBXFileReference; lastKnownFileType = text; path = fuzz_noise.fp; sourceTree = "<group>"; };
-		8A80DD8317ABB57000917483 /* fuzz_smooth.fp */ = {isa = PBXFileReference; lastKnownFileType = text; path = fuzz_smooth.fp; sourceTree = "<group>"; };
-		8A80DD8417ABB57000917483 /* fuzz_smoothnoise.fp */ = {isa = PBXFileReference; lastKnownFileType = text; path = fuzz_smoothnoise.fp; sourceTree = "<group>"; };
-		8A80DD8517ABB57000917483 /* fuzz_smoothtranslucent.fp */ = {isa = PBXFileReference; lastKnownFileType = text; path = fuzz_smoothtranslucent.fp; sourceTree = "<group>"; };
-		8A80DD8617ABB57000917483 /* fuzz_standard.fp */ = {isa = PBXFileReference; lastKnownFileType = text; path = fuzz_standard.fp; sourceTree = "<group>"; };
-		8A80DD8717ABB57000917483 /* fuzz_swirly.fp */ = {isa = PBXFileReference; lastKnownFileType = text; path = fuzz_swirly.fp; sourceTree = "<group>"; };
-		8A80DD8817ABB57000917483 /* fxaa.fp */ = {isa = PBXFileReference; lastKnownFileType = text; path = fxaa.fp; sourceTree = "<group>"; };
-		8A80DD8917ABB57000917483 /* gamma_correction.fp */ = {isa = PBXFileReference; lastKnownFileType = text; path = gamma_correction.fp; sourceTree = "<group>"; };
-		8A80DD8A17ABB57000917483 /* main.fp */ = {isa = PBXFileReference; lastKnownFileType = text; path = main.fp; sourceTree = "<group>"; };
-		8A80DD8B17ABB57000917483 /* main.vp */ = {isa = PBXFileReference; lastKnownFileType = text; path = main.vp; sourceTree = "<group>"; };
-		8A80DD8C17ABB57000917483 /* main_colormap.fp */ = {isa = PBXFileReference; lastKnownFileType = text; path = main_colormap.fp; sourceTree = "<group>"; };
 		8A80DD8D17ABB57000917483 /* sndinfo.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = sndinfo.txt; sourceTree = "<group>"; };
 		8A80DD8E17ABB57000917483 /* sndseq.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = sndseq.txt; sourceTree = "<group>"; };
 		8A80DD9017ABB57000917483 /* DSDGACT.flac */ = {isa = PBXFileReference; lastKnownFileType = file; path = DSDGACT.flac; sourceTree = "<group>"; };
@@ -1793,7 +1768,6 @@
 		8A80DE3917ABB57100917483 /* textures.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = textures.txt; sourceTree = "<group>"; };
 		8A80DE3A17ABB57100917483 /* things.h.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = things.h.txt; sourceTree = "<group>"; };
 		8A80DE3B17ABB57100917483 /* vga-rom-font.16 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "vga-rom-font.16"; sourceTree = "<group>"; };
-		8A80DE3C17ABB57100917483 /* wadspecials.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = wadspecials.txt; sourceTree = "<group>"; };
 		8A80DE3D17ABB57100917483 /* x11r6rgb.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = x11r6rgb.txt; sourceTree = "<group>"; };
 		8A80DE3E17ABB57100917483 /* xhairs.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = xhairs.txt; sourceTree = "<group>"; };
 		8A80DE4017ABB57100917483 /* base.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = base.txt; sourceTree = "<group>"; };
@@ -1867,7 +1841,6 @@
 		8A906CAF19556C1D0017F0E4 /* SpecialColormap.pso */ = {isa = PBXFileReference; lastKnownFileType = file; path = SpecialColormap.pso; sourceTree = "<group>"; };
 		8A906CB019556C1D0017F0E4 /* SpecialColormapPal.pso */ = {isa = PBXFileReference; lastKnownFileType = file; path = SpecialColormapPal.pso; sourceTree = "<group>"; };
 		8A906CB119556C1D0017F0E4 /* VertexColor.pso */ = {isa = PBXFileReference; lastKnownFileType = file; path = VertexColor.pso; sourceTree = "<group>"; };
-		8A906CB719556C370017F0E4 /* main_foglayer.fp */ = {isa = PBXFileReference; lastKnownFileType = text; path = main_foglayer.fp; sourceTree = "<group>"; };
 		8A906CB819556CAB0017F0E4 /* doom2_xbox.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = doom2_xbox.txt; sourceTree = "<group>"; };
 		8A906CBA19556CC30017F0E4 /* readyico.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = readyico.png; sourceTree = "<group>"; };
 		8A938D0F13B6039F002627DE /* actorptrselect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = actorptrselect.cpp; sourceTree = "<group>"; };
@@ -3002,7 +2975,6 @@
 			children = (
 				8A80DBE317ABB57000917483 /* acs */,
 				8A80DBE517ABB57000917483 /* actors */,
-				8A80DCA417ABB57000917483 /* glstuff */,
 				8A80DCA917ABB57000917483 /* graphics */,
 				8A80DD1117ABB57000917483 /* maparrows */,
 				8A80DD1717ABB57000917483 /* mapinfo */,
@@ -3020,7 +2992,6 @@
 				8A80DC9D17ABB57000917483 /* dbigfont.lmp */,
 				8A80DC9E17ABB57000917483 /* decaldef.txt */,
 				8A80DC9F17ABB57000917483 /* decorate.txt */,
-				8A80DCA017ABB57000917483 /* decorate.z */,
 				8A80DCA117ABB57000917483 /* dehsupp.txt */,
 				8A80DCA217ABB57000917483 /* etc.h.txt */,
 				8A80DCA317ABB57000917483 /* fontdefs.txt */,
@@ -3038,7 +3009,6 @@
 				8A80DD0F17ABB57000917483 /* language.ptb */,
 				8A80DD1017ABB57000917483 /* lockdefs.txt */,
 				8A80DD2B17ABB57000917483 /* menudef.txt */,
-				8A80DD2C17ABB57000917483 /* menudef.z */,
 				8A80DD2D17ABB57000917483 /* netnotch.dat */,
 				8A80DD2E17ABB57000917483 /* notch.dat */,
 				8A80DD2F17ABB57000917483 /* reverbs.txt */,
@@ -3054,7 +3024,6 @@
 				8A80DE3917ABB57100917483 /* textures.txt */,
 				8A80DE3A17ABB57100917483 /* things.h.txt */,
 				8A80DE3B17ABB57100917483 /* vga-rom-font.16 */,
-				8A80DE3C17ABB57100917483 /* wadspecials.txt */,
 				8A80DE3D17ABB57100917483 /* x11r6rgb.txt */,
 				8A80DE3E17ABB57100917483 /* xhairs.txt */,
 			);
@@ -3304,17 +3273,6 @@
 			path = strife;
 			sourceTree = "<group>";
 		};
-		8A80DCA417ABB57000917483 /* glstuff */ = {
-			isa = PBXGroup;
-			children = (
-				8A80DCA517ABB57000917483 /* gllight.png */,
-				8A80DCA617ABB57000917483 /* glpart.png */,
-				8A80DCA717ABB57000917483 /* glpart2.png */,
-				8A80DCA817ABB57000917483 /* mirror.png */,
-			);
-			path = glstuff;
-			sourceTree = "<group>";
-		};
 		8A80DCA917ABB57000917483 /* graphics */ = {
 			isa = PBXGroup;
 			children = (
@@ -3466,7 +3424,6 @@
 			isa = PBXGroup;
 			children = (
 				8A80DD3717ABB57000917483 /* d3d */,
-				8A80DD7917ABB57000917483 /* glsl */,
 			);
 			path = shaders;
 			sourceTree = "<group>";
@@ -3480,33 +3437,6 @@
 				8A80DD3917ABB57000917483 /* shaders.ps */,
 			);
 			path = d3d;
-			sourceTree = "<group>";
-		};
-		8A80DD7917ABB57000917483 /* glsl */ = {
-			isa = PBXGroup;
-			children = (
-				8A80DD7A17ABB57000917483 /* fogboundary.fp */,
-				8A80DD7B17ABB57000917483 /* func_brightmap.fp */,
-				8A80DD7C17ABB57000917483 /* func_normal.fp */,
-				8A80DD7D17ABB57000917483 /* func_notexture.fp */,
-				8A80DD7E17ABB57000917483 /* func_warp1.fp */,
-				8A80DD7F17ABB57000917483 /* func_warp2.fp */,
-				8A80DD8017ABB57000917483 /* func_wavex.fp */,
-				8A80DD8117ABB57000917483 /* fuzz_jagged.fp */,
-				8A80DD8217ABB57000917483 /* fuzz_noise.fp */,
-				8A80DD8317ABB57000917483 /* fuzz_smooth.fp */,
-				8A80DD8417ABB57000917483 /* fuzz_smoothnoise.fp */,
-				8A80DD8517ABB57000917483 /* fuzz_smoothtranslucent.fp */,
-				8A80DD8617ABB57000917483 /* fuzz_standard.fp */,
-				8A80DD8717ABB57000917483 /* fuzz_swirly.fp */,
-				8A80DD8817ABB57000917483 /* fxaa.fp */,
-				8A80DD8917ABB57000917483 /* gamma_correction.fp */,
-				8A80DD8A17ABB57000917483 /* main.fp */,
-				8A80DD8B17ABB57000917483 /* main.vp */,
-				8A80DD8C17ABB57000917483 /* main_colormap.fp */,
-				8A906CB719556C370017F0E4 /* main_foglayer.fp */,
-			);
-			path = glsl;
 			sourceTree = "<group>";
 		};
 		8A80DD8F17ABB57000917483 /* sounds */ = {
