@@ -1,5 +1,5 @@
 /*
- ** cocoa_backend.mm
+ ** i_cocoa_backend.mm
  **
  **---------------------------------------------------------------------------
  ** Copyright 2012-2014 Alexey Lysiuk
@@ -1621,7 +1621,7 @@ int main(int argc, char** argv)
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
 
 	[NSApplication sharedApplication];
-	[NSBundle loadNibNamed:@"ZDoom" owner:NSApp];
+	[NSBundle loadNibNamed:@"zdoom" owner:NSApp];
 
 	s_applicationDelegate = [ApplicationDelegate new];
 	[NSApp setDelegate:s_applicationDelegate];

@@ -91,6 +91,8 @@
 		8A0304DC190D4238000BC6D7 /* Lzma2Dec.c in Sources */ = {isa = PBXBuildFile; fileRef = 8A0304C8190D4215000BC6D7 /* Lzma2Dec.c */; };
 		8A0304DD190D4238000BC6D7 /* LzmaDec.c in Sources */ = {isa = PBXBuildFile; fileRef = 8A0304CA190D4215000BC6D7 /* LzmaDec.c */; };
 		8A0304DE190D4238000BC6D7 /* LzmaEnc.c in Sources */ = {isa = PBXBuildFile; fileRef = 8A0304CC190D4215000BC6D7 /* LzmaEnc.c */; };
+		8A051CB5197BA98900064B44 /* zdoom.icns in Resources */ = {isa = PBXBuildFile; fileRef = 8A051CB4197BA98900064B44 /* zdoom.icns */; };
+		8A051CB6197BA98900064B44 /* zdoom.icns in Resources */ = {isa = PBXBuildFile; fileRef = 8A051CB4197BA98900064B44 /* zdoom.icns */; };
 		8A054ACE193B2A7400D7849E /* c_consolebuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A054ACC193B2A5300D7849E /* c_consolebuffer.cpp */; };
 		8A054ACF193B2A7700D7849E /* c_consolebuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A054ACC193B2A5300D7849E /* c_consolebuffer.cpp */; };
 		8A19382C150A5F38003ED92C /* HID_Name_Lookup.c in Sources */ = {isa = PBXBuildFile; fileRef = 8A422113150A0478001D28A0 /* HID_Name_Lookup.c */; };
@@ -109,7 +111,7 @@
 		8A2C748016C66DA600ABD7C8 /* loadokt2.c in Sources */ = {isa = PBXBuildFile; fileRef = 8A2C747716C66CB600ABD7C8 /* loadokt2.c */; };
 		8A2C748116C66DBA00ABD7C8 /* readokt.c in Sources */ = {isa = PBXBuildFile; fileRef = 8A2C747816C66CB600ABD7C8 /* readokt.c */; };
 		8A2C748216C66DBA00ABD7C8 /* readokt2.c in Sources */ = {isa = PBXBuildFile; fileRef = 8A2C747916C66CB600ABD7C8 /* readokt2.c */; };
-		8A3AC15B14BE294E000D402B /* ZDoom.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8A3AC15A14BE294E000D402B /* ZDoom.xib */; };
+		8A3AC15B14BE294E000D402B /* zdoom.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8A3AC15A14BE294E000D402B /* zdoom.xib */; };
 		8A3ACEF417F833FC002E550F /* m_specialpaths.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A3ACEF317F833FC002E550F /* m_specialpaths.cpp */; };
 		8A3ACEF517F833FC002E550F /* m_specialpaths.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A3ACEF317F833FC002E550F /* m_specialpaths.cpp */; };
 		8A3DA66D1547DB5100D1302A /* thingdef_function.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A3DA66C1547DB5100D1302A /* thingdef_function.cpp */; };
@@ -119,7 +121,7 @@
 		8A422122150A0478001D28A0 /* HID_Utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = 8A422115150A0478001D28A0 /* HID_Utilities.c */; };
 		8A422126150A0478001D28A0 /* IOHIDDevice_.c in Sources */ = {isa = PBXBuildFile; fileRef = 8A422119150A0478001D28A0 /* IOHIDDevice_.c */; };
 		8A422128150A0478001D28A0 /* IOHIDElement_.c in Sources */ = {isa = PBXBuildFile; fileRef = 8A42211B150A0478001D28A0 /* IOHIDElement_.c */; };
-		8A422139150A0578001D28A0 /* iokit_joystick.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A422138150A0578001D28A0 /* iokit_joystick.cpp */; };
+		8A422139150A0578001D28A0 /* i_joystick.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A422138150A0578001D28A0 /* i_joystick.cpp */; };
 		8A5FDCCB197AA94500694177 /* i_cursor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A5FDCC9197AA92700694177 /* i_cursor.cpp */; };
 		8A74F2A2139235E0001F54B0 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A74F2A1139235E0001F54B0 /* OpenGL.framework */; };
 		8A74F2BA1392360F001F54B0 /* libfmodex.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A74F2B91392360F001F54B0 /* libfmodex.dylib */; };
@@ -138,7 +140,7 @@
 		8A7C310E18F184410001B5A2 /* ulp.c in Sources */ = {isa = PBXBuildFile; fileRef = 8AF27CB3139121FA0095D9A0 /* ulp.c */; };
 		8A7C310F18F184430001B5A2 /* sum.c in Sources */ = {isa = PBXBuildFile; fileRef = 8AF27CB2139121FA0095D9A0 /* sum.c */; };
 		8A7C81C613BF3C0B000B654E /* SDLMain.m in Sources */ = {isa = PBXBuildFile; fileRef = 8AF27F3E139126C00095D9A0 /* SDLMain.m */; };
-		8A7FF48014BB2B220069731E /* cocoa_backend.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8A7FF47F14BB2B220069731E /* cocoa_backend.mm */; };
+		8A7FF48014BB2B220069731E /* i_cocoa_backend.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8A7FF47F14BB2B220069731E /* i_cocoa_backend.mm */; };
 		8A8D68B713C84344001D368F /* r_swrenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A8D68B313C84344001D368F /* r_swrenderer.cpp */; };
 		8A8D68B813C84344001D368F /* r_utility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A8D68B513C84344001D368F /* r_utility.cpp */; };
 		8A938D1113B6039F002627DE /* actorptrselect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A938D0F13B6039F002627DE /* actorptrselect.cpp */; };
@@ -147,7 +149,6 @@
 		8A9633AA14F90431000E4D55 /* sdlvideo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AF27F3F139126C00095D9A0 /* sdlvideo.cpp */; };
 		8A9906B0172D349500B2B92B /* i_system_cocoa.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8A9906AF172D349500B2B92B /* i_system_cocoa.mm */; };
 		8A9906B1172D349500B2B92B /* i_system_cocoa.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8A9906AF172D349500B2B92B /* i_system_cocoa.mm */; };
-		8A9F530114BB0F2900F3369B /* doom.icns in Resources */ = {isa = PBXBuildFile; fileRef = 49E9287713978BF600CCEBBC /* doom.icns */; };
 		8A9F530214BB0F2900F3369B /* Credits.html in Resources */ = {isa = PBXBuildFile; fileRef = 8AD870F1140A4EC5007A06A9 /* Credits.html */; };
 		8A9F530414BB0F2900F3369B /* __autostart.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AF27D0C139126C00095D9A0 /* __autostart.cpp */; };
 		8A9F530514BB0F2900F3369B /* am_map.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AF27CFF139126C00095D9A0 /* am_map.cpp */; };
@@ -1237,6 +1238,7 @@
 		8A0304CE190D4215000BC6D7 /* Threads.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = Threads.c; sourceTree = "<group>"; };
 		8A0304CF190D4215000BC6D7 /* Threads.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Threads.h; sourceTree = "<group>"; };
 		8A0304D0190D4215000BC6D7 /* Types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Types.h; sourceTree = "<group>"; };
+		8A051CB4197BA98900064B44 /* zdoom.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = zdoom.icns; sourceTree = "<group>"; };
 		8A054ACC193B2A5300D7849E /* c_consolebuffer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = c_consolebuffer.cpp; sourceTree = "<group>"; };
 		8A054ACD193B2A5300D7849E /* c_consolebuffer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = c_consolebuffer.h; sourceTree = "<group>"; };
 		8A1D33A7154D6EC000BA2C16 /* CoreMIDI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMIDI.framework; path = System/Library/Frameworks/CoreMIDI.framework; sourceTree = SDKROOT; };
@@ -1248,7 +1250,7 @@
 		8A2C747716C66CB600ABD7C8 /* loadokt2.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = loadokt2.c; sourceTree = "<group>"; };
 		8A2C747816C66CB600ABD7C8 /* readokt.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = readokt.c; sourceTree = "<group>"; };
 		8A2C747916C66CB600ABD7C8 /* readokt2.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = readokt2.c; sourceTree = "<group>"; };
-		8A3AC15A14BE294E000D402B /* ZDoom.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ZDoom.xib; path = misc/resources/ZDoom.xib; sourceTree = "<group>"; };
+		8A3AC15A14BE294E000D402B /* zdoom.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = zdoom.xib; sourceTree = "<group>"; };
 		8A3ACEF317F833FC002E550F /* m_specialpaths.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = m_specialpaths.cpp; sourceTree = "<group>"; };
 		8A3DA66C1547DB5100D1302A /* thingdef_function.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = thingdef_function.cpp; sourceTree = "<group>"; };
 		8A3FB89D18B10ED6007AAE66 /* gdtoa_fltrnds.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gdtoa_fltrnds.h; sourceTree = "<group>"; };
@@ -1266,7 +1268,7 @@
 		8A42211B150A0478001D28A0 /* IOHIDElement_.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = IOHIDElement_.c; sourceTree = "<group>"; };
 		8A42211C150A0478001D28A0 /* IOHIDElement_.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IOHIDElement_.h; sourceTree = "<group>"; };
 		8A42211D150A0478001D28A0 /* IOHIDLib_.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IOHIDLib_.h; sourceTree = "<group>"; };
-		8A422138150A0578001D28A0 /* iokit_joystick.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = iokit_joystick.cpp; sourceTree = "<group>"; };
+		8A422138150A0578001D28A0 /* i_joystick.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = i_joystick.cpp; sourceTree = "<group>"; };
 		8A44602813BF0306007FA8E1 /* zdoom.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = zdoom.xcconfig; path = misc/zdoom.xcconfig; sourceTree = "<group>"; };
 		8A5FDCC9197AA92700694177 /* i_cursor.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = i_cursor.cpp; sourceTree = "<group>"; };
 		8A74F2A1139235E0001F54B0 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
@@ -1277,7 +1279,7 @@
 		8A7C310218F16B220001B5A2 /* gme_types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gme_types.h; sourceTree = "<group>"; };
 		8A7C310318F16B220001B5A2 /* Spc_Filter.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Spc_Filter.cpp; sourceTree = "<group>"; };
 		8A7C310418F16B220001B5A2 /* Spc_Filter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Spc_Filter.h; sourceTree = "<group>"; };
-		8A7FF47F14BB2B220069731E /* cocoa_backend.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = cocoa_backend.mm; sourceTree = "<group>"; };
+		8A7FF47F14BB2B220069731E /* i_cocoa_backend.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = i_cocoa_backend.mm; sourceTree = "<group>"; };
 		8A80DBE417ABB57000917483 /* strfhelp.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = strfhelp.o; sourceTree = "<group>"; };
 		8A80DBE617ABB57000917483 /* actor.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = actor.txt; sourceTree = "<group>"; };
 		8A80DBE817ABB57000917483 /* chexammo.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = chexammo.txt; sourceTree = "<group>"; };
@@ -2774,7 +2776,7 @@
 		8AF3DF48177831EF00474776 /* updaterevision.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = updaterevision.c; sourceTree = "<group>"; };
 		8AF3DF4E1778323600474776 /* updaterevision */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = updaterevision; sourceTree = BUILT_PRODUCTS_DIR; };
 		8AF62EA6142F259E003F3556 /* SDL.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SDL.xcodeproj; path = thirdparty/SDL/Xcode/SDL/SDL.xcodeproj; sourceTree = "<group>"; };
-		8D1107310486CEB800E47090 /* ZDoom-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "ZDoom-Info.plist"; path = "misc/resources/ZDoom-Info.plist"; sourceTree = "<group>"; };
+		8D1107310486CEB800E47090 /* zdoom-info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "zdoom-info.plist"; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* ZDoom_SDL.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ZDoom_SDL.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -2860,7 +2862,6 @@
 				8AF27B281390F5EE0095D9A0 /* dumb */,
 				8AF27C84139121F90095D9A0 /* gdtoa */,
 				8AF27A571390F51A0095D9A0 /* gme */,
-				8A422110150A0478001D28A0 /* hid_utilities */,
 				8AF2790A1390F0880095D9A0 /* jpeg-6b */,
 				8AF2795F1390F1410095D9A0 /* lzma */,
 				8AF279C01390F26E0095D9A0 /* tools */,
@@ -2905,8 +2906,6 @@
 				8A80DBE217ABB57000917483 /* wadsrc */,
 				8AD870F1140A4EC5007A06A9 /* Credits.html */,
 				49E9287713978BF600CCEBBC /* doom.icns */,
-				8D1107310486CEB800E47090 /* ZDoom-Info.plist */,
-				8A3AC15A14BE294E000D402B /* ZDoom.xib */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -2949,9 +2948,14 @@
 			path = r_data;
 			sourceTree = "<group>";
 		};
-		8A422110150A0478001D28A0 /* hid_utilities */ = {
+		8A051CB3197BA98900064B44 /* cocoa */ = {
 			isa = PBXGroup;
 			children = (
+				8A7FF47F14BB2B220069731E /* i_cocoa_backend.mm */,
+				8A422138150A0578001D28A0 /* i_joystick.cpp */,
+				8A051CB4197BA98900064B44 /* zdoom.icns */,
+				8A3AC15A14BE294E000D402B /* zdoom.xib */,
+				8D1107310486CEB800E47090 /* zdoom-info.plist */,
 				8A422111150A0478001D28A0 /* HID_Config_Utilities.c */,
 				8A422112150A0478001D28A0 /* HID_Error_Handler.c */,
 				8A422113150A0478001D28A0 /* HID_Name_Lookup.c */,
@@ -2966,8 +2970,7 @@
 				8A42211C150A0478001D28A0 /* IOHIDElement_.h */,
 				8A42211D150A0478001D28A0 /* IOHIDLib_.h */,
 			);
-			name = hid_utilities;
-			path = thirdparty/hid_utilities;
+			path = cocoa;
 			sourceTree = "<group>";
 		};
 		8A80DBE217ABB57000917483 /* wadsrc */ = {
@@ -4216,6 +4219,7 @@
 			children = (
 				8AF27D02139126C00095D9A0 /* asm_ia32 */,
 				8AF27D08139126C00095D9A0 /* asm_x86_64 */,
+				8A051CB3197BA98900064B44 /* cocoa */,
 				8AF27D55139126C00095D9A0 /* fragglescript */,
 				8AF27D62139126C00095D9A0 /* g_doom */,
 				8AF27D78139126C00095D9A0 /* g_heretic */,
@@ -4826,7 +4830,6 @@
 		8AF27F2C139126C00095D9A0 /* sdl */ = {
 			isa = PBXGroup;
 			children = (
-				8A7FF47F14BB2B220069731E /* cocoa_backend.mm */,
 				8AF27F2D139126C00095D9A0 /* crashcatcher.c */,
 				8AF27F2E139126C00095D9A0 /* critsec.h */,
 				8AF27F2F139126C00095D9A0 /* dikeys.h */,
@@ -4842,7 +4845,6 @@
 				8AF27F38139126C00095D9A0 /* i_system.cpp */,
 				8AF27F39139126C00095D9A0 /* i_system.h */,
 				8A9906AF172D349500B2B92B /* i_system_cocoa.mm */,
-				8A422138150A0578001D28A0 /* iokit_joystick.cpp */,
 				8AF27F3B139126C00095D9A0 /* iwadpicker_cocoa.mm */,
 				8AF27F3E139126C00095D9A0 /* SDLMain.m */,
 				8AF27F3F139126C00095D9A0 /* sdlvideo.cpp */,
@@ -5360,9 +5362,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8A9F530114BB0F2900F3369B /* doom.icns in Resources */,
 				8A9F530214BB0F2900F3369B /* Credits.html in Resources */,
-				8A3AC15B14BE294E000D402B /* ZDoom.xib in Resources */,
+				8A051CB5197BA98900064B44 /* zdoom.icns in Resources */,
+				8A3AC15B14BE294E000D402B /* zdoom.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5372,6 +5374,7 @@
 			files = (
 				49E9287913978BF600CCEBBC /* doom.icns in Resources */,
 				8AD870F3140A4EC5007A06A9 /* Credits.html in Resources */,
+				8A051CB6197BA98900064B44 /* zdoom.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5596,14 +5599,14 @@
 				8A9F540014BB0F2900F3369B /* file_wad.cpp in Sources */,
 				8A9F540114BB0F2900F3369B /* file_zip.cpp in Sources */,
 				8A9F540214BB0F2900F3369B /* resourcefile.cpp in Sources */,
-				8A7FF48014BB2B220069731E /* cocoa_backend.mm in Sources */,
+				8A7FF48014BB2B220069731E /* i_cocoa_backend.mm in Sources */,
 				8A9F540A14BB0F2900F3369B /* hardware.cpp in Sources */,
 				8A9F540B14BB0F2900F3369B /* i_cd.cpp in Sources */,
 				8A9F540E14BB0F2900F3369B /* i_main.cpp in Sources */,
 				8A9F540F14BB0F2900F3369B /* i_movie.cpp in Sources */,
 				8A9F541014BB0F2900F3369B /* i_system.cpp in Sources */,
 				8A9906B0172D349500B2B92B /* i_system_cocoa.mm in Sources */,
-				8A422139150A0578001D28A0 /* iokit_joystick.cpp in Sources */,
+				8A422139150A0578001D28A0 /* i_joystick.cpp in Sources */,
 				8A9F546E14BB0F2900F3369B /* iwadpicker_cocoa.mm in Sources */,
 				8A9633AA14F90431000E4D55 /* sdlvideo.cpp in Sources */,
 				8A9F541314BB0F2900F3369B /* st_start.cpp in Sources */,
@@ -6632,7 +6635,7 @@
 			baseConfigurationReference = 8A44602813BF0306007FA8E1 /* zdoom.xcconfig */;
 			buildSettings = {
 				CONFIGURATION_TEMP_DIR = "$(PROJECT_TEMP_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)_Cocoa";
-				INFOPLIST_FILE = "misc/resources/ZDoom-Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/src/cocoa/zdoom-info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				PRODUCT_NAME = ZDoom_Cocoa;
 			};
@@ -6643,7 +6646,7 @@
 			baseConfigurationReference = 8A44602813BF0306007FA8E1 /* zdoom.xcconfig */;
 			buildSettings = {
 				CONFIGURATION_TEMP_DIR = "$(PROJECT_TEMP_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)_Cocoa";
-				INFOPLIST_FILE = "misc/resources/ZDoom-Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/src/cocoa/zdoom-info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				PRODUCT_NAME = ZDoom_Cocoa;
 			};
@@ -6676,7 +6679,7 @@
 			baseConfigurationReference = 8A44602813BF0306007FA8E1 /* zdoom.xcconfig */;
 			buildSettings = {
 				CONFIGURATION_TEMP_DIR = "$(PROJECT_TEMP_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)_Cocoa";
-				INFOPLIST_FILE = "misc/resources/ZDoom-Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/src/cocoa/zdoom-info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				PRODUCT_NAME = ZDoom_Cocoa;
 			};
@@ -6687,7 +6690,7 @@
 			baseConfigurationReference = 8A44602813BF0306007FA8E1 /* zdoom.xcconfig */;
 			buildSettings = {
 				CONFIGURATION_TEMP_DIR = "$(PROJECT_TEMP_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)_SDL";
-				INFOPLIST_FILE = "misc/resources/ZDoom-Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/src/cocoa/zdoom-info.plist";
 				PRODUCT_NAME = ZDoom_SDL;
 			};
 			name = MaxOptim;
@@ -6989,7 +6992,7 @@
 			baseConfigurationReference = 8A44602813BF0306007FA8E1 /* zdoom.xcconfig */;
 			buildSettings = {
 				CONFIGURATION_TEMP_DIR = "$(PROJECT_TEMP_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)_SDL";
-				INFOPLIST_FILE = "misc/resources/ZDoom-Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/src/cocoa/zdoom-info.plist";
 				PRODUCT_NAME = ZDoom_SDL;
 			};
 			name = Debug;
@@ -6999,7 +7002,7 @@
 			baseConfigurationReference = 8A44602813BF0306007FA8E1 /* zdoom.xcconfig */;
 			buildSettings = {
 				CONFIGURATION_TEMP_DIR = "$(PROJECT_TEMP_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)_SDL";
-				INFOPLIST_FILE = "misc/resources/ZDoom-Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/src/cocoa/zdoom-info.plist";
 				PRODUCT_NAME = ZDoom_SDL;
 			};
 			name = Release;

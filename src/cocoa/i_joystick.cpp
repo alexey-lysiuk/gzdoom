@@ -1,8 +1,8 @@
 /*
- ** iokit_joystick.cpp
+ ** i_joystick.cpp
  **
  **---------------------------------------------------------------------------
- ** Copyright 2012 Alexey Lysiuk
+ ** Copyright 2012-2014 Alexey Lysiuk
  ** All rights reserved.
  **
  ** Redistribution and use in source and binary forms, with or without
@@ -33,7 +33,7 @@
 
 #include "m_joy.h"
 
-#include <HID_Utilities_External.h>
+#include "HID_Utilities_External.h"
 
 #include "d_event.h"
 #include "doomdef.h"

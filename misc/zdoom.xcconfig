@@ -17,7 +17,7 @@ LIBS_HEADER_SEARCH_PATHS = game-music-emu gdtoa lzma/C jpeg-6b
 FMOD_HEADER_SEARCH_PATH[arch=i386]   = thirdparty/FMOD/include/4.26.36
 FMOD_HEADER_SEARCH_PATH[arch=x86_64] = thirdparty/FMOD/include/4.44.35
 
-TRDP_HEADER_SEARCH_PATHS = $(FMOD_HEADER_SEARCH_PATH) thirdparty/SDL/include thirdparty/hid_utilities
+TRDP_HEADER_SEARCH_PATHS = $(FMOD_HEADER_SEARCH_PATH) thirdparty/SDL/include
 
 HEADER_SEARCH_PATHS = $(inherited) $(DOOM_HEADER_SEARCH_PATHS) $(LIBS_HEADER_SEARCH_PATHS) $(TRDP_HEADER_SEARCH_PATHS) src/sdl
 
