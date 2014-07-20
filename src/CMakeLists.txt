@@ -26,6 +26,8 @@ endif( ZD_CMAKE_COMPILER_IS_GNUCXX_COMPATIBLE )
 
 option( DYN_FLUIDSYNTH "Dynamically load fluidsynth" ON )
 
+option( OSX_COCOA_BACKEND "Use native Cocoa backend instead of SDL" OFF )
+
 if( CMAKE_SIZEOF_VOID_P MATCHES "8" )
 	set( X64 64 )
 endif( CMAKE_SIZEOF_VOID_P MATCHES "8" )
@@ -211,7 +213,9 @@ else( WIN32 )
 	if( NOT SDL_FOUND )
 		message( SEND_ERROR "SDL is required for building." )
 	endif( NOT SDL_FOUND )
-	set( ZDOOM_LIBS ${ZDOOM_LIBS} "${SDL_LIBRARY}" )
+	if( NOT APPLE OR NOT OSX_COCOA_BACKEND )
+		set( ZDOOM_LIBS ${ZDOOM_LIBS} "${SDL_LIBRARY}" )
+	endif( NOT APPLE OR NOT OSX_COCOA_BACKEND )
 	include_directories( "${SDL_INCLUDE_DIR}" )
 
 	find_path( FPU_CONTROL_DIR fpu_control.h )
@@ -555,21 +559,41 @@ set( PLAT_WIN32_SOURCES
 	win32/i_system.cpp
 	win32/st_start.cpp
 	win32/win32video.cpp )
-set( PLAT_SDL_SOURCES
+set( PLAT_SDL_SYSTEM_SOURCES
 	sdl/crashcatcher.c
 	sdl/hardware.cpp
 	sdl/i_cd.cpp
-	sdl/i_input.cpp
-	sdl/i_joystick.cpp
 	sdl/i_main.cpp
 	sdl/i_movie.cpp
 	sdl/i_system.cpp
 	sdl/sdlvideo.cpp
 	sdl/st_start.cpp )
+set( PLAT_SDL_INPUT_SOURCES
+	sdl/i_cursor.cpp
+	sdl/i_input.cpp
+	sdl/i_joystick.cpp )
 set( PLAT_MAC_SOURCES
-	sdl/SDLMain.m
 	sdl/iwadpicker_cocoa.mm
 	sdl/i_system_cocoa.mm )
+set( PLAT_COCOA_SOURCES
+	cocoa/HID_Config_Utilities.c
+	cocoa/HID_Error_Handler.c
+	cocoa/HID_Name_Lookup.c
+	cocoa/HID_Queue_Utilities.c
+	cocoa/HID_Utilities.c
+	cocoa/IOHIDDevice_.c
+	cocoa/IOHIDElement_.c
+	cocoa/ImmrHIDUtilAddOn.c
+	cocoa/i_cocoa_backend.mm
+	cocoa/i_joystick.cpp )
+
+if( APPLE AND OSX_COCOA_BACKEND )
+	set( PLAT_SDL_SOURCES ${PLAT_SDL_SYSTEM_SOURCES} ${PLAT_COCOA_SOURCES} )
+else( APPLE AND OSX_COCOA_BACKEND )
+	set( PLAT_SDL_SOURCES ${PLAT_SDL_SYSTEM_SOURCES} ${PLAT_SDL_INPUT_SOURCES} )
+	set( PLAT_MAC_SOURCES ${PLAT_MAC_SOURCES} sdl/SDLMain.m )
+endif( APPLE AND OSX_COCOA_BACKEND )
+
 if( WIN32 )
 	set( SYSTEM_SOURCES_DIR win32 )
 	set( SYSTEM_SOURCES ${PLAT_WIN32_SOURCES} )
@@ -1163,6 +1187,10 @@ if( ZD_CMAKE_COMPILER_IS_GNUCXX_COMPATIBLE )
 		set_source_files_properties( x86.cpp PROPERTIES COMPILE_FLAGS "-msse2 -mmmx" )
 	endif( SSE_MATTERS )
 endif( ZD_CMAKE_COMPILER_IS_GNUCXX_COMPATIBLE )
+
+if( APPLE AND OSX_COCOA_BACKEND )
+	set_target_properties(zdoom PROPERTIES LINK_FLAGS "-framework Cocoa -framework IOKit -framework OpenGL")
+endif( APPLE AND OSX_COCOA_BACKEND )
 
 source_group("Assembly Files\\ia32" REGULAR_EXPRESSION "^${CMAKE_CURRENT_SOURCE_DIR}/asm_ia32/.+")
 source_group("Assembly Files\\x86_64" REGULAR_EXPRESSION "^${CMAKE_CURRENT_SOURCE_DIR}/asm_x86_64/.+")
