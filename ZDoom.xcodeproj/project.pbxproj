@@ -122,6 +122,8 @@
 		8A422126150A0478001D28A0 /* IOHIDDevice_.c in Sources */ = {isa = PBXBuildFile; fileRef = 8A422119150A0478001D28A0 /* IOHIDDevice_.c */; };
 		8A422128150A0478001D28A0 /* IOHIDElement_.c in Sources */ = {isa = PBXBuildFile; fileRef = 8A42211B150A0478001D28A0 /* IOHIDElement_.c */; };
 		8A422139150A0578001D28A0 /* i_joystick.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A422138150A0578001D28A0 /* i_joystick.cpp */; };
+		8A54310D197EF56C0002A1A0 /* i_timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A543107197EF40A0002A1A0 /* i_timer.cpp */; };
+		8A54310F197EF7B90002A1A0 /* i_timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A54310E197EF78F0002A1A0 /* i_timer.cpp */; };
 		8A5FDCCB197AA94500694177 /* i_cursor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A5FDCC9197AA92700694177 /* i_cursor.cpp */; };
 		8A74F2A2139235E0001F54B0 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A74F2A1139235E0001F54B0 /* OpenGL.framework */; };
 		8A74F2BA1392360F001F54B0 /* libfmodex.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A74F2B91392360F001F54B0 /* libfmodex.dylib */; };
@@ -1270,6 +1272,8 @@
 		8A42211D150A0478001D28A0 /* IOHIDLib_.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IOHIDLib_.h; sourceTree = "<group>"; };
 		8A422138150A0578001D28A0 /* i_joystick.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = i_joystick.cpp; sourceTree = "<group>"; };
 		8A44602813BF0306007FA8E1 /* zdoom.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = zdoom.xcconfig; path = misc/zdoom.xcconfig; sourceTree = "<group>"; };
+		8A543107197EF40A0002A1A0 /* i_timer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = i_timer.cpp; sourceTree = "<group>"; };
+		8A54310E197EF78F0002A1A0 /* i_timer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = i_timer.cpp; sourceTree = "<group>"; };
 		8A5FDCC9197AA92700694177 /* i_cursor.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = i_cursor.cpp; sourceTree = "<group>"; };
 		8A74F2A1139235E0001F54B0 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		8A74F2B91392360F001F54B0 /* libfmodex.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfmodex.dylib; path = thirdparty/FMOD/lib/libfmodex.dylib; sourceTree = "<group>"; };
@@ -2953,6 +2957,7 @@
 			children = (
 				8A7FF47F14BB2B220069731E /* i_cocoa_backend.mm */,
 				8A422138150A0578001D28A0 /* i_joystick.cpp */,
+				8A54310E197EF78F0002A1A0 /* i_timer.cpp */,
 				8A051CB4197BA98900064B44 /* zdoom.icns */,
 				8A3AC15A14BE294E000D402B /* zdoom.xib */,
 				8D1107310486CEB800E47090 /* zdoom-info.plist */,
@@ -4845,6 +4850,7 @@
 				8AF27F38139126C00095D9A0 /* i_system.cpp */,
 				8AF27F39139126C00095D9A0 /* i_system.h */,
 				8A9906AF172D349500B2B92B /* i_system_cocoa.mm */,
+				8A543107197EF40A0002A1A0 /* i_timer.cpp */,
 				8AF27F3B139126C00095D9A0 /* iwadpicker_cocoa.mm */,
 				8AF27F3E139126C00095D9A0 /* SDLMain.m */,
 				8AF27F3F139126C00095D9A0 /* sdlvideo.cpp */,
@@ -5507,6 +5513,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				8A9F530414BB0F2900F3369B /* __autostart.cpp in Sources */,
+				8A7FF48014BB2B220069731E /* i_cocoa_backend.mm in Sources */,
+				8A422139150A0578001D28A0 /* i_joystick.cpp in Sources */,
+				8A54310F197EF7B90002A1A0 /* i_timer.cpp in Sources */,
 				8A9F532914BB0F2900F3369B /* t_cmd.cpp in Sources */,
 				8A9F532A14BB0F2900F3369B /* t_fspic.cpp in Sources */,
 				8A9F532B14BB0F2900F3369B /* t_func.cpp in Sources */,
@@ -5599,14 +5608,12 @@
 				8A9F540014BB0F2900F3369B /* file_wad.cpp in Sources */,
 				8A9F540114BB0F2900F3369B /* file_zip.cpp in Sources */,
 				8A9F540214BB0F2900F3369B /* resourcefile.cpp in Sources */,
-				8A7FF48014BB2B220069731E /* i_cocoa_backend.mm in Sources */,
 				8A9F540A14BB0F2900F3369B /* hardware.cpp in Sources */,
 				8A9F540B14BB0F2900F3369B /* i_cd.cpp in Sources */,
 				8A9F540E14BB0F2900F3369B /* i_main.cpp in Sources */,
 				8A9F540F14BB0F2900F3369B /* i_movie.cpp in Sources */,
 				8A9F541014BB0F2900F3369B /* i_system.cpp in Sources */,
 				8A9906B0172D349500B2B92B /* i_system_cocoa.mm in Sources */,
-				8A422139150A0578001D28A0 /* i_joystick.cpp in Sources */,
 				8A9F546E14BB0F2900F3369B /* iwadpicker_cocoa.mm in Sources */,
 				8A9633AA14F90431000E4D55 /* sdlvideo.cpp in Sources */,
 				8A9F541314BB0F2900F3369B /* st_start.cpp in Sources */,
@@ -6172,6 +6179,7 @@
 				8AF28173139126C10095D9A0 /* i_movie.cpp in Sources */,
 				8AF28174139126C10095D9A0 /* i_system.cpp in Sources */,
 				8A9906B1172D349500B2B92B /* i_system_cocoa.mm in Sources */,
+				8A54310D197EF56C0002A1A0 /* i_timer.cpp in Sources */,
 				8AF28175139126C10095D9A0 /* iwadpicker_cocoa.mm in Sources */,
 				8A7C81C613BF3C0B000B654E /* SDLMain.m in Sources */,
 				8AF28178139126C10095D9A0 /* sdlvideo.cpp in Sources */,
