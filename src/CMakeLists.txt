@@ -590,26 +590,30 @@ set( PLAT_COCOA_SOURCES
 	cocoa/i_timer.cpp
 	cocoa/zdoom.icns )
 
-if( APPLE AND OSX_COCOA_BACKEND )
-	find_program( IBTOOL ibtool HINTS "/usr/bin" "${OSX_DEVELOPER_ROOT}/usr/bin" )
-	if( ${IBTOOL} STREQUAL "IBTOOL-NOTFOUND" )
-		message( SEND_ERROR "ibtool can not be found to compile xib files." )
-	endif( ${IBTOOL} STREQUAL "IBTOOL-NOTFOUND" )
+if( APPLE )
+	if( OSX_COCOA_BACKEND )
+		find_program( IBTOOL ibtool HINTS "/usr/bin" "${OSX_DEVELOPER_ROOT}/usr/bin" )
+		if( ${IBTOOL} STREQUAL "IBTOOL-NOTFOUND" )
+			message( SEND_ERROR "ibtool can not be found to compile xib files." )
+		endif( ${IBTOOL} STREQUAL "IBTOOL-NOTFOUND" )
 
-	set( NIB_FILE "${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/zdoom.dir/zdoom.nib" )
-	add_custom_command( OUTPUT "${NIB_FILE}"
-		COMMAND ${IBTOOL} --errors --warnings --notices --output-format human-readable-text
-				--compile "${NIB_FILE}" "${CMAKE_CURRENT_SOURCE_DIR}/cocoa/zdoom.xib"
-		COMMENT "Compiling zdoom.xib" )
+		set( NIB_FILE "${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/zdoom.dir/zdoom.nib" )
+		add_custom_command( OUTPUT "${NIB_FILE}"
+			COMMAND ${IBTOOL} --errors --warnings --notices --output-format human-readable-text
+					--compile "${NIB_FILE}" "${CMAKE_CURRENT_SOURCE_DIR}/cocoa/zdoom.xib"
+			COMMENT "Compiling zdoom.xib" )
 
-	set( PLAT_SDL_SOURCES ${PLAT_SDL_SYSTEM_SOURCES} ${PLAT_COCOA_SOURCES} "${NIB_FILE}" "${FMOD_LIBRARY}" )
+		set( PLAT_SDL_SOURCES ${PLAT_SDL_SYSTEM_SOURCES} ${PLAT_COCOA_SOURCES} "${NIB_FILE}" "${FMOD_LIBRARY}" )
 
-	set_source_files_properties( "${NIB_FILE}" cocoa/zdoom.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources )
+		set_source_files_properties( "${NIB_FILE}" PROPERTIES MACOSX_PACKAGE_LOCATION Resources )
+	else( OSX_COCOA_BACKEND )
+		set( PLAT_SDL_SOURCES ${PLAT_SDL_SYSTEM_SOURCES} ${PLAT_SDL_INPUT_SOURCES} "${FMOD_LIBRARY}" )
+		set( PLAT_MAC_SOURCES ${PLAT_MAC_SOURCES} sdl/SDLMain.m )
+	endif( OSX_COCOA_BACKEND )
+
+	set_source_files_properties( cocoa/zdoom.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources )
 	set_source_files_properties( "${FMOD_LIBRARY}" PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks )
-else( APPLE AND OSX_COCOA_BACKEND )
-	set( PLAT_SDL_SOURCES ${PLAT_SDL_SYSTEM_SOURCES} ${PLAT_SDL_INPUT_SOURCES} )
-	set( PLAT_MAC_SOURCES ${PLAT_MAC_SOURCES} sdl/SDLMain.m )
-endif( APPLE AND OSX_COCOA_BACKEND )
+endif( APPLE )
 
 if( WIN32 )
 	set( SYSTEM_SOURCES_DIR win32 )
