@@ -391,7 +391,7 @@ public:
 	explicit PostProcess(const RenderTarget* const sharedDepth = NULL);
 	~PostProcess();
 
-	void Init(const char* const shaderName, const GLsizei width, const GLsizei height);
+	void Init(const EEffect effect, const GLsizei width, const GLsizei height);
 	void Release();
 
 	bool IsInitialized() const;
@@ -402,6 +402,7 @@ public:
 private:
 	GLsizei m_width;
 	GLsizei m_height;
+	EEffect m_effect;
 
 	RenderTarget*  m_renderTarget;
 	const RenderTarget* m_sharedDepth;
@@ -1458,6 +1459,7 @@ PostProcess::PostProcess(const RenderTarget* const sharedDepth)
 : m_width       (0   )
 , m_height      (0   )
 , m_renderTarget(NULL)
+, m_effect      (EFF_NONE)
 , m_sharedDepth (sharedDepth)
 {
 
@@ -1469,9 +1471,9 @@ PostProcess::~PostProcess()
 }
 
 
-void PostProcess::Init(const char* const shaderName, const GLsizei width, const GLsizei height)
+void PostProcess::Init(const EEffect effect, const GLsizei width, const GLsizei height)
 {
-	assert(NULL != shaderName);
+	assert(EFF_NONE != effect && effect < MAX_EFFECTS);
 	assert(width  > 0);
 	assert(height > 0);
 
@@ -1479,6 +1481,7 @@ void PostProcess::Init(const char* const shaderName, const GLsizei width, const 
 
 	m_width  = width;
 	m_height = height;
+	m_effect = effect;
 
 	m_renderTarget = new RenderTarget(m_width, m_height);
 	m_renderTarget->GetColorTexture().Bind(0, 0, false);
@@ -1496,6 +1499,7 @@ void PostProcess::Release()
 
 	m_width  = 0;
 	m_height = 0;
+	m_effect = EFF_NONE;
 }
 
 
@@ -1519,7 +1523,7 @@ void PostProcess::Finish()
 	m_renderTarget->GetColorTexture().Bind(0, 0, false);
 
 	gl_RenderState.SetColor(float(m_width), float(m_height), 0.0f);
-	gl_RenderState.SetEffect(EFF_FXAA);
+	gl_RenderState.SetEffect(m_effect);
 
 	BoundTextureDraw2D(m_width, m_height);
 }
@@ -1565,7 +1569,7 @@ void StartPostProcess()
 
 	if (!postProcess->IsInitialized())
 	{
-		postProcess->Init("shaders/glsl/fxaa.fp", SCREENWIDTH, SCREENHEIGHT);
+		postProcess->Init(EFF_FXAA, SCREENWIDTH, SCREENHEIGHT);
 	}
 
 	postProcess->Start();
