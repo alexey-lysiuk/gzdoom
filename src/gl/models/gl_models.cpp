@@ -460,7 +460,7 @@ void gl_InitModels()
 {
 	int Lump, lastLump;
 	FString path;
-	int index;
+	int index, surface;
 	int i;
 
 	FSpriteModelFrame smf;
@@ -616,11 +616,19 @@ void gl_InitModels()
 					}
 					else if (sc.Compare("inheritactorpitch"))
 					{
-						smf.flags |= MDL_INHERITACTORPITCH;
+						smf.flags |= MDL_USEACTORPITCH | MDL_BADROTATION;
 					}
 					else if (sc.Compare("inheritactorroll"))
 					{
-						smf.flags |= MDL_INHERITACTORROLL;
+						smf.flags |= MDL_USEACTORROLL;
+					}
+					else if (sc.Compare("useactorpitch"))
+					{
+						smf.flags |= MDL_USEACTORPITCH;
+					}
+					else if (sc.Compare("useactorroll"))
+					{
+						smf.flags |= MDL_USEACTORROLL;
 					}
 					else if (sc.Compare("rotating"))
 					{
@@ -684,6 +692,39 @@ void gl_InitModels()
 							if (!smf.skinIDs[index].isValid())
 							{
 								Printf("Skin '%s' not found in '%s'\n",
+									sc.String, smf.type->TypeName.GetChars());
+							}
+						}
+					}
+					else if (sc.Compare("surfaceskin"))
+					{
+						sc.MustGetNumber();
+						index = sc.Number;
+						sc.MustGetNumber();
+						surface = sc.Number;
+
+						if (index<0 || index >= MAX_MODELS_PER_FRAME)
+						{
+							sc.ScriptError("Too many models in %s", smf.type->TypeName.GetChars());
+						}
+
+						if (surface<0 || surface >= MD3_MAX_SURFACES)
+						{
+							sc.ScriptError("Invalid MD3 Surface %d in %s", MD3_MAX_SURFACES, smf.type->TypeName.GetChars());
+						}
+
+						sc.MustGetString();
+						FixPathSeperator(sc.String);
+						if (sc.Compare(""))
+						{
+							smf.surfaceskinIDs[index][surface] = FNullTextureID();
+						}
+						else
+						{
+							smf.surfaceskinIDs[index][surface] = LoadSkin(path.GetChars(), sc.String);
+							if (!smf.surfaceskinIDs[index][surface].isValid())
+							{
+								Printf("Surface Skin '%s' not found in '%s'\n",
 									sc.String, smf.type->TypeName.GetChars());
 							}
 						}
@@ -893,6 +934,8 @@ void gl_RenderFrameModels( const FSpriteModelFrame *smf,
 			mdl->BuildVertexBuffer();
 			gl_RenderState.SetVertexBuffer(mdl->mVBuf);
 
+			mdl->PushSpriteMDLFrame(smf, i);
+
 			if ( smfNext && smf->modelframes[i] != smfNext->modelframes[i] )
 				mdl->RenderFrame(tex, smf->modelframes[i], smfNext->modelframes[i], inter, translation);
 			else
@@ -961,10 +1004,15 @@ void gl_RenderModel(GLSprite * spr)
 		rotateOffset = float((time - xs_FloorToInt(time)) *360.f );
 	}
 
-	// Added MDL_INHERITACTORPITCH and MDL_INHERITACTORROLL flags processing.
-	// If both flags MDL_INHERITACTORPITCH and MDL_PITCHFROMMOMENTUM are set, the pitch sums up the actor pitch and the momentum vector pitch.
-	if(smf->flags & MDL_INHERITACTORPITCH) pitch -= spr->actor->Angles.Pitch.Degrees;
-	if(smf->flags & MDL_INHERITACTORROLL) roll += spr->actor->Angles.Roll.Degrees;
+	// Added MDL_USEACTORPITCH and MDL_USEACTORROLL flags processing.
+	// If both flags MDL_USEACTORPITCH and MDL_PITCHFROMMOMENTUM are set, the pitch sums up the actor pitch and the momentum vector pitch.
+	if (smf->flags & MDL_USEACTORPITCH)
+	{
+		double d = spr->actor->Angles.Pitch.Degrees;
+		if (smf->flags & MDL_BADROTATION) pitch -= d;
+		else pitch += d;
+	}
+	if(smf->flags & MDL_USEACTORROLL) roll += spr->actor->Angles.Roll.Degrees;
 
 	gl_RenderState.mModelMatrix.loadIdentity();
 

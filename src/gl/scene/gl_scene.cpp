@@ -1179,6 +1179,7 @@ void FGLInterface::Precache(BYTE *texhitlist, TMap<PClassActor*, bool> &actorhit
 					}
 					else if (smf->modelIDs[i] != -1)
 					{
+						Models[smf->modelIDs[i]]->PushSpriteMDLFrame(smf, i);
 						Models[smf->modelIDs[i]]->AddSkins(texhitlist);
 					}
 					if (smf->modelIDs[i] != -1)
