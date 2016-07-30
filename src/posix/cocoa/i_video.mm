@@ -1287,6 +1287,20 @@ void SDLGLFB::SetGammaTable(WORD* table)
 {
 }
 
+void SDLGLFB::ResetGammaTable()
+{
+}
+
+int SDLGLFB::GetClientWidth()
+{
+	return GetWidth();
+}
+
+int SDLGLFB::GetClientHeight()
+{
+	return GetHeight();
+}
+
 
 // ---------------------------------------------------------------------------
 

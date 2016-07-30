@@ -737,6 +737,12 @@
 		8AD069F41CBA3A9A0073B0B3 /* sqrt.c in Sources */ = {isa = PBXBuildFile; fileRef = 8AD069D41CBA3A600073B0B3 /* sqrt.c */; };
 		8AD069F51CBA3A9A0073B0B3 /* tan.c in Sources */ = {isa = PBXBuildFile; fileRef = 8AD069D51CBA3A600073B0B3 /* tan.c */; };
 		8AD069F61CBA3A9A0073B0B3 /* tanh.c in Sources */ = {isa = PBXBuildFile; fileRef = 8AD069D61CBA3A600073B0B3 /* tanh.c */; };
+		8AD5154F1D4C85AD0047C328 /* gl_renderbuffers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AD515471D4C855D0047C328 /* gl_renderbuffers.cpp */; };
+		8AD515501D4C85B20047C328 /* gl_renderbuffers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AD515471D4C855D0047C328 /* gl_renderbuffers.cpp */; };
+		8AD515511D4C85C50047C328 /* gl_presentshader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AD515491D4C85730047C328 /* gl_presentshader.cpp */; };
+		8AD515521D4C85CE0047C328 /* gl_presentshader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AD515491D4C85730047C328 /* gl_presentshader.cpp */; };
+		8AD515531D4C85D70047C328 /* gl_shaderprogram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AD5154B1D4C85730047C328 /* gl_shaderprogram.cpp */; };
+		8AD515541D4C85E40047C328 /* gl_shaderprogram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AD5154B1D4C85730047C328 /* gl_shaderprogram.cpp */; };
 		8AD870F3140A4EC5007A06A9 /* Credits.html in Resources */ = {isa = PBXBuildFile; fileRef = 8AD870F1140A4EC5007A06A9 /* Credits.html */; };
 		8AE271341C959DB8006389F1 /* i_main_except.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AE271331C959DA0006389F1 /* i_main_except.cpp */; };
 		8AE875801BAAFDB700717B78 /* libcommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8AE8757E1BAAFDB700717B78 /* libcommon.a */; };
@@ -2960,6 +2966,15 @@
 		8AD069D41CBA3A600073B0B3 /* sqrt.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = sqrt.c; sourceTree = "<group>"; };
 		8AD069D51CBA3A600073B0B3 /* tan.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tan.c; sourceTree = "<group>"; };
 		8AD069D61CBA3A600073B0B3 /* tanh.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tanh.c; sourceTree = "<group>"; };
+		8AD515471D4C855D0047C328 /* gl_renderbuffers.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = gl_renderbuffers.cpp; sourceTree = "<group>"; };
+		8AD515481D4C855D0047C328 /* gl_renderbuffers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gl_renderbuffers.h; sourceTree = "<group>"; };
+		8AD515491D4C85730047C328 /* gl_presentshader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = gl_presentshader.cpp; sourceTree = "<group>"; };
+		8AD5154A1D4C85730047C328 /* gl_presentshader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gl_presentshader.h; sourceTree = "<group>"; };
+		8AD5154B1D4C85730047C328 /* gl_shaderprogram.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = gl_shaderprogram.cpp; sourceTree = "<group>"; };
+		8AD5154C1D4C85730047C328 /* gl_shaderprogram.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gl_shaderprogram.h; sourceTree = "<group>"; };
+		8AD515551D4C86160047C328 /* func_warp3.fp */ = {isa = PBXFileReference; lastKnownFileType = text; path = func_warp3.fp; sourceTree = "<group>"; };
+		8AD515561D4C86160047C328 /* present.fp */ = {isa = PBXFileReference; lastKnownFileType = text; path = present.fp; sourceTree = "<group>"; };
+		8AD515571D4C86160047C328 /* present.vp */ = {isa = PBXFileReference; lastKnownFileType = text; path = present.vp; sourceTree = "<group>"; };
 		8AD870F1140A4EC5007A06A9 /* Credits.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = Credits.html; path = misc/resources/Credits.html; sourceTree = "<group>"; };
 		8AE271331C959DA0006389F1 /* i_main_except.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = i_main_except.cpp; sourceTree = "<group>"; };
 		8AE8757E1BAAFDB700717B78 /* libcommon.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcommon.a; path = "thirdparty/openal-soft/lib/libcommon.a"; sourceTree = "<group>"; };
@@ -5086,6 +5101,7 @@
 				8A80DD7D17ABB57000917483 /* func_notexture.fp */,
 				8A80DD7E17ABB57000917483 /* func_warp1.fp */,
 				8A80DD7F17ABB57000917483 /* func_warp2.fp */,
+				8AD515551D4C86160047C328 /* func_warp3.fp */,
 				8A80DD8017ABB57000917483 /* func_wavex.fp */,
 				8A80DD8117ABB57000917483 /* fuzz_jagged.fp */,
 				8A80DD8217ABB57000917483 /* fuzz_noise.fp */,
@@ -5098,6 +5114,8 @@
 				8A80DD8917ABB57000917483 /* gammacorrection.fp */,
 				8A80DD8A17ABB57000917483 /* main.fp */,
 				8A80DD8B17ABB57000917483 /* main.vp */,
+				8AD515561D4C86160047C328 /* present.fp */,
+				8AD515571D4C86160047C328 /* present.vp */,
 				8A29918D1CD774B0008A1836 /* shaderdefs.i */,
 				8A29918E1CD774B0008A1836 /* stencil.fp */,
 			);
@@ -7146,6 +7164,8 @@
 				8AF27E1F139126C00095D9A0 /* gl_colormap.h */,
 				8AF27E20139126C00095D9A0 /* gl_lightdata.cpp */,
 				8AF27E21139126C00095D9A0 /* gl_lightdata.h */,
+				8AD515471D4C855D0047C328 /* gl_renderbuffers.cpp */,
+				8AD515481D4C855D0047C328 /* gl_renderbuffers.h */,
 				8AF27E22139126C00095D9A0 /* gl_renderer.cpp */,
 				8AF27E23139126C00095D9A0 /* gl_renderer.h */,
 				8AF27E24139126C00095D9A0 /* gl_renderstate.cpp */,
@@ -7185,8 +7205,12 @@
 		8AF27E3C139126C00095D9A0 /* shaders */ = {
 			isa = PBXGroup;
 			children = (
+				8AD515491D4C85730047C328 /* gl_presentshader.cpp */,
+				8AD5154A1D4C85730047C328 /* gl_presentshader.h */,
 				8AF27E3D139126C00095D9A0 /* gl_shader.cpp */,
 				8AF27E3E139126C00095D9A0 /* gl_shader.h */,
+				8AD5154B1D4C85730047C328 /* gl_shaderprogram.cpp */,
+				8AD5154C1D4C85730047C328 /* gl_shaderprogram.h */,
 				8AF27E3F139126C00095D9A0 /* gl_texshader.cpp */,
 				8AF27E40139126C00095D9A0 /* gl_texshader.h */,
 			);
@@ -8061,6 +8085,7 @@
 				8A9F537114BB0F2900F3369B /* gl_models_md3.cpp in Sources */,
 				8A9F537214BB0F2900F3369B /* gl_voxels.cpp in Sources */,
 				8A9F537314BB0F2900F3369B /* gl_lightdata.cpp in Sources */,
+				8AD5154F1D4C85AD0047C328 /* gl_renderbuffers.cpp in Sources */,
 				8A9F537414BB0F2900F3369B /* gl_renderer.cpp in Sources */,
 				8A9F537514BB0F2900F3369B /* gl_renderstate.cpp in Sources */,
 				8A9F537614BB0F2900F3369B /* gl_bsp.cpp in Sources */,
@@ -8080,7 +8105,9 @@
 				8A9F538414BB0F2900F3369B /* gl_walls.cpp in Sources */,
 				8A9F538514BB0F2900F3369B /* gl_walls_draw.cpp in Sources */,
 				8A9F538614BB0F2900F3369B /* gl_weapon.cpp in Sources */,
+				8AD515511D4C85C50047C328 /* gl_presentshader.cpp in Sources */,
 				8A9F538714BB0F2900F3369B /* gl_shader.cpp in Sources */,
+				8AD515531D4C85D70047C328 /* gl_shaderprogram.cpp in Sources */,
 				8A9F538814BB0F2900F3369B /* gl_texshader.cpp in Sources */,
 				8A213C461C0062F2002DD476 /* gl_anaglyph.cpp in Sources */,
 				8A83D8AA1CC2237C00F3792F /* gl_quadstereo.cpp in Sources */,
@@ -8792,6 +8819,7 @@
 				8AF280D0139126C00095D9A0 /* gl_models_md3.cpp in Sources */,
 				8AF280D1139126C00095D9A0 /* gl_voxels.cpp in Sources */,
 				8AF280D2139126C00095D9A0 /* gl_lightdata.cpp in Sources */,
+				8AD515501D4C85B20047C328 /* gl_renderbuffers.cpp in Sources */,
 				8AF280D3139126C00095D9A0 /* gl_renderer.cpp in Sources */,
 				8AF280D4139126C00095D9A0 /* gl_renderstate.cpp in Sources */,
 				8AF280D5139126C00095D9A0 /* gl_bsp.cpp in Sources */,
@@ -8811,7 +8839,9 @@
 				8AF280E3139126C00095D9A0 /* gl_walls.cpp in Sources */,
 				8AF280E4139126C00095D9A0 /* gl_walls_draw.cpp in Sources */,
 				8AF280E5139126C00095D9A0 /* gl_weapon.cpp in Sources */,
+				8AD515521D4C85CE0047C328 /* gl_presentshader.cpp in Sources */,
 				8AF280E6139126C00095D9A0 /* gl_shader.cpp in Sources */,
+				8AD515541D4C85E40047C328 /* gl_shaderprogram.cpp in Sources */,
 				8AF280E7139126C00095D9A0 /* gl_texshader.cpp in Sources */,
 				8A213C4B1C006300002DD476 /* gl_anaglyph.cpp in Sources */,
 				8A83D8AB1CC2238200F3792F /* gl_quadstereo.cpp in Sources */,
