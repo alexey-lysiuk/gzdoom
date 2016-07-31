@@ -94,6 +94,8 @@ CUSTOM_CVAR(Int, gl_bloom_kernel_size, 7, 0)
 EXTERN_CVAR(Float, vid_brightness)
 EXTERN_CVAR(Float, vid_contrast)
 
+CVAR(Bool, gl_smooth_rendered, true, CVAR_ARCHIVE | CVAR_GLOBALCONFIG);
+
 //-----------------------------------------------------------------------------
 //
 // Adds bloom contribution to scene texture
@@ -367,6 +369,10 @@ void FGLRenderer::Flush()
 			mPresentShader->Brightness.Set(clamp<float>(vid_brightness, -0.8f, 0.8f));
 		}
 		mBuffers->BindHudTexture(0);
+
+		const GLint smoothFilter = gl_smooth_rendered ? GL_LINEAR : GL_NEAREST;
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, smoothFilter);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, smoothFilter);
 
 		FFlatVertex *ptr = GLRenderer->mVBO->GetBuffer();
 		ptr->Set(-1.0f, -1.0f, 0, 0.0f, 0.0f); ptr++;
