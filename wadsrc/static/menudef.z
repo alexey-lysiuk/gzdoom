@@ -38,6 +38,15 @@ OptionValue "HWGammaModes"
 	2, "$OPTVAL_FULLSCREENONLY"
 }
 
+OptionValue "TonemapModes"
+{
+	0, "$OPTVAL_OFF"
+	1, "$OPTVAL_UNCHARTED2"
+	2, "$OPTVAL_HEJLDAWSON"
+	3, "$OPTVAL_REINHARD"
+	4, "$OPTVAL_LINEAR"
+}
+
 OptionValue "TextureFormats"
 {
 	0, "$OPTVAL_RGBA8"
@@ -58,6 +67,16 @@ OptionValue "Anisotropy"
 	4, "$OPTVAL_4X"
 	8, "$OPTVAL_8X"
 	16, "$OPTVAL_16X"
+}
+
+OptionValue "Multisample"
+{
+	1, "$OPTVAL_OFF"
+	2, "$OPTVAL_2X"
+	4, "$OPTVAL_4X"
+	8, "$OPTVAL_8X"
+	16, "$OPTVAL_16X"
+	32, "$OPTVAL_32X"
 }
 
 OptionValue "Colormaps"
@@ -215,6 +234,9 @@ OptionMenu "GLPrefOptions"
 	Option "$GLPREFMNU_RENDERQUALITY",			gl_render_precise,				"Precision"
 	Option "$GLPREFMNU_VRMODE",					vr_mode, 						"VRMode"
 	Option "$GLPREFMNU_VRQUADSTEREO",			vr_enable_quadbuffered,			"OnOff"
+	Option "$GLPREFMNU_MULTISAMPLE", 			gl_multisample,					"Multisample"
+	Option "$GLPREFMNU_TONEMAP", 				gl_tonemap,						"TonemapModes"
+	Option "$GLPREFMNU_BLOOM",		 			gl_bloom,						"OnOff"
 	Option "Post-processing",					gl_postprocess,					"PostProcess"
 	Option "Smooth rendered picture",			gl_smooth_rendered,				"OnOff"
 }

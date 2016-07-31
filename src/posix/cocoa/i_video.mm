@@ -342,113 +342,6 @@ private:
 // ---------------------------------------------------------------------------
 
 
-class NonCopyable
-{
-protected:
-	NonCopyable() { }
-	~NonCopyable() { }
-
-private:
-	NonCopyable(const NonCopyable&);
-	const NonCopyable& operator=(const NonCopyable&);
-};
-
-
-// ---------------------------------------------------------------------------
-
-
-class RenderTarget : private NonCopyable
-{
-public:
-	RenderTarget(const GLsizei width, const GLsizei height);
-	~RenderTarget();
-
-	void Bind();
-	void Unbind();
-
-	FHardwareTexture& GetColorTexture()
-	{
-		return m_texture;
-	}
-
-private:
-	GLuint m_ID;
-	GLuint m_oldID;
-
-	FHardwareTexture m_texture;
-
-	static GLuint GetBoundID();
-
-}; // class RenderTarget
-
-
-// ---------------------------------------------------------------------------
-
-
-class PostProcess
-{
-public:
-	explicit PostProcess(const RenderTarget* const sharedDepth = NULL);
-	~PostProcess();
-
-	void Init(const EEffect effect, const GLsizei width, const GLsizei height);
-	void Release();
-
-	bool IsInitialized() const;
-
-	void Start();
-	void Finish();
-
-private:
-	GLsizei m_width;
-	GLsizei m_height;
-	EEffect m_effect;
-
-	RenderTarget*  m_renderTarget;
-	const RenderTarget* m_sharedDepth;
-
-}; // class PostProcess
-
-
-// ---------------------------------------------------------------------------
-
-
-class CocoaOpenGLFrameBuffer : public OpenGLFrameBuffer, private NonCopyable
-{
-	typedef OpenGLFrameBuffer Super;
-
-public:
-	CocoaOpenGLFrameBuffer(void* hMonitor, int width, int height, int bits, int refreshHz, bool fullscreen);
-
-	virtual bool Lock(bool buffered);
-	virtual void Update();
-
-	virtual void GetScreenshotBuffer(const BYTE*& buffer, int& pitch, ESSType& color_type);
-
-	virtual void SetSmoothPicture(bool smooth);
-
-	PostProcess* GetPostProcess() { return &m_postProcess; }
-
-private:
-	RenderTarget m_renderTarget;
-
-	PostProcess  m_postProcess;
-
-	uint32_t     m_frame;
-	uint32_t     m_framesToSwitchVSync;
-	uint32_t     m_lastFrame;
-	uint32_t     m_lastFrameTime;
-
-	void UpdateAutomaticVSync();
-
-	void DrawRenderTarget();
-
-}; // class CocoaOpenGLFrameBuffer
-
-
-// ---------------------------------------------------------------------------
-
-
 EXTERN_CVAR(Float, Gamma)
 
 CUSTOM_CVAR(Float, rgamma, 1.0f, CVAR_ARCHIVE | CVAR_GLOBALCONFIG)
@@ -709,7 +602,7 @@ DFrameBuffer* CocoaVideo::CreateFrameBuffer(const int width, const int height, c
 
 	if (1 == s_currentRenderer)
  	{
-		fb = new CocoaOpenGLFrameBuffer(NULL, width, height, 32, 60, fullscreen);
+		fb = new OpenGLFrameBuffer(NULL, width, height, 32, 60, fullscreen);
 	}
 	else
 	{
@@ -1202,6 +1095,20 @@ SDLGLFB::SDLGLFB(void*, const int width, const int height, int, int, const bool 
 , m_lock(-1)
 , m_isUpdatePending(false)
 {
+	CGGammaValue gammaTable[GAMMA_TABLE_SIZE];
+	uint32_t actualChannelSize;
+
+	const CGError result = CGGetDisplayTransferByTable(kCGDirectMainDisplay, GAMMA_CHANNEL_SIZE,
+		gammaTable, &gammaTable[GAMMA_CHANNEL_SIZE], &gammaTable[GAMMA_CHANNEL_SIZE * 2], &actualChannelSize);
+	m_supportsGamma = kCGErrorSuccess == result && GAMMA_CHANNEL_SIZE == actualChannelSize;
+
+	if (m_supportsGamma)
+	{
+		for (uint32_t i = 0; i < GAMMA_TABLE_SIZE; ++i)
+		{
+			m_originalGamma[i] = static_cast<WORD>(gammaTable[i] * 65535.0f);
+		}
+	}
 }
 
 SDLGLFB::SDLGLFB()
@@ -1285,516 +1192,36 @@ void SDLGLFB::SwapBuffers()
 
 void SDLGLFB::SetGammaTable(WORD* table)
 {
+	if (m_supportsGamma)
+	{
+		CGGammaValue gammaTable[GAMMA_TABLE_SIZE];
+
+		for (uint32_t i = 0; i < GAMMA_TABLE_SIZE; ++i)
+		{
+			gammaTable[i] = static_cast<CGGammaValue>(table[i] / 65535.0f);
+		}
+
+		CGSetDisplayTransferByTable(kCGDirectMainDisplay, GAMMA_CHANNEL_SIZE,
+			gammaTable, &gammaTable[GAMMA_CHANNEL_SIZE], &gammaTable[GAMMA_CHANNEL_SIZE * 2]);
+	}
 }
 
 void SDLGLFB::ResetGammaTable()
 {
+	if (m_supportsGamma)
+	{
+		SetGammaTable(m_originalGamma);
+	}
 }
 
 int SDLGLFB::GetClientWidth()
 {
-	return GetWidth();
+	return static_cast<int>(rbOpts.width + 2.0f * rbOpts.shiftX);
 }
 
 int SDLGLFB::GetClientHeight()
 {
-	return GetHeight();
-}
-
-
-// ---------------------------------------------------------------------------
-
-
-void BoundTextureSetFilter(const GLenum target, const GLint filter)
-{
-	glTexParameteri(target, GL_TEXTURE_MIN_FILTER, filter);
-	glTexParameteri(target, GL_TEXTURE_MAG_FILTER, filter);
-
-	glTexParameteri(target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-}
-
-EXTERN_CVAR(Float, vid_brightness)
-EXTERN_CVAR(Float, vid_contrast)
-
-void BoundTextureDraw2D(const GLsizei width, const GLsizei height)
-{
-	gl_RenderState.SetTextureMode(TM_OPAQUE);
-	gl_RenderState.AlphaFunc(GL_GEQUAL, 0.f);
-	gl_RenderState.Apply();
-
-	static const float x  = 0.f;
-	static const float y  = 0.f;
-	const float w = float(width);
-	const float h = float(height);
-
-	static const float u1 = 0.f;
-	static const float v1 = 1.f;
-	static const float u2 = 1.f;
-	static const float v2 = 0.f;
-
-	FFlatVertexBuffer* const vbo = GLRenderer->mVBO;
-	FFlatVertex* ptr = vbo->GetBuffer();
-
-	ptr->Set(x,     y,     0, u1, v1); ++ptr;
-	ptr->Set(x,     y + h, 0, u1, v2); ++ptr;
-	ptr->Set(x + w, y,     0, u2, v1); ++ptr;
-	ptr->Set(x + w, y + h, 0, u2, v2); ++ptr;
-
-	vbo->RenderCurrent(ptr, GL_TRIANGLE_STRIP);
-
-	gl_RenderState.SetEffect(EFF_NONE);
-	gl_RenderState.SetTextureMode(TM_MODULATE);
-}
-
-bool BoundTextureSaveAsPNG(const GLenum target, const char* const path)
-{
-	if (NULL == path)
-	{
-		return false;
-	}
-
-	GLint width  = 0;
-	GLint height = 0;
-
-	glGetTexLevelParameteriv(target, 0, GL_TEXTURE_WIDTH,  &width );
-	glGetTexLevelParameteriv(target, 0, GL_TEXTURE_HEIGHT, &height);
-
-	if (0 == width || 0 == height)
-	{
-		Printf("BoundTextureSaveAsPNG: invalid texture size %ix%i\n", width, height);
-
-		return false;
-	}
-
-	static const int BYTES_PER_PIXEL = 4;
-
-	const int imageSize = width * height * BYTES_PER_PIXEL;
-	unsigned char* imageBuffer = static_cast<unsigned char*>(malloc(imageSize));
-
-	if (NULL == imageBuffer)
-	{
-		Printf("BoundTextureSaveAsPNG: cannot allocate %i bytes\n", imageSize);
-
-		return false;
-	}
-
-	glGetTexImage(target, 0, GL_BGRA, GL_UNSIGNED_BYTE, imageBuffer);
-
-	const int lineSize = width * BYTES_PER_PIXEL;
-	unsigned char lineBuffer[lineSize];
-
-	for (GLint line = 0; line < height / 2; ++line)
-	{
-		void* frontLinePtr = &imageBuffer[line                * lineSize];
-		void*  backLinePtr = &imageBuffer[(height - line - 1) * lineSize];
-
-		memcpy(  lineBuffer, frontLinePtr, lineSize);
-		memcpy(frontLinePtr,  backLinePtr, lineSize);
-		memcpy( backLinePtr,   lineBuffer, lineSize);
-	}
-
-	FILE* file = fopen(path, "w");
-
-	if (NULL == file)
-	{
-		Printf("BoundTextureSaveAsPNG: cannot open file %s\n", path);
-
-		free(imageBuffer);
-
-		return false;
-	}
-
-	const bool result =
-		   M_CreatePNG(file, &imageBuffer[0], NULL, SS_BGRA, width, height, width * BYTES_PER_PIXEL)
-		&& M_FinishPNG(file);
-
-	fclose(file);
-
-	free(imageBuffer);
-
-	return result;
-}
-
-
-// ---------------------------------------------------------------------------
-
-
-RenderTarget::RenderTarget(const GLsizei width, const GLsizei height)
-: m_ID(0)
-, m_oldID(0)
-, m_texture(width, height, true)
-{
-	glGenFramebuffersEXT(1, &m_ID);
-
-	Bind();
-	m_texture.CreateTexture(NULL, width, height, 0, false, 0);
-	m_texture.BindToFrameBuffer();
-	Unbind();
-}
-
-RenderTarget::~RenderTarget()
-{
-	glDeleteFramebuffersEXT(1, &m_ID);
-}
-
-
-void RenderTarget::Bind()
-{
-	const GLuint boundID = GetBoundID();
-
-	if (m_ID != boundID)
-	{
-		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_ID);
-		m_oldID = boundID;
-	}
-}
-
-void RenderTarget::Unbind()
-{
-	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_oldID);
-	m_oldID = 0;
-}
-
-
-GLuint RenderTarget::GetBoundID()
-{
-	GLint result;
-	glGetIntegerv(GL_FRAMEBUFFER_BINDING_EXT, &result);
-
-	return static_cast<GLuint>(result);
-}
-
-
-// ---------------------------------------------------------------------------
-
-
-PostProcess::PostProcess(const RenderTarget* const sharedDepth)
-: m_width       (0   )
-, m_height      (0   )
-, m_renderTarget(NULL)
-, m_effect      (EFF_NONE)
-, m_sharedDepth (sharedDepth)
-{
-
-}
-
-PostProcess::~PostProcess()
-{
-	Release();
-}
-
-
-void PostProcess::Init(const EEffect effect, const GLsizei width, const GLsizei height)
-{
-	assert(EFF_NONE != effect && effect < MAX_EFFECTS);
-	assert(width  > 0);
-	assert(height > 0);
-
-	Release();
-
-	m_width  = width;
-	m_height = height;
-	m_effect = effect;
-
-	m_renderTarget = new RenderTarget(m_width, m_height);
-	m_renderTarget->GetColorTexture().Bind(0, 0, false);
-
-	BoundTextureSetFilter(GL_TEXTURE_2D, GL_NEAREST);
-}
-
-void PostProcess::Release()
-{
-	if (NULL != m_renderTarget)
-	{
-		delete m_renderTarget;
-		m_renderTarget = NULL;
-	}
-
-	m_width  = 0;
-	m_height = 0;
-	m_effect = EFF_NONE;
-}
-
-
-bool PostProcess::IsInitialized() const
-{
-	// TODO: check other members?
-	return NULL != m_renderTarget;
-}
-
-
-void PostProcess::Start()
-{
-	assert(NULL != m_renderTarget);
-
-	m_renderTarget->Bind();
-}
-
-void PostProcess::Finish()
-{
-	m_renderTarget->Unbind();
-	m_renderTarget->GetColorTexture().Bind(0, 0, false);
-
-	gl_RenderState.SetColor(float(m_width), float(m_height), 0.0f);
-	gl_RenderState.SetEffect(m_effect);
-
-	BoundTextureDraw2D(m_width, m_height);
-}
-
-
-// ---------------------------------------------------------------------------
-
-
-static PostProcess* GetPostProcess()
-{
-	CocoaOpenGLFrameBuffer* frameBuffer = static_cast<CocoaOpenGLFrameBuffer*>(screen);
-
-	return NULL == frameBuffer
-		? NULL
-		: frameBuffer->GetPostProcess();
-}
-
-
-CUSTOM_CVAR(Int, gl_postprocess, 0, CVAR_ARCHIVE | CVAR_GLOBALCONFIG | CVAR_NOINITCALL)
-{
-	PostProcess* const postProcess = GetPostProcess();
-
-	if (NULL != postProcess)
-	{
-		postProcess->Release();
-	}
-}
-
-
-bool IsPostProcessActive()
-{
-	return NULL != GetPostProcess() && gl_postprocess > 0;
-}
-
-void StartPostProcess()
-{
-	if (!IsPostProcessActive())
-	{
-		return;
-	}
-
-	PostProcess* const postProcess = GetPostProcess();
-
-	if (!postProcess->IsInitialized())
-	{
-		postProcess->Init(EFF_FXAA, SCREENWIDTH, SCREENHEIGHT);
-	}
-
-	postProcess->Start();
-}
-
-void EndPostProcess()
-{
-	if (IsPostProcessActive())
-	{
-		GetPostProcess()->Finish();
-	}
-}
-
-
-// ---------------------------------------------------------------------------
-
-
-CocoaOpenGLFrameBuffer::CocoaOpenGLFrameBuffer(void* hMonitor, int width, int height, int bits, int refreshHz, bool fullscreen)
-: OpenGLFrameBuffer(hMonitor, width, height, bits, refreshHz, fullscreen)
-, m_renderTarget(width, height)
-, m_postProcess(&m_renderTarget)
-, m_frame(0)
-, m_framesToSwitchVSync(0)
-, m_lastFrame(0)
-, m_lastFrameTime(0)
-{
-	SetSmoothPicture(gl_smooth_rendered);
-
-	// Fill render target with black color
-
-	m_renderTarget.Bind();
-	glClear(GL_COLOR_BUFFER_BIT);
-	m_renderTarget.Unbind();
-
-	// Post-processing setup
-
-	GLRenderer->beforeRenderView = StartPostProcess;
-	GLRenderer->afterRenderView  = EndPostProcess;
-}
-
-
-bool CocoaOpenGLFrameBuffer::Lock(bool buffered)
-{
-	if (0 == m_lock)
-	{
-		m_renderTarget.Bind();
-	}
-
-	return Super::Lock(buffered);
-}
-
-void CocoaOpenGLFrameBuffer::Update()
-{
-	UpdateAutomaticVSync();
-
-	if (!CanUpdate())
-	{
-		GLRenderer->Flush();
-		return;
-	}
-
-	Begin2D(false);
-
-	DrawRateStuff();
-	GLRenderer->Flush();
-
-	DrawRenderTarget();
-
-	Swap();
-	Unlock();
-
-	CheckBench();
-}
-
-
-void CocoaOpenGLFrameBuffer::GetScreenshotBuffer(const BYTE*& buffer, int& pitch, ESSType& color_type)
-{
-	m_renderTarget.Bind();
-
-	Super::GetScreenshotBuffer(buffer, pitch, color_type);
-
-	m_renderTarget.Unbind();
-}
-
-
-static bool IsVSyncEnabled()
-{
-	GLint result = 0;
-
-	[[NSOpenGLContext currentContext] getValues:&result
-								   forParameter:NSOpenGLCPSwapInterval];
-
-	return result;
-}
-
-void CocoaOpenGLFrameBuffer::UpdateAutomaticVSync()
-{
-	++m_frame;
-
-	// Check and update vertical synchromization state of OpenGL context
-	// if automatic VSync is not active or game is not running (menu, console, pause etc)
-
-	const bool isVSync = IsVSyncEnabled();
-	const bool isGameRunning = GS_LEVEL == gamestate
-		&& !paused
-		&& !g_isTicFrozen
-		&& MENU_Off == menuactive
-		&& c_up == ConsoleState;
-
-	if (2 != vid_vsync || !isGameRunning)
-	{
-		m_framesToSwitchVSync = 0;
-		m_lastFrame           = 0;
-		m_lastFrameTime       = 0;
-
-		if (0 == vid_vsync && isVSync)
-		{
-			SetVSync(0);
-		}
-		else if (vid_vsync > 0 && !isVSync)
-		{
-			SetVSync(1);
-		}
-
-		return;
-	}
-
-	// Update automatic VSync state
-	// and change corresponding OpenGL context parameter if needed
-
-	const uint32_t frameTime = I_MSTime();
-
-	if (0 != m_lastFrameTime && frameTime != m_lastFrameTime)
-	{
-		const uint32_t fps = 1000 / (frameTime - m_lastFrameTime);
-
-		if (   ( isVSync && fps <  vid_vsync_auto_fps)
-			|| (!isVSync && fps >= vid_vsync_auto_fps) )
-
-		{
-			if (m_frame == m_lastFrame + 1)
-			{
-				++m_framesToSwitchVSync;
-			}
-			else
-			{
-				m_framesToSwitchVSync = 0;
-			}
-
-			m_lastFrame = m_frame;
-		}
-		else
-		{
-			m_framesToSwitchVSync = 0;
-		}
-	}
-
-	if (m_framesToSwitchVSync >= vid_vsync_auto_switch_frames)
-	{
-		SetVSync(isVSync ? 0 : 1);
-
-		m_framesToSwitchVSync = 0;
-	}
-
-	m_lastFrameTime = frameTime;
-}
-
-
-void CocoaOpenGLFrameBuffer::DrawRenderTarget()
-{
-	m_renderTarget.Unbind();
-	m_renderTarget.GetColorTexture().Bind(0, 0, false);
-
-	if (rbOpts.dirty)
-	{
-		// TODO: Figure out why the following glClear() call is needed
-		// to avoid drawing of garbage in fullscreen mode when
-		// in-game's aspect ratio is different from display one
-		glClear(GL_COLOR_BUFFER_BIT);
-
-		rbOpts.dirty = false;
-	}
-
-	glViewport(rbOpts.shiftX, rbOpts.shiftY, rbOpts.width, rbOpts.height);
-
-	gl_RenderState.SetColor(Gamma, vid_contrast, vid_brightness);
-	gl_RenderState.SetEffect(EFF_GAMMACORRECTION);
-
-	BoundTextureDraw2D(Width, Height);
-
-	glViewport(0, 0, Width, Height);
-}
-
-
-void CocoaOpenGLFrameBuffer::SetSmoothPicture(const bool smooth)
-{
-	FHardwareTexture& texture = m_renderTarget.GetColorTexture();
-	texture.Bind(0, 0, false);
-	BoundTextureSetFilter(GL_TEXTURE_2D, smooth ? GL_LINEAR : GL_NEAREST);
-}
-
-
-// ---------------------------------------------------------------------------
-
-
-CUSTOM_CVAR(Bool, gl_smooth_rendered, false, CVAR_ARCHIVE | CVAR_GLOBALCONFIG | CVAR_NOINITCALL)
-{
-	if (NULL != screen)
-	{
-		screen->SetSmoothPicture(self);
-	}
+	return static_cast<int>(rbOpts.height + 2.0f * rbOpts.shiftY);
 }
 
 
