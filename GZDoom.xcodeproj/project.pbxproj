@@ -712,6 +712,8 @@
 		8ABDDCBB1C4ED80100271DE5 /* gl_load.c in Sources */ = {isa = PBXBuildFile; fileRef = 8ABDDCB61C4ED7C900271DE5 /* gl_load.c */; };
 		8AC2EE371D560A3000760879 /* gl_postprocessstate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AC2EE351D560A1500760879 /* gl_postprocessstate.cpp */; };
 		8AC2EE381D560A3400760879 /* gl_postprocessstate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AC2EE351D560A1500760879 /* gl_postprocessstate.cpp */; };
+		8AC2EE3B1D560BC100760879 /* gl_fxaashader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AC2EE391D560BAA00760879 /* gl_fxaashader.cpp */; };
+		8AC2EE3C1D560BC500760879 /* gl_fxaashader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AC2EE391D560BAA00760879 /* gl_fxaashader.cpp */; };
 		8AC81C411391321300F49DC3 /* libjpeg_gzdoom.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8AF278CA1390F0370095D9A0 /* libjpeg_gzdoom.a */; };
 		8AC81C421391321300F49DC3 /* liblzma_gzdoom.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8AF2795A1390F1200095D9A0 /* liblzma_gzdoom.a */; };
 		8AC81C431391321300F49DC3 /* libgme_gzdoom.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8AF27A541390F4F40095D9A0 /* libgme_gzdoom.a */; };
@@ -2972,6 +2974,8 @@
 		8ABDDCBC1C4ED85000271DE5 /* wglext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = wglext.h; sourceTree = "<group>"; };
 		8AC2EE351D560A1500760879 /* gl_postprocessstate.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = gl_postprocessstate.cpp; sourceTree = "<group>"; };
 		8AC2EE361D560A1500760879 /* gl_postprocessstate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gl_postprocessstate.h; sourceTree = "<group>"; };
+		8AC2EE391D560BAA00760879 /* gl_fxaashader.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = gl_fxaashader.cpp; sourceTree = "<group>"; };
+		8AC2EE3A1D560BAA00760879 /* gl_fxaashader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gl_fxaashader.h; sourceTree = "<group>"; };
 		8AC7C1AE1C415FDE00D7D23E /* GuillotineBinPack.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = GuillotineBinPack.cpp; sourceTree = "<group>"; };
 		8AC7C1AF1C415FDE00D7D23E /* GuillotineBinPack.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GuillotineBinPack.h; sourceTree = "<group>"; };
 		8AC7C1B01C415FDE00D7D23E /* Rect.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Rect.h; sourceTree = "<group>"; };
@@ -7249,6 +7253,8 @@
 				8AB6BB031D4DFC7D0065FA17 /* gl_bloomshader.h */,
 				8AB6BB041D4DFC7D0065FA17 /* gl_blurshader.cpp */,
 				8AB6BB051D4DFC7D0065FA17 /* gl_blurshader.h */,
+				8AC2EE391D560BAA00760879 /* gl_fxaashader.cpp */,
+				8AC2EE3A1D560BAA00760879 /* gl_fxaashader.h */,
 				8A3B26871D55CD9400BEF731 /* gl_lensshader.cpp */,
 				8A3B26881D55CD9400BEF731 /* gl_lensshader.h */,
 				8AD515491D4C85730047C328 /* gl_presentshader.cpp */,
@@ -8157,6 +8163,7 @@
 				8A9F538614BB0F2900F3369B /* gl_weapon.cpp in Sources */,
 				8AB6BB081D4DFCA70065FA17 /* gl_bloomshader.cpp in Sources */,
 				8AB6BB091D4DFCA70065FA17 /* gl_blurshader.cpp in Sources */,
+				8AC2EE3C1D560BC500760879 /* gl_fxaashader.cpp in Sources */,
 				8A3B268B1D55CDD500BEF731 /* gl_lensshader.cpp in Sources */,
 				8AD515511D4C85C50047C328 /* gl_presentshader.cpp in Sources */,
 				8A9F538714BB0F2900F3369B /* gl_shader.cpp in Sources */,
@@ -8897,6 +8904,7 @@
 				8AF280E5139126C00095D9A0 /* gl_weapon.cpp in Sources */,
 				8AB6BB0A1D4DFCAD0065FA17 /* gl_bloomshader.cpp in Sources */,
 				8AB6BB0B1D4DFCAD0065FA17 /* gl_blurshader.cpp in Sources */,
+				8AC2EE3B1D560BC100760879 /* gl_fxaashader.cpp in Sources */,
 				8A3B268C1D55CDDB00BEF731 /* gl_lensshader.cpp in Sources */,
 				8AD515521D4C85CE0047C328 /* gl_presentshader.cpp in Sources */,
 				8AF280E6139126C00095D9A0 /* gl_shader.cpp in Sources */,

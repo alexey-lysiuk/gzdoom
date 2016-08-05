@@ -66,6 +66,7 @@
 #include "gl/shaders/gl_blurshader.h"
 #include "gl/shaders/gl_tonemapshader.h"
 #include "gl/shaders/gl_lensshader.h"
+#include "gl/shaders/gl_fxaashader.h"
 #include "gl/shaders/gl_presentshader.h"
 #include "gl/textures/gl_texture.h"
 #include "gl/textures/gl_translate.h"
@@ -106,8 +107,7 @@ FGLRenderer::FGLRenderer(OpenGLFrameBuffer *fb)
 	mShaderManager = NULL;
 	gllight = glpart2 = glpart = mirrortexture = NULL;
 	mLights = NULL;
-	beforeRenderView = nullptr;
-	afterRenderView = nullptr;
+	mFXAAShader = nullptr;
 }
 
 void gl_LoadModels();
@@ -121,6 +121,7 @@ void FGLRenderer::Initialize()
 	mBlurShader = new FBlurShader();
 	mTonemapShader = new FTonemapShader();
 	mLensShader = new FLensShader();
+	mFXAAShader = new FFXAAShader();
 	mPresentShader = new FPresentShader();
 
 	// Only needed for the core profile, because someone decided it was a good idea to remove the default VAO.
@@ -171,6 +172,7 @@ FGLRenderer::~FGLRenderer()
 	}
 	if (mBuffers) delete mBuffers;
 	if (mPresentShader) delete mPresentShader;
+	delete mFXAAShader;
 	if (mBloomExtractShader) delete mBloomExtractShader;
 	if (mBloomCombineShader) delete mBloomCombineShader;
 	if (mBlurShader) delete mBlurShader;

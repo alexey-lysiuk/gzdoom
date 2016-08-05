@@ -24,6 +24,7 @@ class FBloomCombineShader;
 class FBlurShader;
 class FTonemapShader;
 class FLensShader;
+class FFXAAShader;
 class FPresentShader;
 
 inline float DEG2RAD(float deg)
@@ -92,6 +93,7 @@ public:
 	FBlurShader *mBlurShader;
 	FTonemapShader *mTonemapShader;
 	FLensShader *mLensShader;
+	FFXAAShader *mFXAAShader;
 	FPresentShader *mPresentShader;
 
 	FTexture *gllight;
@@ -113,9 +115,6 @@ public:
 	GL_IRECT mOutputViewport;
 	bool mDrawingScene2D = false;
 	float mCameraExposure = 1.0f;
-
-	void (*beforeRenderView)();
-	void (*afterRenderView)();
 
 
 	FGLRenderer(OpenGLFrameBuffer *fb);
@@ -167,6 +166,7 @@ public:
 	void BloomScene();
 	void TonemapScene();
 	void LensDistortScene();
+	void PostProcessFXAA();
 	void CopyToBackbuffer(const GL_IRECT *bounds, bool applyGamma);
 	void Flush() { CopyToBackbuffer(nullptr, true); }
 

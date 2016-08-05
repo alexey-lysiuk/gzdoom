@@ -70,6 +70,7 @@
 #include "gl/shaders/gl_blurshader.h"
 #include "gl/shaders/gl_tonemapshader.h"
 #include "gl/shaders/gl_lensshader.h"
+#include "gl/shaders/gl_fxaashader.h"
 #include "gl/shaders/gl_presentshader.h"
 
 //==========================================================================
@@ -102,6 +103,8 @@ CVAR(Bool, gl_lens, false, CVAR_ARCHIVE | CVAR_GLOBALCONFIG)
 CVAR(Float, gl_lens_k, -0.12f, 0)
 CVAR(Float, gl_lens_kcube, 0.1f, 0)
 CVAR(Float, gl_lens_chromatic, 1.12f, 0)
+
+CVAR(Int, gl_postprocess, 0, CVAR_ARCHIVE | CVAR_GLOBALCONFIG)
 
 EXTERN_CVAR(Float, vid_brightness)
 EXTERN_CVAR(Float, vid_contrast)
@@ -264,6 +267,37 @@ void FGLRenderer::LensDistortScene()
 	mVBO->RenderScreenQuad();
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	mBuffers->NextTexture();
+}
+
+//-----------------------------------------------------------------------------
+//
+// Apply FXAA and place the result in the HUD/2D texture
+//
+//-----------------------------------------------------------------------------
+
+void FGLRenderer::PostProcessFXAA()
+{
+	if (0 == gl_postprocess)
+	{
+		return;
+	}
+
+	const GLfloat resolution[2] =
+	{
+		static_cast<GLfloat>(mBuffers->GetWidth()),
+		static_cast<GLfloat>(mBuffers->GetHeight())
+	};
+
+	FGLPostProcessState savedState;
+
+	mBuffers->BindNextFB();
+	mBuffers->BindCurrentTexture(0);
+	mFXAAShader->Bind();
+	mFXAAShader->InputTexture.Set(0);
+	mFXAAShader->Resolution.Set(resolution);
+	mVBO->BindVBO();
+	mVBO->RenderScreenQuad();
 	mBuffers->NextTexture();
 }
 

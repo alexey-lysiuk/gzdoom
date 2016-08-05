@@ -866,6 +866,7 @@ sector_t * FGLRenderer::RenderViewpoint (AActor * camera, GL_IRECT * bounds, flo
 			BloomScene();
 			TonemapScene();
 			LensDistortScene();
+			PostProcessFXAA();
 		}
 		mDrawingScene2D = false;
 		eye->TearDown();
@@ -885,11 +886,6 @@ sector_t * FGLRenderer::RenderViewpoint (AActor * camera, GL_IRECT * bounds, flo
 
 void FGLRenderer::RenderView (player_t* player)
 {
-	if (NULL != beforeRenderView)
-	{
-		beforeRenderView();
-	}
-
 	OpenGLFrameBuffer* GLTarget = static_cast<OpenGLFrameBuffer*>(screen);
 	AActor *&LastCamera = GLTarget->LastCamera;
 
@@ -948,11 +944,6 @@ void FGLRenderer::RenderView (player_t* player)
 	GLRenderer->mLightCount = ((it.Next()) != NULL);
 
 	sector_t * viewsector = RenderViewpoint(player->camera, NULL, FieldOfView.Degrees, ratio, fovratio, true, true);
-
-	if (NULL != afterRenderView)
-	{
-		afterRenderView();
-	}
 
 	All.Unclock();
 }
