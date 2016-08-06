@@ -710,6 +710,8 @@
 		8AB930D0199FA70E00EEF7AF /* Image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AB930CD199FA6EF00EEF7AF /* Image.cpp */; };
 		8ABDDCBA1C4ED7F800271DE5 /* gl_load.c in Sources */ = {isa = PBXBuildFile; fileRef = 8ABDDCB61C4ED7C900271DE5 /* gl_load.c */; };
 		8ABDDCBB1C4ED80100271DE5 /* gl_load.c in Sources */ = {isa = PBXBuildFile; fileRef = 8ABDDCB61C4ED7C900271DE5 /* gl_load.c */; };
+		8AC2EE371D560A3000760879 /* gl_postprocessstate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AC2EE351D560A1500760879 /* gl_postprocessstate.cpp */; };
+		8AC2EE381D560A3400760879 /* gl_postprocessstate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AC2EE351D560A1500760879 /* gl_postprocessstate.cpp */; };
 		8AC81C411391321300F49DC3 /* libjpeg_gzdoom.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8AF278CA1390F0370095D9A0 /* libjpeg_gzdoom.a */; };
 		8AC81C421391321300F49DC3 /* liblzma_gzdoom.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8AF2795A1390F1200095D9A0 /* liblzma_gzdoom.a */; };
 		8AC81C431391321300F49DC3 /* libgme_gzdoom.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8AF27A541390F4F40095D9A0 /* libgme_gzdoom.a */; };
@@ -2968,6 +2970,8 @@
 		8ABDDCB61C4ED7C900271DE5 /* gl_load.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gl_load.c; sourceTree = "<group>"; };
 		8ABDDCB71C4ED7C900271DE5 /* gl_load.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gl_load.h; sourceTree = "<group>"; };
 		8ABDDCBC1C4ED85000271DE5 /* wglext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = wglext.h; sourceTree = "<group>"; };
+		8AC2EE351D560A1500760879 /* gl_postprocessstate.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = gl_postprocessstate.cpp; sourceTree = "<group>"; };
+		8AC2EE361D560A1500760879 /* gl_postprocessstate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gl_postprocessstate.h; sourceTree = "<group>"; };
 		8AC7C1AE1C415FDE00D7D23E /* GuillotineBinPack.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = GuillotineBinPack.cpp; sourceTree = "<group>"; };
 		8AC7C1AF1C415FDE00D7D23E /* GuillotineBinPack.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GuillotineBinPack.h; sourceTree = "<group>"; };
 		8AC7C1B01C415FDE00D7D23E /* Rect.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Rect.h; sourceTree = "<group>"; };
@@ -7198,6 +7202,8 @@
 				8AF27E20139126C00095D9A0 /* gl_lightdata.cpp */,
 				8AF27E21139126C00095D9A0 /* gl_lightdata.h */,
 				8AB6BB0E1D4DFD1D0065FA17 /* gl_postprocess.cpp */,
+				8AC2EE351D560A1500760879 /* gl_postprocessstate.cpp */,
+				8AC2EE361D560A1500760879 /* gl_postprocessstate.h */,
 				8AD515471D4C855D0047C328 /* gl_renderbuffers.cpp */,
 				8AD515481D4C855D0047C328 /* gl_renderbuffers.h */,
 				8AF27E22139126C00095D9A0 /* gl_renderer.cpp */,
@@ -8128,6 +8134,7 @@
 				8A9F537214BB0F2900F3369B /* gl_voxels.cpp in Sources */,
 				8A9F537314BB0F2900F3369B /* gl_lightdata.cpp in Sources */,
 				8AB6BB0F1D4DFD2C0065FA17 /* gl_postprocess.cpp in Sources */,
+				8AC2EE371D560A3000760879 /* gl_postprocessstate.cpp in Sources */,
 				8AD5154F1D4C85AD0047C328 /* gl_renderbuffers.cpp in Sources */,
 				8A9F537414BB0F2900F3369B /* gl_renderer.cpp in Sources */,
 				8A9F537514BB0F2900F3369B /* gl_renderstate.cpp in Sources */,
@@ -8867,6 +8874,7 @@
 				8AF280D1139126C00095D9A0 /* gl_voxels.cpp in Sources */,
 				8AF280D2139126C00095D9A0 /* gl_lightdata.cpp in Sources */,
 				8AB6BB101D4DFD310065FA17 /* gl_postprocess.cpp in Sources */,
+				8AC2EE381D560A3400760879 /* gl_postprocessstate.cpp in Sources */,
 				8AD515501D4C85B20047C328 /* gl_renderbuffers.cpp in Sources */,
 				8AF280D3139126C00095D9A0 /* gl_renderer.cpp in Sources */,
 				8AF280D4139126C00095D9A0 /* gl_renderstate.cpp in Sources */,

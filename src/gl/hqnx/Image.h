@@ -142,4 +142,4 @@ class CImage
     char             m_cBuf[32768];
 };
 
-#pragma pack(8)
+#pragma pack()

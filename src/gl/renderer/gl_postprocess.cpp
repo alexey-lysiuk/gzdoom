@@ -63,6 +63,7 @@
 #include "gl/renderer/gl_renderstate.h"
 #include "gl/renderer/gl_renderbuffers.h"
 #include "gl/renderer/gl_renderer.h"
+#include "gl/renderer/gl_postprocessstate.h"
 #include "gl/data/gl_data.h"
 #include "gl/data/gl_vertexbuffer.h"
 #include "gl/shaders/gl_bloomshader.h"
@@ -119,33 +120,10 @@ void FGLRenderer::BloomScene()
 	if (!gl_bloom || !FGLRenderBuffers::IsEnabled() || gl_fixedcolormap != CM_DEFAULT)
 		return;
 
+	FGLPostProcessState savedState;
+
 	const float blurAmount = gl_bloom_amount;
 	int sampleCount = gl_bloom_kernel_size;
-
-	// TBD: Maybe need a better way to share state with other parts of the pipeline
-	GLint activeTex, textureBinding, samplerBinding;
-	glGetIntegerv(GL_ACTIVE_TEXTURE, &activeTex);
-	glActiveTexture(GL_TEXTURE0);
-	glGetIntegerv(GL_TEXTURE_BINDING_2D, &textureBinding);
-	if (gl.flags & RFL_SAMPLER_OBJECTS)
-	{
-		glGetIntegerv(GL_SAMPLER_BINDING, &samplerBinding);
-		glBindSampler(0, 0);
-	}
-	GLboolean blendEnabled, scissorEnabled;
-	GLint currentProgram, blendEquationRgb, blendEquationAlpha, blendSrcRgb, blendSrcAlpha, blendDestRgb, blendDestAlpha;
-	glGetBooleanv(GL_BLEND, &blendEnabled);
-	glGetBooleanv(GL_SCISSOR_TEST, &scissorEnabled);
-	glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
-	glGetIntegerv(GL_BLEND_EQUATION_RGB, &blendEquationRgb);
-	glGetIntegerv(GL_BLEND_EQUATION_ALPHA, &blendEquationAlpha);
-	glGetIntegerv(GL_BLEND_SRC_RGB, &blendSrcRgb);
-	glGetIntegerv(GL_BLEND_SRC_ALPHA, &blendSrcAlpha);
-	glGetIntegerv(GL_BLEND_DST_RGB, &blendDestRgb);
-	glGetIntegerv(GL_BLEND_DST_ALPHA, &blendDestAlpha);
-
-	glDisable(GL_BLEND);
-	glDisable(GL_SCISSOR_TEST);
 
 	const auto &level0 = mBuffers->BloomLevels[0];
 
@@ -209,18 +187,6 @@ void FGLRenderer::BloomScene()
 	mBloomCombineShader->Bind();
 	mBloomCombineShader->BloomTexture.Set(0);
 	mVBO->RenderScreenQuad();
-
-	if (blendEnabled)
-		glEnable(GL_BLEND);
-	if (scissorEnabled)
-		glEnable(GL_SCISSOR_TEST);
-	glBlendEquationSeparate(blendEquationRgb, blendEquationAlpha);
-	glBlendFuncSeparate(blendSrcRgb, blendDestRgb, blendSrcAlpha, blendDestAlpha);
-	glUseProgram(currentProgram);
-	glBindTexture(GL_TEXTURE_2D, textureBinding);
-	if (gl.flags & RFL_SAMPLER_OBJECTS)
-		glBindSampler(0, samplerBinding);
-	glActiveTexture(activeTex);
 }
 
 //-----------------------------------------------------------------------------
@@ -234,22 +200,7 @@ void FGLRenderer::TonemapScene()
 	if (gl_tonemap == 0)
 		return;
 
-	GLint activeTex, textureBinding, samplerBinding;
-	glGetIntegerv(GL_ACTIVE_TEXTURE, &activeTex);
-	glActiveTexture(GL_TEXTURE0);
-	glGetIntegerv(GL_TEXTURE_BINDING_2D, &textureBinding);
-	if (gl.flags & RFL_SAMPLER_OBJECTS)
-	{
-		glGetIntegerv(GL_SAMPLER_BINDING, &samplerBinding);
-		glBindSampler(0, 0);
-	}
-
-	GLboolean blendEnabled, scissorEnabled;
-	glGetBooleanv(GL_BLEND, &blendEnabled);
-	glGetBooleanv(GL_SCISSOR_TEST, &scissorEnabled);
-
-	glDisable(GL_BLEND);
-	glDisable(GL_SCISSOR_TEST);
+	FGLPostProcessState savedState;
 
 	mBuffers->BindNextFB();
 	mBuffers->BindCurrentTexture(0);
@@ -259,15 +210,6 @@ void FGLRenderer::TonemapScene()
 	mVBO->BindVBO();
 	mVBO->RenderScreenQuad();
 	mBuffers->NextTexture();
-
-	if (blendEnabled)
-		glEnable(GL_BLEND);
-	if (scissorEnabled)
-		glEnable(GL_SCISSOR_TEST);
-	glBindTexture(GL_TEXTURE_2D, textureBinding);
-	if (gl.flags & RFL_SAMPLER_OBJECTS)
-		glBindSampler(0, samplerBinding);
-	glActiveTexture(activeTex);
 }
 
 //-----------------------------------------------------------------------------
@@ -280,23 +222,6 @@ void FGLRenderer::LensDistortScene()
 {
 	if (gl_lens == 0)
 		return;
-
-	GLint activeTex, textureBinding, samplerBinding;
-	glGetIntegerv(GL_ACTIVE_TEXTURE, &activeTex);
-	glActiveTexture(GL_TEXTURE0);
-	glGetIntegerv(GL_TEXTURE_BINDING_2D, &textureBinding);
-	if (gl.flags & RFL_SAMPLER_OBJECTS)
-	{
-		glGetIntegerv(GL_SAMPLER_BINDING, &samplerBinding);
-		glBindSampler(0, 0);
-	}
-
-	GLboolean blendEnabled, scissorEnabled;
-	glGetBooleanv(GL_BLEND, &blendEnabled);
-	glGetBooleanv(GL_SCISSOR_TEST, &scissorEnabled);
-
-	glDisable(GL_BLEND);
-	glDisable(GL_SCISSOR_TEST);
 
 	float k[4] =
 	{
@@ -323,6 +248,8 @@ void FGLRenderer::LensDistortScene()
 	float f = MAX(f0, f2);
 	float scale = 1.0f / f;
 
+	FGLPostProcessState savedState;
+
 	mBuffers->BindNextFB();
 	mBuffers->BindCurrentTexture(0);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -335,16 +262,9 @@ void FGLRenderer::LensDistortScene()
 	mLensShader->CubicDistortionValue.Set(kcube);
 	mVBO->BindVBO();
 	mVBO->RenderScreenQuad();
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	mBuffers->NextTexture();
-
-	if (blendEnabled)
-		glEnable(GL_BLEND);
-	if (scissorEnabled)
-		glEnable(GL_SCISSOR_TEST);
-	glBindTexture(GL_TEXTURE_2D, textureBinding);
-	if (gl.flags & RFL_SAMPLER_OBJECTS)
-		glBindSampler(0, samplerBinding);
-	glActiveTexture(activeTex);
 }
 
 //-----------------------------------------------------------------------------
@@ -357,23 +277,7 @@ void FGLRenderer::CopyToBackbuffer(const GL_IRECT *bounds, bool applyGamma)
 {
 	if (FGLRenderBuffers::IsEnabled())
 	{
-		glDisable(GL_MULTISAMPLE);
-		glDisable(GL_DEPTH_TEST);
-		glDisable(GL_STENCIL_TEST);
-
-		GLboolean blendEnabled;
-		GLint currentProgram;
-		GLint activeTex, textureBinding, samplerBinding;
-		glGetBooleanv(GL_BLEND, &blendEnabled);
-		glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
-		glGetIntegerv(GL_ACTIVE_TEXTURE, &activeTex);
-		glActiveTexture(GL_TEXTURE0);
-		glGetIntegerv(GL_TEXTURE_BINDING_2D, &textureBinding);
-		if (gl.flags & RFL_SAMPLER_OBJECTS)
-		{
-			glGetIntegerv(GL_SAMPLER_BINDING, &samplerBinding);
-			glBindSampler(0, 0);
-		}
+		FGLPostProcessState savedState;
 
 		mBuffers->BindOutputFB();
 
@@ -449,13 +353,5 @@ void FGLRenderer::CopyToBackbuffer(const GL_IRECT *bounds, bool applyGamma)
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, smoothFilter);
 		mVBO->BindVBO();
 		mVBO->RenderScreenQuad(mScreenViewport.width / (float)mBuffers->GetWidth(), mScreenViewport.height / (float)mBuffers->GetHeight());
-
-		if (blendEnabled)
-			glEnable(GL_BLEND);
-		glUseProgram(currentProgram);
-		glBindTexture(GL_TEXTURE_2D, textureBinding);
-		if (gl.flags & RFL_SAMPLER_OBJECTS)
-			glBindSampler(0, samplerBinding);
-		glActiveTexture(activeTex);
 	}
 }

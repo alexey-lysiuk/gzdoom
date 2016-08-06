@@ -1028,6 +1028,7 @@ set( FASTMATH_SOURCES
 	gl/renderer/gl_renderbuffers.cpp
 	gl/renderer/gl_lightdata.cpp
 	gl/renderer/gl_postprocess.cpp
+	gl/renderer/gl_postprocessstate.cpp
 	gl/hqnx/Image.cpp
 	gl/hqnx/hq2x_16.cpp
 	gl/hqnx/hq2x_32.cpp
