@@ -105,11 +105,23 @@ CVAR(Float, gl_lens_kcube, 0.1f, 0)
 CVAR(Float, gl_lens_chromatic, 1.12f, 0)
 
 CVAR(Int, gl_postprocess, 0, CVAR_ARCHIVE | CVAR_GLOBALCONFIG)
+CVAR(Bool, gl_smooth_rendered, true, CVAR_ARCHIVE | CVAR_GLOBALCONFIG);
 
 EXTERN_CVAR(Float, vid_brightness)
 EXTERN_CVAR(Float, vid_contrast)
 
-CVAR(Bool, gl_smooth_rendered, true, CVAR_ARCHIVE | CVAR_GLOBALCONFIG);
+
+void FGLRenderer::RenderScreenQuad(float maxU, float maxV)
+{
+	FFlatVertex *ptr = mVBO->GetBuffer();
+	mVBO->BindVBO();
+	gl_RenderState.ResetVertexBuffer();
+	ptr->Set(-1.0f, -1.0f, 0, 0.0f, 0.0f); ptr++;
+	ptr->Set(-1.0f, 1.0f, 0, 0.0f, maxV); ptr++;
+	ptr->Set(1.0f, -1.0f, 0, maxU, 0.0f); ptr++;
+	ptr->Set(1.0f, 1.0f, 0, maxU, maxV); ptr++;
+	mVBO->RenderCurrent(ptr, GL_TRIANGLE_STRIP);
+}
 
 //-----------------------------------------------------------------------------
 //
@@ -139,8 +151,7 @@ void FGLRenderer::BloomScene()
 	mBloomExtractShader->Bind();
 	mBloomExtractShader->SceneTexture.Set(0);
 	mBloomExtractShader->Exposure.Set(mCameraExposure);
-	mVBO->BindVBO();
-	mVBO->RenderScreenQuad();
+	RenderScreenQuad();
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
@@ -171,7 +182,7 @@ void FGLRenderer::BloomScene()
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		mBloomCombineShader->Bind();
 		mBloomCombineShader->BloomTexture.Set(0);
-		mVBO->RenderScreenQuad();
+		RenderScreenQuad();
 	}
 
 	mBlurShader->BlurHorizontal(mVBO, blurAmount, sampleCount, level0.VTexture, level0.HFramebuffer, level0.Width, level0.Height);
@@ -189,7 +200,7 @@ void FGLRenderer::BloomScene()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	mBloomCombineShader->Bind();
 	mBloomCombineShader->BloomTexture.Set(0);
-	mVBO->RenderScreenQuad();
+	RenderScreenQuad();
 }
 
 //-----------------------------------------------------------------------------
@@ -210,8 +221,7 @@ void FGLRenderer::TonemapScene()
 	mTonemapShader->Bind();
 	mTonemapShader->SceneTexture.Set(0);
 	mTonemapShader->Exposure.Set(mCameraExposure);
-	mVBO->BindVBO();
-	mVBO->RenderScreenQuad();
+	RenderScreenQuad();
 	mBuffers->NextTexture();
 }
 
@@ -263,8 +273,7 @@ void FGLRenderer::LensDistortScene()
 	mLensShader->Scale.Set(scale);
 	mLensShader->LensDistortionCoefficient.Set(k);
 	mLensShader->CubicDistortionValue.Set(kcube);
-	mVBO->BindVBO();
-	mVBO->RenderScreenQuad();
+	RenderScreenQuad();
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	mBuffers->NextTexture();
@@ -296,8 +305,7 @@ void FGLRenderer::PostProcessFXAA()
 	mFXAAShader->Bind();
 	mFXAAShader->InputTexture.Set(0);
 	mFXAAShader->Resolution.Set(resolution);
-	mVBO->BindVBO();
-	mVBO->RenderScreenQuad();
+	RenderScreenQuad();
 	mBuffers->NextTexture();
 }
 
@@ -385,7 +393,6 @@ void FGLRenderer::CopyToBackbuffer(const GL_IRECT *bounds, bool applyGamma)
 		const GLint smoothFilter = gl_smooth_rendered ? GL_LINEAR : GL_NEAREST;
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, smoothFilter);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, smoothFilter);
-		mVBO->BindVBO();
-		mVBO->RenderScreenQuad(mScreenViewport.width / (float)mBuffers->GetWidth(), mScreenViewport.height / (float)mBuffers->GetHeight());
+		RenderScreenQuad(mScreenViewport.width / (float)mBuffers->GetWidth(), mScreenViewport.height / (float)mBuffers->GetHeight());
 	}
 }

@@ -167,6 +167,7 @@ void gl_LoadExtensions()
 
 	gl.vendorstring = (char*)glGetString(GL_VENDOR);
 	gl.lightmethod = LM_SOFTWARE;
+	gl.buffermethod = BM_CLIENTARRAY;
 
 	if ((gl.version >= 3.3f || CheckExtension("GL_ARB_sampler_objects")) && !Args->CheckParm("-nosampler"))
 	{
@@ -177,12 +178,16 @@ void gl_LoadExtensions()
 	if (gl.version > 3.0f && (gl.version >= 3.3f || CheckExtension("GL_ARB_uniform_buffer_object")))
 	{
 		gl.lightmethod = LM_DEFERRED;
+		// Only Apple requires the core profile for GL 3.x+.
+		// #ifdef __APPLE__
+		// gl.buffermethod = BM_DEFERRED;
+		// #endif
 	}
 
 	if (CheckExtension("GL_ARB_texture_compression")) gl.flags |= RFL_TEXTURE_COMPRESSION;
 	if (CheckExtension("GL_EXT_texture_compression_s3tc")) gl.flags |= RFL_TEXTURE_COMPRESSION_S3TC;
 
-	if (Args->CheckParm("-noshader") || gl.glslversion < 1.2f)
+	if (Args->CheckParm("-noshader")/* || gl.glslversion < 1.2f*/)
 	{
 		gl.version = 2.11f;
 		gl.glslversion = 0;
@@ -190,8 +195,8 @@ void gl_LoadExtensions()
 	}
 	else if (gl.version < 3.0f)
 	{
-		if (CheckExtension("GL_NV_GPU_shader4") || CheckExtension("GL_EXT_GPU_shader4")) gl.glslversion = 1.21f;	// for pre-3.0 drivers that support capable hardware. Needed for Apple.
-		else gl.glslversion = 0;
+		//if (CheckExtension("GL_NV_GPU_shader4") || CheckExtension("GL_EXT_GPU_shader4")) gl.glslversion = 1.21f;	// for pre-3.0 drivers that support capable hardware. Needed for Apple.
+		//else gl.glslversion = 0;
 
 		if (!CheckExtension("GL_EXT_packed_float")) gl.flags |= RFL_NO_RGBA16F;
 		if (!CheckExtension("GL_EXT_packed_depth_stencil")) gl.flags |= RFL_NO_DEPTHSTENCIL;
@@ -222,6 +227,7 @@ void gl_LoadExtensions()
 			}
 			gl.flags |= RFL_BUFFER_STORAGE;
 			gl.lightmethod = LM_DIRECT;
+			gl.buffermethod = BM_PERSISTENT;
 		}
 		else
 		{
@@ -234,6 +240,13 @@ void gl_LoadExtensions()
 	{
 		if (!stricmp(lm, "deferred") && gl.lightmethod == LM_DIRECT) gl.lightmethod = LM_DEFERRED;	
 		if (!stricmp(lm, "textured")) gl.lightmethod = LM_SOFTWARE;
+	}
+
+	lm = Args->CheckValue("-buffermethod");
+	if (lm != NULL)
+	{
+		//if (!stricmp(lm, "deferred") && gl.buffermethod == BM_PERSISTENT) gl.buffermethod = BM_DEFERRED;
+		if (!stricmp(lm, "clientarray")) gl.buffermethod = BM_CLIENTARRAY;
 	}
 
 	int v;

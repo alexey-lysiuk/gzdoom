@@ -54,8 +54,6 @@ class FFlatVertexBuffer : public FVertexBuffer
 	static const unsigned int BUFFER_SIZE = 2000000;
 	static const unsigned int BUFFER_SIZE_TO_USE = 1999500;
 
-	void ImmRenderBuffer(unsigned int primtype, unsigned int offset, unsigned int count);
-
 public:
 	TArray<FFlatVertex> vbo_shadowdata;	// this is kept around for updating the actual (non-readable) buffer and as stand-in for pre GL 4.x
 
@@ -85,14 +83,7 @@ public:
 	void RenderArray(unsigned int primtype, unsigned int offset, unsigned int count)
 	{
 		drawcalls.Clock();
-		if (gl.flags & RFL_BUFFER_STORAGE)
-		{
-			glDrawArrays(primtype, offset, count);
-		}
-		else
-		{
-			ImmRenderBuffer(primtype, offset, count);
-		}
+		glDrawArrays(primtype, offset, count);
 		drawcalls.Unclock();
 	}
 
@@ -103,16 +94,6 @@ public:
 		RenderArray(primtype, offset, count);
 		if (poffset) *poffset = offset;
 		if (pcount) *pcount = count;
-	}
-
-	void RenderScreenQuad(float maxU = 1.0f, float maxV = 1.0f)
-	{
-		FFlatVertex *ptr = GetBuffer();
-		ptr->Set(-1.0f, -1.0f, 0, 0.0f, 0.0f); ptr++;
-		ptr->Set(-1.0f, 1.0f, 0, 0.0f, maxV); ptr++;
-		ptr->Set(1.0f, -1.0f, 0, maxU, 0.0f); ptr++;
-		ptr->Set(1.0f, 1.0f, 0, maxU, maxV); ptr++;
-		RenderCurrent(ptr, GL_TRIANGLE_STRIP);
 	}
 
 #endif
