@@ -65,6 +65,7 @@
 #include "gl/shaders/gl_bloomshader.h"
 #include "gl/shaders/gl_blurshader.h"
 #include "gl/shaders/gl_tonemapshader.h"
+#include "gl/shaders/gl_lensshader.h"
 #include "gl/shaders/gl_presentshader.h"
 #include "gl/textures/gl_texture.h"
 #include "gl/textures/gl_translate.h"
@@ -119,6 +120,7 @@ void FGLRenderer::Initialize()
 	mBloomCombineShader = new FBloomCombineShader();
 	mBlurShader = new FBlurShader();
 	mTonemapShader = new FTonemapShader();
+	mLensShader = new FLensShader();
 	mPresentShader = new FPresentShader();
 
 	// Only needed for the core profile, because someone decided it was a good idea to remove the default VAO.
@@ -173,6 +175,7 @@ FGLRenderer::~FGLRenderer()
 	if (mBloomCombineShader) delete mBloomCombineShader;
 	if (mBlurShader) delete mBlurShader;
 	if (mTonemapShader) delete mTonemapShader;
+	if (mLensShader) delete mLensShader;
 }
 
 //==========================================================================
@@ -187,6 +190,7 @@ void FGLRenderer::SetOutputViewport(GL_IRECT *bounds)
 	{
 		mOutputViewport = *bounds;
 		mOutputViewportLB = *bounds;
+		mScreenViewport = *bounds;
 		return;
 	}
 
@@ -210,6 +214,12 @@ void FGLRenderer::SetOutputViewport(GL_IRECT *bounds)
 
 	int vw = viewwidth;
 	int vh = viewheight;
+
+	// The entire renderable area, including the 2D HUD
+	mScreenViewport.left = 0;
+	mScreenViewport.top = 0;
+	mScreenViewport.width = framebuffer->GetWidth();
+	mScreenViewport.height = framebuffer->GetHeight();
 
 	// Letterboxed viewport for the main scene
 	mOutputViewportLB.left = viewwindowx;
@@ -243,13 +253,9 @@ void FGLRenderer::Begin2D()
 		if (mDrawingScene2D)
 			mBuffers->BindSceneFB();
 		else
-			mBuffers->BindHudFB();
-		glViewport(0, 0, mOutputViewport.width, mOutputViewport.height);
+			mBuffers->BindCurrentFB();
 	}
-	else
-	{
-		glViewport(mOutputViewport.left, mOutputViewport.top, mOutputViewport.width, mOutputViewport.height);
-	}
+	glViewport(mScreenViewport.left, mScreenViewport.top, mScreenViewport.width, mScreenViewport.height);
 
 	gl_RenderState.EnableFog(false);
 	gl_RenderState.Set2DMode(true);

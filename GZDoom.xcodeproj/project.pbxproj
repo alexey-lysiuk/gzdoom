@@ -183,6 +183,8 @@
 		8A34AED01C4A44DB0007C31A /* p_portals.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A34AECE1C4A44A00007C31A /* p_portals.cpp */; };
 		8A3ACEF417F833FC002E550F /* m_specialpaths.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A3ACEF317F833FC002E550F /* m_specialpaths.cpp */; };
 		8A3ACEF517F833FC002E550F /* m_specialpaths.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A3ACEF317F833FC002E550F /* m_specialpaths.cpp */; };
+		8A3B268B1D55CDD500BEF731 /* gl_lensshader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A3B26871D55CD9400BEF731 /* gl_lensshader.cpp */; };
+		8A3B268C1D55CDDB00BEF731 /* gl_lensshader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A3B26871D55CD9400BEF731 /* gl_lensshader.cpp */; };
 		8A517FB519600F7000FAAB33 /* mpg123_decoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A517FAA19600F4400FAAB33 /* mpg123_decoder.cpp */; };
 		8A517FB619600F7500FAAB33 /* mpg123_decoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A517FAA19600F4400FAAB33 /* mpg123_decoder.cpp */; };
 		8A517FB719600F7F00FAAB33 /* oalsound.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A517FAC19600F4400FAAB33 /* oalsound.cpp */; };
@@ -1638,6 +1640,10 @@
 		8A34AECA1C4A442C0007C31A /* edata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = edata.h; sourceTree = "<group>"; };
 		8A34AECE1C4A44A00007C31A /* p_portals.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = p_portals.cpp; sourceTree = "<group>"; };
 		8A3ACEF317F833FC002E550F /* m_specialpaths.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = m_specialpaths.cpp; sourceTree = "<group>"; };
+		8A3B26871D55CD9400BEF731 /* gl_lensshader.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = gl_lensshader.cpp; sourceTree = "<group>"; };
+		8A3B26881D55CD9400BEF731 /* gl_lensshader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gl_lensshader.h; sourceTree = "<group>"; };
+		8A3B26891D55CDB000BEF731 /* lensdistortion.fp */ = {isa = PBXFileReference; lastKnownFileType = text; path = lensdistortion.fp; sourceTree = "<group>"; };
+		8A3B268A1D55CDB000BEF731 /* lensdistortion.vp */ = {isa = PBXFileReference; lastKnownFileType = text; path = lensdistortion.vp; sourceTree = "<group>"; };
 		8A3DA6941547DC2A00D1302A /* gl_builddraw.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = gl_builddraw.cpp; sourceTree = "<group>"; };
 		8A3FB89D18B10ED6007AAE66 /* gdtoa_fltrnds.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gdtoa_fltrnds.h; sourceTree = "<group>"; };
 		8A41EE9719FB9A900072E317 /* GWANA0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = GWANA0.png; sourceTree = "<group>"; };
@@ -5135,6 +5141,8 @@
 				8A80DD8617ABB57000917483 /* fuzz_standard.fp */,
 				8A80DD8717ABB57000917483 /* fuzz_swirly.fp */,
 				8A80DD8817ABB57000917483 /* fxaa.fp */,
+				8A3B26891D55CDB000BEF731 /* lensdistortion.fp */,
+				8A3B268A1D55CDB000BEF731 /* lensdistortion.vp */,
 				8A80DD8A17ABB57000917483 /* main.fp */,
 				8A80DD8B17ABB57000917483 /* main.vp */,
 				8AD515561D4C86160047C328 /* present.fp */,
@@ -7235,6 +7243,8 @@
 				8AB6BB031D4DFC7D0065FA17 /* gl_bloomshader.h */,
 				8AB6BB041D4DFC7D0065FA17 /* gl_blurshader.cpp */,
 				8AB6BB051D4DFC7D0065FA17 /* gl_blurshader.h */,
+				8A3B26871D55CD9400BEF731 /* gl_lensshader.cpp */,
+				8A3B26881D55CD9400BEF731 /* gl_lensshader.h */,
 				8AD515491D4C85730047C328 /* gl_presentshader.cpp */,
 				8AD5154A1D4C85730047C328 /* gl_presentshader.h */,
 				8AF27E3D139126C00095D9A0 /* gl_shader.cpp */,
@@ -8140,6 +8150,7 @@
 				8A9F538614BB0F2900F3369B /* gl_weapon.cpp in Sources */,
 				8AB6BB081D4DFCA70065FA17 /* gl_bloomshader.cpp in Sources */,
 				8AB6BB091D4DFCA70065FA17 /* gl_blurshader.cpp in Sources */,
+				8A3B268B1D55CDD500BEF731 /* gl_lensshader.cpp in Sources */,
 				8AD515511D4C85C50047C328 /* gl_presentshader.cpp in Sources */,
 				8A9F538714BB0F2900F3369B /* gl_shader.cpp in Sources */,
 				8AD515531D4C85D70047C328 /* gl_shaderprogram.cpp in Sources */,
@@ -8878,6 +8889,7 @@
 				8AF280E5139126C00095D9A0 /* gl_weapon.cpp in Sources */,
 				8AB6BB0A1D4DFCAD0065FA17 /* gl_bloomshader.cpp in Sources */,
 				8AB6BB0B1D4DFCAD0065FA17 /* gl_blurshader.cpp in Sources */,
+				8A3B268C1D55CDDB00BEF731 /* gl_lensshader.cpp in Sources */,
 				8AD515521D4C85CE0047C328 /* gl_presentshader.cpp in Sources */,
 				8AF280E6139126C00095D9A0 /* gl_shader.cpp in Sources */,
 				8AD515541D4C85E40047C328 /* gl_shaderprogram.cpp in Sources */,

@@ -158,10 +158,7 @@ void FGLRenderer::SetViewArea()
 
 void FGLRenderer::Reset3DViewport()
 {
-	if (FGLRenderBuffers::IsEnabled())
-		glViewport(0, 0, mOutputViewport.width, mOutputViewport.height);
-	else
-		glViewport(mOutputViewport.left, mOutputViewport.top, mOutputViewport.width, mOutputViewport.height);
+	glViewport(mOutputViewport.left, mOutputViewport.top, mOutputViewport.width, mOutputViewport.height);
 }
 
 //-----------------------------------------------------------------------------
@@ -170,21 +167,17 @@ void FGLRenderer::Reset3DViewport()
 //
 //-----------------------------------------------------------------------------
 
-void FGLRenderer::Set3DViewport(bool toscreen)
+void FGLRenderer::Set3DViewport(bool mainview)
 {
-	const auto &bounds = mOutputViewportLB;
-	if (toscreen && FGLRenderBuffers::IsEnabled())
+	if (mainview && FGLRenderBuffers::IsEnabled())
 	{
 		mBuffers->Setup(mOutputViewport.width, mOutputViewport.height);
 		mBuffers->BindSceneFB();
-		glViewport(0, 0, bounds.width, bounds.height);
-		glScissor(0, 0, bounds.width, bounds.height);
 	}
-	else
-	{
-		glViewport(bounds.left, bounds.top, bounds.width, bounds.height);
-		glScissor(bounds.left, bounds.top, bounds.width, bounds.height);
-	}
+
+	const auto &bounds = mOutputViewportLB;
+	glViewport(bounds.left, bounds.top, bounds.width, bounds.height);
+	glScissor(bounds.left, bounds.top, bounds.width, bounds.height);
 
 	glEnable(GL_SCISSOR_TEST);
 	
@@ -848,7 +841,7 @@ sector_t * FGLRenderer::RenderViewpoint (AActor * camera, GL_IRECT * bounds, flo
 		eye->SetUp();
 		// TODO: stereo specific viewport - needed when implementing side-by-side modes etc.
 		SetOutputViewport(bounds);
-		Set3DViewport(toscreen);
+		Set3DViewport(mainview);
 		mDrawingScene2D = true;
 		mCurrentFoV = fov;
 		// Stereo mode specific perspective projection
@@ -866,12 +859,13 @@ sector_t * FGLRenderer::RenderViewpoint (AActor * camera, GL_IRECT * bounds, flo
 		clipper.SafeAddClipRangeRealAngles(ViewAngle.BAMs() + a1, ViewAngle.BAMs() - a1);
 
 		ProcessScene(toscreen);
-		if (mainview) EndDrawScene(retval);	// do not call this for camera textures.
-		if (toscreen)
+		if (mainview && toscreen) EndDrawScene(retval);	// do not call this for camera textures.
+		if (mainview)
 		{
 			if (FGLRenderBuffers::IsEnabled()) mBuffers->BlitSceneToTexture();
 			BloomScene();
 			TonemapScene();
+			LensDistortScene();
 		}
 		mDrawingScene2D = false;
 		eye->TearDown();
@@ -994,6 +988,7 @@ void FGLRenderer::WriteSavePic (player_t *player, FILE *file, int width, int hei
 	gl_RenderState.SetSoftLightLevel(-1);
 	screen->Begin2D(false);
 	DrawBlend(viewsector);
+	CopyToBackbuffer(&bounds, false);
 	glFlush();
 
 	byte * scr = (byte *)M_Malloc(width * height * 3);

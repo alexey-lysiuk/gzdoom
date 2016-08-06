@@ -23,6 +23,7 @@ class FBloomExtractShader;
 class FBloomCombineShader;
 class FBlurShader;
 class FTonemapShader;
+class FLensShader;
 class FPresentShader;
 
 inline float DEG2RAD(float deg)
@@ -90,6 +91,7 @@ public:
 	FBloomCombineShader *mBloomCombineShader;
 	FBlurShader *mBlurShader;
 	FTonemapShader *mTonemapShader;
+	FLensShader *mLensShader;
 	FPresentShader *mPresentShader;
 
 	FTexture *gllight;
@@ -106,6 +108,7 @@ public:
 	FSkyVertexBuffer *mSkyVBO;
 	FLightBuffer *mLights;
 
+	GL_IRECT mScreenViewport;
 	GL_IRECT mOutputViewportLB;
 	GL_IRECT mOutputViewport;
 	bool mDrawingScene2D = false;
@@ -121,7 +124,7 @@ public:
 	angle_t FrustumAngle();
 	void SetViewArea();
 	void SetOutputViewport(GL_IRECT *bounds);
-	void Set3DViewport(bool toscreen);
+	void Set3DViewport(bool mainview);
 	void Reset3DViewport();
 	sector_t *RenderViewpoint (AActor * camera, GL_IRECT * bounds, float fov, float ratio, float fovratio, bool mainview, bool toscreen);
 	void RenderView(player_t *player);
@@ -163,7 +166,9 @@ public:
 	void EndDrawScene(sector_t * viewsector);
 	void BloomScene();
 	void TonemapScene();
-	void Flush();
+	void LensDistortScene();
+	void CopyToBackbuffer(const GL_IRECT *bounds, bool applyGamma);
+	void Flush() { CopyToBackbuffer(nullptr, true); }
 
 	void SetProjection(float fov, float ratio, float fovratio);
 	void SetProjection(VSMatrix matrix); // raw matrix input from stereo 3d modes

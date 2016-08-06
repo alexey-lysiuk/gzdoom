@@ -105,6 +105,16 @@ public:
 		if (pcount) *pcount = count;
 	}
 
+	void RenderScreenQuad(float maxU = 1.0f, float maxV = 1.0f)
+	{
+		FFlatVertex *ptr = GetBuffer();
+		ptr->Set(-1.0f, -1.0f, 0, 0.0f, 0.0f); ptr++;
+		ptr->Set(-1.0f, 1.0f, 0, 0.0f, maxV); ptr++;
+		ptr->Set(1.0f, -1.0f, 0, maxU, 0.0f); ptr++;
+		ptr->Set(1.0f, 1.0f, 0, maxU, maxV); ptr++;
+		RenderCurrent(ptr, GL_TRIANGLE_STRIP);
+	}
+
 #endif
 	void Reset()
 	{
@@ -157,6 +167,10 @@ private:
 
 	int mRows, mColumns;
 
+	// indices for sky cubemap faces
+	int mFaceStart[7];
+	int mSideStart;
+
 	void SkyVertex(int r, int c, bool yflip);
 	void CreateSkyHemisphere(int hemi);
 	void CreateDome();
@@ -168,6 +182,11 @@ public:
 	virtual ~FSkyVertexBuffer();
 	void RenderDome(FMaterial *tex, int mode);
 	void BindVBO();
+	int FaceStart(int i)
+	{
+		if (i >= 0 && i < 7) return mFaceStart[i];
+		else return mSideStart;
+	}
 
 };
 

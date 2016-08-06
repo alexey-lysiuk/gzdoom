@@ -1,6 +1,6 @@
 /*
-** gl_presentshader.cpp
-** Copy rendered texture to back buffer, possibly with gamma correction
+** gl_lensshader.cpp
+** Lens distortion with chromatic aberration shader
 **
 **---------------------------------------------------------------------------
 ** Copyright 2016 Magnus Norddahl
@@ -47,22 +47,22 @@
 #include "gl/system/gl_interface.h"
 #include "gl/system/gl_framebuffer.h"
 #include "gl/system/gl_cvars.h"
-#include "gl/shaders/gl_presentshader.h"
+#include "gl/shaders/gl_lensshader.h"
 
-void FPresentShader::Bind()
+void FLensShader::Bind()
 {
 	if (!mShader)
 	{
-		mShader.Compile(FShaderProgram::Vertex, "shaders/glsl/present.vp", "", 330);
-		mShader.Compile(FShaderProgram::Fragment, "shaders/glsl/present.fp", "", 330);
+		mShader.Compile(FShaderProgram::Vertex, "shaders/glsl/lensdistortion.vp", "", 330);
+		mShader.Compile(FShaderProgram::Fragment, "shaders/glsl/lensdistortion.fp", "", 330);
 		mShader.SetFragDataLocation(0, "FragColor");
-		mShader.Link("shaders/glsl/present");
+		mShader.Link("shaders/glsl/lensdistortion");
 		mShader.SetAttribLocation(0, "PositionInProjection");
-		mShader.SetAttribLocation(1, "UV");
 		InputTexture.Init(mShader, "InputTexture");
-		Gamma.Init(mShader, "Gamma");
-		Contrast.Init(mShader, "Contrast");
-		Brightness.Init(mShader, "Brightness");
+		AspectRatio.Init(mShader, "Aspect");
+		Scale.Init(mShader, "Scale");
+		LensDistortionCoefficient.Init(mShader, "k");
+		CubicDistortionValue.Init(mShader, "kcube");
 	}
 	mShader.Bind();
 }
