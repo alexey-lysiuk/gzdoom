@@ -1093,6 +1093,7 @@ public:
 		const int y = (SCREENHEIGHT - font->GetHeight()) / 2;
 
 		screen->Lock(false);
+		screen->Begin2D(false);
 
 		if (!m_dimmed)
 		{
