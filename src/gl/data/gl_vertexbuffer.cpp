@@ -77,22 +77,53 @@ void FSimpleVertexBuffer::BindVBO()
 	glBindBuffer(GL_ARRAY_BUFFER, vbo_id);
 	if (gl.glslversion > 0)
 	{
-		glVertexAttribPointer(VATTR_VERTEX, 3, GL_FLOAT, false, sizeof(FFlatVertex), &VTO->x);
-		glVertexAttribPointer(VATTR_TEXCOORD, 2, GL_FLOAT, false, sizeof(FFlatVertex), &VTO->u);
-		glDisableVertexAttribArray(VATTR_COLOR);
+		glVertexAttribPointer(VATTR_VERTEX, 3, GL_FLOAT, false, sizeof(FSimpleVertex), &VSiO->x);
+		glVertexAttribPointer(VATTR_TEXCOORD, 2, GL_FLOAT, false, sizeof(FSimpleVertex), &VSiO->u);
+		glVertexAttribPointer(VATTR_COLOR, 4, GL_UNSIGNED_BYTE, true, sizeof(FSimpleVertex), &VSiO->color);
+		glEnableVertexAttribArray(VATTR_VERTEX);
+		glEnableVertexAttribArray(VATTR_TEXCOORD);
+		glEnableVertexAttribArray(VATTR_COLOR);
 		glDisableVertexAttribArray(VATTR_VERTEX2);
 	}
 	else
 	{
-		glVertexPointer(3, GL_FLOAT, sizeof(FFlatVertex), &VTO->x);
-		glTexCoordPointer(2, GL_FLOAT, sizeof(FFlatVertex), &VTO->u);
+		glVertexPointer(3, GL_FLOAT, sizeof(FSimpleVertex), &VSiO->x);
+		glTexCoordPointer(2, GL_FLOAT, sizeof(FSimpleVertex), &VSiO->u);
+		glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(FSimpleVertex), &VSiO->color);
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-		glDisableClientState(GL_COLOR_ARRAY);
+		glEnableClientState(GL_COLOR_ARRAY);
 	}
 }
 
-void FSimpleVertexBuffer::set(FFlatVertex *verts, int count)
+void FSimpleVertexBuffer::EnableColorArray(bool on)
+{
+	if (on)
+	{
+		if (gl.glslversion > 0)
+		{
+			glEnableVertexAttribArray(VATTR_COLOR);
+		}
+		else
+		{
+			glEnableClientState(GL_COLOR_ARRAY);
+		}
+	}
+	else
+	{
+		if (gl.glslversion > 0)
+		{
+			glDisableVertexAttribArray(VATTR_COLOR);
+		}
+		else
+		{
+			glDisableClientState(GL_COLOR_ARRAY);
+		}
+	}
+}
+
+
+void FSimpleVertexBuffer::set(FSimpleVertex *verts, int count)
 {
 	glBindBuffer(GL_ARRAY_BUFFER, vbo_id);
 	gl_RenderState.SetVertexBuffer(this);
@@ -105,7 +136,7 @@ void FSimpleVertexBuffer::set(FFlatVertex *verts, int count)
 //
 //==========================================================================
 
-FFlatVertexBuffer::FFlatVertexBuffer()
+FFlatVertexBuffer::FFlatVertexBuffer(int width, int height)
 : FVertexBuffer(gl.buffermethod == BM_PERSISTENT)
 {
 	if (gl.buffermethod == BM_PERSISTENT)
@@ -121,7 +152,28 @@ FFlatVertexBuffer::FFlatVertexBuffer()
 		vbo_shadowdata.Reserve(BUFFER_SIZE);
 		map = new FFlatVertex[BUFFER_SIZE];
 	}
-	mNumReserved = mIndex = mCurIndex = 0;
+	mIndex = mCurIndex = 0;
+	mNumReserved = 12;
+	vbo_shadowdata.Resize(mNumReserved);
+
+	// the first quad is reserved for handling coordinates through uniforms.
+	vbo_shadowdata[0].Set(1, 0, 0, 0, 0);
+	vbo_shadowdata[1].Set(2, 0, 0, 0, 0);
+	vbo_shadowdata[2].Set(3, 0, 0, 0, 0);
+	vbo_shadowdata[3].Set(4, 0, 0, 0, 0);
+
+	// and the second one for the fullscreen quad used for blend overlays.
+	vbo_shadowdata[4].Set(0, 0, 0, 0, 0);
+	vbo_shadowdata[5].Set(0, (float)height, 0, 0, 0);
+	vbo_shadowdata[6].Set((float)width, 0, 0, 0, 0);
+	vbo_shadowdata[7].Set((float)width, (float)height, 0, 0, 0);
+
+	// and this is for the postprocessing copy operation
+	vbo_shadowdata[8].Set(-1.0f, -1.0f, 0, 0.0f, 0.0f);
+	vbo_shadowdata[9].Set(-1.0f, 1.0f, 0, 0.0f, 1.f);
+	vbo_shadowdata[10].Set(1.0f, -1.0f, 0, 1.f, 0.0f);
+	vbo_shadowdata[11].Set(1.0f, 1.0f, 0, 1.f, 1.f);
+
 }
 
 FFlatVertexBuffer::~FFlatVertexBuffer()

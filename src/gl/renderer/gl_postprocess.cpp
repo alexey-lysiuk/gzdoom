@@ -72,6 +72,7 @@
 #include "gl/shaders/gl_lensshader.h"
 #include "gl/shaders/gl_fxaashader.h"
 #include "gl/shaders/gl_presentshader.h"
+#include "gl/renderer/gl_2ddrawer.h"
 
 //==========================================================================
 //
@@ -111,16 +112,11 @@ EXTERN_CVAR(Float, vid_brightness)
 EXTERN_CVAR(Float, vid_contrast)
 
 
-void FGLRenderer::RenderScreenQuad(float maxU, float maxV)
+void FGLRenderer::RenderScreenQuad()
 {
-	FFlatVertex *ptr = mVBO->GetBuffer();
 	mVBO->BindVBO();
 	gl_RenderState.ResetVertexBuffer();
-	ptr->Set(-1.0f, -1.0f, 0, 0.0f, 0.0f); ptr++;
-	ptr->Set(-1.0f, 1.0f, 0, 0.0f, maxV); ptr++;
-	ptr->Set(1.0f, -1.0f, 0, maxU, 0.0f); ptr++;
-	ptr->Set(1.0f, 1.0f, 0, maxU, maxV); ptr++;
-	mVBO->RenderCurrent(ptr, GL_TRIANGLE_STRIP);
+	glDrawArrays(GL_TRIANGLE_STRIP, 8, 4);
 }
 
 //-----------------------------------------------------------------------------
@@ -317,6 +313,7 @@ void FGLRenderer::PostProcessFXAA()
 
 void FGLRenderer::CopyToBackbuffer(const GL_IRECT *bounds, bool applyGamma)
 {
+	m2DDrawer->Flush();	// draw all pending 2D stuff before copying the buffer
 	if (FGLRenderBuffers::IsEnabled())
 	{
 		FGLPostProcessState savedState;
@@ -389,10 +386,11 @@ void FGLRenderer::CopyToBackbuffer(const GL_IRECT *bounds, bool applyGamma)
 			mPresentShader->Contrast.Set(clamp<float>(vid_contrast, 0.1f, 3.f));
 			mPresentShader->Brightness.Set(clamp<float>(vid_brightness, -0.8f, 0.8f));
 		}
+		mPresentShader->Scale.Set(mScreenViewport.width / (float)mBuffers->GetWidth(), mScreenViewport.height / (float)mBuffers->GetHeight());
 		mBuffers->BindCurrentTexture(0);
 		const GLint smoothFilter = gl_smooth_rendered ? GL_LINEAR : GL_NEAREST;
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, smoothFilter);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, smoothFilter);
-		RenderScreenQuad(mScreenViewport.width / (float)mBuffers->GetWidth(), mScreenViewport.height / (float)mBuffers->GetHeight());
+		RenderScreenQuad();
 	}
 }

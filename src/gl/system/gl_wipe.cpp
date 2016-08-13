@@ -61,6 +61,7 @@
 #include "gl/textures/gl_samplers.h"
 #include "gl/utility/gl_templates.h"
 #include "gl/data/gl_vertexbuffer.h"
+#include "gl/renderer/gl_2ddrawer.h"
 
 #ifndef _WIN32
 struct POINT {
@@ -187,6 +188,7 @@ bool OpenGLFrameBuffer::WipeStartScreen(int type)
 
 void OpenGLFrameBuffer::WipeEndScreen()
 {
+	GLRenderer->m2DDrawer->Flush();
 	wipeendscreen = new FHardwareTexture(Width, Height, true);
 	wipeendscreen->CreateTexture(NULL, Width, Height, 0, false, 0);
 	GLRenderer->mSamplerManager->Bind(0, CLAMP_NOFILTER, -1);
@@ -288,8 +290,8 @@ OpenGLFrameBuffer::Wiper::~Wiper()
 
 void OpenGLFrameBuffer::Wiper::MakeVBO(OpenGLFrameBuffer *fb)
 {
-	FFlatVertex make[4];
-	FFlatVertex *ptr = make;
+	FSimpleVertex make[4];
+	FSimpleVertex *ptr = make;
 
 	float ur = fb->GetWidth() / FHardwareTexture::GetTexDimension(fb->GetWidth());
 	float vb = fb->GetHeight() / FHardwareTexture::GetTexDimension(fb->GetHeight());
@@ -339,7 +341,6 @@ bool OpenGLFrameBuffer::Wiper_Crossfade::Run(int ticks, OpenGLFrameBuffer *fb)
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 	float a = clamp(Clock / 32.f, 0.f, 1.f);
-	Printf("%f\n", a);
 	gl_RenderState.SetColorAlpha(0xffffff, a);
 	gl_RenderState.Apply();
 	fb->wipeendscreen->Bind(0, 0, false);
@@ -380,8 +381,8 @@ OpenGLFrameBuffer::Wiper_Melt::Wiper_Melt()
 
 int OpenGLFrameBuffer::Wiper_Melt::MakeVBO(int ticks, OpenGLFrameBuffer *fb, bool &done)
 {
-	FFlatVertex *make = new FFlatVertex[321*4];
-	FFlatVertex *ptr = make;
+	FSimpleVertex *make = new FSimpleVertex[321*4];
+	FSimpleVertex *ptr = make;
 	int dy;
 
 	float ur = fb->GetWidth() / FHardwareTexture::GetTexDimension(fb->GetWidth());

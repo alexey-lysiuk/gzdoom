@@ -36,20 +36,38 @@ struct FFlatVertex
 		u = uu;
 		v = vv;
 	}
-	void BindVBO();
+};
+
+struct FSimpleVertex
+{
+	float x, z, y;	// world position
+	float u, v;		// texture coordinates
+	PalEntry color;
+
+	void Set(float xx, float zz, float yy, float uu = 0, float vv = 0, PalEntry col = 0xffffffff)
+	{
+		x = xx;
+		z = zz;
+		y = yy;
+		u = uu;
+		v = vv;
+		color = col;
+	}
 };
 
 #define VTO ((FFlatVertex*)NULL)
+#define VSiO ((FSimpleVertex*)NULL)
 
 class FSimpleVertexBuffer : public FVertexBuffer
 {
-	TArray<FFlatVertex> mBuffer;
+	TArray<FSimpleVertex> mBuffer;
 public:
 	FSimpleVertexBuffer()
 	{
 	}
 	void BindVBO();
-	void set(FFlatVertex *verts, int count);
+	void set(FSimpleVertex *verts, int count);
+	void EnableColorArray(bool on);
 };
 
 class FFlatVertexBuffer : public FVertexBuffer
@@ -67,7 +85,7 @@ class FFlatVertexBuffer : public FVertexBuffer
 public:
 	TArray<FFlatVertex> vbo_shadowdata;	// this is kept around for updating the actual (non-readable) buffer and as stand-in for pre GL 4.x
 
-	FFlatVertexBuffer();
+	FFlatVertexBuffer(int width, int height);
 	~FFlatVertexBuffer();
 
 	void BindVBO();
