@@ -155,14 +155,10 @@ void F2DDrawer::AddTexture(FTexture *img, DrawParms &parms)
 	color.a = (BYTE)(parms.Alpha * 255);
 
 	// scissor test doesn't use the current viewport for the coordinates, so use real screen coordinates
-	int btm = (SCREENHEIGHT - screen->GetHeight()) / 2;
-	btm = SCREENHEIGHT - btm;
-
-	int space = (static_cast<OpenGLFrameBuffer*>(screen)->GetTrueHeight() - screen->GetHeight()) / 2;
-	dg.mScissor[0] = parms.lclip;
-	dg.mScissor[1] = btm - parms.dclip + space;
-	dg.mScissor[2] = parms.rclip - parms.lclip;
-	dg.mScissor[3] = parms.dclip - parms.uclip;
+	dg.mScissor[0] = GLRenderer->ScreenToWindowX(parms.lclip);
+	dg.mScissor[1] = GLRenderer->ScreenToWindowY(parms.dclip);
+	dg.mScissor[2] = GLRenderer->ScreenToWindowX(parms.rclip) - GLRenderer->ScreenToWindowX(parms.lclip);
+	dg.mScissor[3] = GLRenderer->ScreenToWindowY(parms.dclip) - GLRenderer->ScreenToWindowY(parms.uclip);
 
 	FSimpleVertex *ptr = &mVertices[dg.mVertIndex];
 	ptr->Set(x, y, 0, u1, v1, color); ptr++;
@@ -399,6 +395,7 @@ void F2DDrawer::Flush()
 		// DrawTypePoly may not use the color part of the vertex buffer because it needs to use gl_SetColor to produce proper output.
 		if (lasttype == DrawTypePoly && dg->mType != DrawTypePoly)
 		{
+			gl_RenderState.ResetColor();	// this is needed to reset the desaturation.
 			EnableColorArray(true);
 		}
 		else if (lasttype != DrawTypePoly && dg->mType == DrawTypePoly)
@@ -437,7 +434,8 @@ void F2DDrawer::Flush()
 				glDrawArrays(GL_TRIANGLE_STRIP, dt->mVertIndex + 4, 4);
 			}
 
-			glScissor(0, 0, screen->GetWidth(), screen->GetHeight());
+			const auto &viewport = GLRenderer->mScreenViewport;
+			glScissor(viewport.left, viewport.top, viewport.width, viewport.height);
 			glDisable(GL_SCISSOR_TEST);
 			gl_RenderState.BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			gl_RenderState.SetTextureMode(TM_MODULATE);

@@ -113,8 +113,8 @@ public:
 	F2DDrawer *m2DDrawer;
 
 	GL_IRECT mScreenViewport;
-	GL_IRECT mOutputViewportLB;
-	GL_IRECT mOutputViewport;
+	GL_IRECT mSceneViewport;
+	GL_IRECT mOutputLetterbox;
 	bool mDrawingScene2D = false;
 	float mCameraExposure = 1.0f;
 
@@ -122,9 +122,12 @@ public:
 	FGLRenderer(OpenGLFrameBuffer *fb);
 	~FGLRenderer() ;
 
+	void SetOutputViewport(GL_IRECT *bounds);
+	int ScreenToWindowX(int x);
+	int ScreenToWindowY(int y);
+
 	angle_t FrustumAngle();
 	void SetViewArea();
-	void SetOutputViewport(GL_IRECT *bounds);
 	void Set3DViewport(bool mainview);
 	void Reset3DViewport();
 	sector_t *RenderViewpoint (AActor * camera, GL_IRECT * bounds, float fov, float ratio, float fovratio, bool mainview, bool toscreen);

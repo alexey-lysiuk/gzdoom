@@ -20,7 +20,7 @@ public:
 	FGLRenderBuffers();
 	~FGLRenderBuffers();
 
-	void Setup(int width, int height);
+	void Setup(int width, int height, int sceneWidth, int sceneHeight);
 
 	void BindSceneFB();
 	void BlitSceneToTexture();
@@ -54,6 +54,7 @@ private:
 	GLuint CreateFrameBuffer(GLuint colorbuffer, GLuint depthstencil, bool colorIsARenderBuffer);
 	GLuint CreateFrameBuffer(GLuint colorbuffer, GLuint depth, GLuint stencil, bool colorIsARenderBuffer);
 	void CheckFrameBufferCompleteness();
+	void ClearFrameBuffer();
 	void DeleteTexture(GLuint &handle);
 	void DeleteRenderBuffer(GLuint &handle);
 	void DeleteFrameBuffer(GLuint &handle);
@@ -64,6 +65,8 @@ private:
 	int mWidth = 0;
 	int mHeight = 0;
 	int mSamples = 0;
+	int mBloomWidth = 0;
+	int mBloomHeight = 0;
 
 	static const int NumPipelineTextures = 2;
 	int mCurrentPipelineTexture = 0;

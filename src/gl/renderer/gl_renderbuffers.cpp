@@ -139,30 +139,46 @@ void FGLRenderBuffers::DeleteFrameBuffer(GLuint &handle)
 //
 //==========================================================================
 
-void FGLRenderBuffers::Setup(int width, int height)
+void FGLRenderBuffers::Setup(int width, int height, int sceneWidth, int sceneHeight)
 {
 	if (!IsEnabled())
 		return;
+		
+	if (width <= 0 || height <= 0)
+		I_FatalError("Requested invalid render buffer sizes: screen = %dx%d", width, height);
 
 	int samples = GetCvarSamples();
+
+	GLint activeTex;
+	GLint textureBinding;
+	glGetIntegerv(GL_ACTIVE_TEXTURE, &activeTex);
+	glActiveTexture(GL_TEXTURE0);
+	glGetIntegerv(GL_TEXTURE_BINDING_2D, &textureBinding);
 
 	if (width == mWidth && height == mHeight && mSamples != samples)
 	{
 		CreateScene(mWidth, mHeight, samples);
 		mSamples = samples;
 	}
-	else if (width > mWidth || height > mHeight)
+	else if (width != mWidth || height != mHeight)
 	{
 		CreatePipeline(width, height);
 		CreateScene(width, height, samples);
-		CreateBloom(width, height);
 		mWidth = width;
 		mHeight = height;
 		mSamples = samples;
 	}
 
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, 0);
+	// Bloom bluring buffers need to match the scene to avoid bloom bleeding artifacts
+	if (mBloomWidth != sceneWidth || mBloomHeight != sceneHeight)
+	{
+		CreateBloom(sceneWidth, sceneHeight);
+		mBloomWidth = sceneWidth;
+		mBloomHeight = sceneHeight;
+	}
+
+	glBindTexture(GL_TEXTURE_BINDING_2D, textureBinding);
+	glActiveTexture(activeTex);
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -219,6 +235,10 @@ void FGLRenderBuffers::CreatePipeline(int width, int height)
 void FGLRenderBuffers::CreateBloom(int width, int height)
 {
 	ClearBloom();
+	
+	// No scene, no bloom!
+	if (width <= 0 || height <= 0)
+		return;
 
 	int bloomWidth = MAX(width / 2, 1);
 	int bloomHeight = MAX(height / 2, 1);
@@ -279,7 +299,6 @@ GLuint FGLRenderBuffers::Create2DTexture(GLuint format, int width, int height)
 	GLuint type = (format == GL_RGBA16F) ? GL_FLOAT : GL_UNSIGNED_BYTE;
 	GLuint handle = 0;
 	glGenTextures(1, &handle);
-	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, handle);
 	glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, GL_RGBA, type, nullptr);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -329,6 +348,7 @@ GLuint FGLRenderBuffers::CreateFrameBuffer(GLuint colorbuffer)
 	glBindFramebuffer(GL_FRAMEBUFFER, handle);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorbuffer, 0);
 	CheckFrameBufferCompleteness();
+	ClearFrameBuffer();
 	return handle;
 }
 
@@ -343,6 +363,7 @@ GLuint FGLRenderBuffers::CreateFrameBuffer(GLuint colorbuffer, GLuint depthstenc
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorbuffer, 0);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, depthstencil);
 	CheckFrameBufferCompleteness();
+	ClearFrameBuffer();
 	return handle;
 }
 
@@ -358,6 +379,7 @@ GLuint FGLRenderBuffers::CreateFrameBuffer(GLuint colorbuffer, GLuint depth, GLu
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depth);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, stencil);
 	CheckFrameBufferCompleteness();
+	ClearFrameBuffer();
 	return handle;
 }
 
@@ -387,6 +409,31 @@ void FGLRenderBuffers::CheckFrameBufferCompleteness()
 	case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS: error << "GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS"; break;
 	}
 	I_FatalError(error);
+}
+
+//==========================================================================
+//
+// Clear frame buffer to make sure it never contains uninitialized data
+//
+//==========================================================================
+
+void FGLRenderBuffers::ClearFrameBuffer()
+{
+	GLboolean scissorEnabled;
+	GLint stencilValue;
+	GLdouble depthValue;
+	glGetBooleanv(GL_SCISSOR_TEST, &scissorEnabled);
+	glGetIntegerv(GL_STENCIL_CLEAR_VALUE, &stencilValue);
+	glGetDoublev(GL_DEPTH_CLEAR_VALUE, &depthValue);
+	glDisable(GL_SCISSOR_TEST);
+	glClearColor(0.0, 0.0, 0.0, 0.0);
+	glClearDepth(0.0);
+	glClearStencil(0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+	glClearStencil(stencilValue);
+	glClearDepth(depthValue);
+	if (scissorEnabled)
+		glEnable(GL_SCISSOR_TEST);
 }
 
 //==========================================================================
