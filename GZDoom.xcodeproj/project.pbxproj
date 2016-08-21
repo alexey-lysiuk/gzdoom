@@ -761,6 +761,8 @@
 		8AD515541D4C85E40047C328 /* gl_shaderprogram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AD5154B1D4C85730047C328 /* gl_shaderprogram.cpp */; };
 		8AD870F3140A4EC5007A06A9 /* Credits.html in Resources */ = {isa = PBXBuildFile; fileRef = 8AD870F1140A4EC5007A06A9 /* Credits.html */; };
 		8AE271341C959DB8006389F1 /* i_main_except.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AE271331C959DA0006389F1 /* i_main_except.cpp */; };
+		8AE3492C1D69DB5900C0CA57 /* gl_debug.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AE3492A1D69DB4700C0CA57 /* gl_debug.cpp */; };
+		8AE3492D1D69DB6100C0CA57 /* gl_debug.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AE3492A1D69DB4700C0CA57 /* gl_debug.cpp */; };
 		8AE875801BAAFDB700717B78 /* libcommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8AE8757E1BAAFDB700717B78 /* libcommon.a */; };
 		8AE875811BAAFDB700717B78 /* libopenal.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8AE8757F1BAAFDB700717B78 /* libopenal.a */; };
 		8AE875821BAAFDB700717B78 /* libcommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8AE8757E1BAAFDB700717B78 /* libcommon.a */; };
@@ -3012,6 +3014,8 @@
 		8AD515561D4C86160047C328 /* present.fp */ = {isa = PBXFileReference; lastKnownFileType = text; path = present.fp; sourceTree = "<group>"; };
 		8AD870F1140A4EC5007A06A9 /* Credits.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = Credits.html; path = misc/resources/Credits.html; sourceTree = "<group>"; };
 		8AE271331C959DA0006389F1 /* i_main_except.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = i_main_except.cpp; sourceTree = "<group>"; };
+		8AE3492A1D69DB4700C0CA57 /* gl_debug.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = gl_debug.cpp; sourceTree = "<group>"; };
+		8AE3492B1D69DB4700C0CA57 /* gl_debug.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gl_debug.h; sourceTree = "<group>"; };
 		8AE8757E1BAAFDB700717B78 /* libcommon.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcommon.a; path = "thirdparty/openal-soft/lib/libcommon.a"; sourceTree = "<group>"; };
 		8AE8757F1BAAFDB700717B78 /* libopenal.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libopenal.a; path = "thirdparty/openal-soft/lib/libopenal.a"; sourceTree = "<group>"; };
 		8AE875981BAAFF8F00717B78 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = /System/Library/Frameworks/AudioToolbox.framework; sourceTree = "<absolute>"; };
@@ -7275,6 +7279,8 @@
 			isa = PBXGroup;
 			children = (
 				8AF27E42139126C00095D9A0 /* gl_cvars.h */,
+				8AE3492A1D69DB4700C0CA57 /* gl_debug.cpp */,
+				8AE3492B1D69DB4700C0CA57 /* gl_debug.h */,
 				8ABDDCB51C4ED7C900271DE5 /* gl_extlist.txt */,
 				8AF27E43139126C00095D9A0 /* gl_framebuffer.cpp */,
 				8AF27E44139126C00095D9A0 /* gl_framebuffer.h */,
@@ -8177,6 +8183,7 @@
 				8A213C481C0062F2002DD476 /* gl_stereo_cvars.cpp in Sources */,
 				8A213C491C0062F2002DD476 /* gl_stereo_leftright.cpp in Sources */,
 				8A213C4A1C0062F2002DD476 /* scoped_view_shifter.cpp in Sources */,
+				8AE3492C1D69DB5900C0CA57 /* gl_debug.cpp in Sources */,
 				8A9F538914BB0F2900F3369B /* gl_framebuffer.cpp in Sources */,
 				8A9F538A14BB0F2900F3369B /* gl_interface.cpp in Sources */,
 				8ABDDCBA1C4ED7F800271DE5 /* gl_load.c in Sources */,
@@ -8919,6 +8926,7 @@
 				8A213C4D1C006300002DD476 /* gl_stereo_cvars.cpp in Sources */,
 				8A213C4E1C006300002DD476 /* gl_stereo_leftright.cpp in Sources */,
 				8A213C4F1C006300002DD476 /* scoped_view_shifter.cpp in Sources */,
+				8AE3492D1D69DB6100C0CA57 /* gl_debug.cpp in Sources */,
 				8AF280E8139126C00095D9A0 /* gl_framebuffer.cpp in Sources */,
 				8AF280E9139126C00095D9A0 /* gl_interface.cpp in Sources */,
 				8ABDDCBB1C4ED80100271DE5 /* gl_load.c in Sources */,
