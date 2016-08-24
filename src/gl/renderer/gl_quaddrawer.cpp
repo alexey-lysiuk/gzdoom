@@ -1,9 +1,8 @@
 /*
-** gl_tonemapshader.cpp
-** Converts a HDR texture to 0-1 range by applying a tonemap operator
+** gl_quaddrawer.h
 **
 **---------------------------------------------------------------------------
-** Copyright 2016 Magnus Norddahl
+** Copyright 2016 Christoph Oelckers
 ** All rights reserved.
 **
 ** Redistribution and use in source and binary forms, with or without
@@ -39,47 +38,49 @@
 */
 
 #include "gl/system/gl_system.h"
-#include "files.h"
-#include "m_swap.h"
-#include "v_video.h"
-#include "gl/gl_functions.h"
-#include "vectors.h"
-#include "gl/system/gl_interface.h"
-#include "gl/system/gl_framebuffer.h"
-#include "gl/system/gl_cvars.h"
-#include "gl/shaders/gl_tonemapshader.h"
+#include "gl/shaders/gl_shader.h"
+#include "gl/renderer/gl_renderer.h"
+#include "gl/renderer/gl_renderstate.h"
+#include "gl/renderer/gl_quaddrawer.h"
+#include "gl/data/gl_matrix.h"
 
-void FTonemapShader::Bind()
+/*
+** For handling of dynamically created quads when no persistently mapped
+** buffer or client array is available (i.e. GL 3.x core profiles)
+**
+** In this situation the 4 vertices of a quad primitive are being passed
+** as a matrix uniform because that is a lot faster than any kind of
+** temporary buffer change.
+*/
+
+FFlatVertex FQuadDrawer::buffer[4];
+
+//==========================================================================
+//
+//
+//
+//==========================================================================
+
+void FQuadDrawer::DoRender(int type)
 {
-	auto &shader = mShader[gl_tonemap];
-	if (!shader)
+	// When this gets called, the render state must already be applied so we can just
+	// send our vertices to the current shader.
+	float matV[16], matT[16];
+	
+	for(int i=0;i<4;i++)
 	{
-		shader.Compile(FShaderProgram::Vertex, "shaders/glsl/screenquad.vp", "", 330);
-		shader.Compile(FShaderProgram::Fragment, "shaders/glsl/tonemap.fp", GetDefines(gl_tonemap), 330);
-		shader.SetFragDataLocation(0, "FragColor");
-		shader.Link("shaders/glsl/tonemap");
-		shader.SetAttribLocation(0, "PositionInProjection");
-		SceneTexture.Init(shader, "InputTexture");
-		Exposure.Init(shader, "ExposureAdjustment");
-		PaletteLUT.Init(shader, "PaletteLUT");
+		matV[i*4+0] = buffer[i].x;
+		matV[i*4+1] = buffer[i].z;
+		matV[i*4+2] = buffer[i].y;
+		matV[i*4+3] = 1;
+		matT[i*4+0] = buffer[i].u;
+		matT[i*4+1] = buffer[i].v;
+		matT[i*4+2] = matT[i*4+3] = 0;
 	}
-	shader.Bind();
-}
-
-bool FTonemapShader::IsPaletteMode()
-{
-	return gl_tonemap == Palette;
-}
-
-const char *FTonemapShader::GetDefines(int mode)
-{
-	switch (mode)
-	{
-	default:
-	case Linear:     return "#define LINEAR\n";
-	case Reinhard:   return "#define REINHARD\n";
-	case HejlDawson: return "#define HEJLDAWSON\n";
-	case Uncharted2: return "#define UNCHARTED2\n";
-	case Palette:    return "#define PALETTE\n";
-	}
+	FShader *shader = GLRenderer->mShaderManager->GetActiveShader();
+	glUniformMatrix4fv(shader->vertexmatrix_index, 1, false, matV);
+	glUniformMatrix4fv(shader->texcoordmatrix_index, 1, false, matT);
+	glUniform1i(shader->quadmode_index, 1);
+	GLRenderer->mVBO->RenderArray(type, 0, 4);
+	glUniform1i(shader->quadmode_index, 0);
 }

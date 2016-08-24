@@ -214,6 +214,8 @@
 		8A74F38F13925284001F54B0 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A74F38E13925284001F54B0 /* IOKit.framework */; };
 		8A74F451139252F9001F54B0 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A74F450139252F9001F54B0 /* AudioUnit.framework */; };
 		8A74F4671392532C001F54B0 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A74F4661392532C001F54B0 /* Carbon.framework */; };
+		8A799E391D6D865500A0CEBE /* gl_quaddrawer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A799E371D6D864400A0CEBE /* gl_quaddrawer.cpp */; };
+		8A799E3A1D6D865B00A0CEBE /* gl_quaddrawer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A799E371D6D864400A0CEBE /* gl_quaddrawer.cpp */; };
 		8A7A230B1C3426A5005CF47F /* pathexpander.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A7A23091C342678005CF47F /* pathexpander.cpp */; };
 		8A7A230C1C3426AD005CF47F /* pathexpander.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A7A23091C342678005CF47F /* pathexpander.cpp */; };
 		8A7C310518F16B490001B5A2 /* Spc_Filter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A7C310318F16B220001B5A2 /* Spc_Filter.cpp */; };
@@ -1675,6 +1677,8 @@
 		8A74F38E13925284001F54B0 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		8A74F450139252F9001F54B0 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
 		8A74F4661392532C001F54B0 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
+		8A799E371D6D864400A0CEBE /* gl_quaddrawer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = gl_quaddrawer.cpp; sourceTree = "<group>"; };
+		8A799E381D6D864400A0CEBE /* gl_quaddrawer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gl_quaddrawer.h; sourceTree = "<group>"; };
 		8A7A23091C342678005CF47F /* pathexpander.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = pathexpander.cpp; sourceTree = "<group>"; };
 		8A7A230A1C342678005CF47F /* pathexpander.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = pathexpander.h; sourceTree = "<group>"; };
 		8A7C310218F16B220001B5A2 /* gme_types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gme_types.h; sourceTree = "<group>"; };
@@ -7212,6 +7216,8 @@
 				8AB6BB0E1D4DFD1D0065FA17 /* gl_postprocess.cpp */,
 				8AC2EE351D560A1500760879 /* gl_postprocessstate.cpp */,
 				8AC2EE361D560A1500760879 /* gl_postprocessstate.h */,
+				8A799E371D6D864400A0CEBE /* gl_quaddrawer.cpp */,
+				8A799E381D6D864400A0CEBE /* gl_quaddrawer.h */,
 				8AD515471D4C855D0047C328 /* gl_renderbuffers.cpp */,
 				8AD515481D4C855D0047C328 /* gl_renderbuffers.h */,
 				8AF27E22139126C00095D9A0 /* gl_renderer.cpp */,
@@ -8148,6 +8154,7 @@
 				8A9F537314BB0F2900F3369B /* gl_lightdata.cpp in Sources */,
 				8AB6BB0F1D4DFD2C0065FA17 /* gl_postprocess.cpp in Sources */,
 				8AC2EE371D560A3000760879 /* gl_postprocessstate.cpp in Sources */,
+				8A799E391D6D865500A0CEBE /* gl_quaddrawer.cpp in Sources */,
 				8AD5154F1D4C85AD0047C328 /* gl_renderbuffers.cpp in Sources */,
 				8A9F537414BB0F2900F3369B /* gl_renderer.cpp in Sources */,
 				8A9F537514BB0F2900F3369B /* gl_renderstate.cpp in Sources */,
@@ -8891,6 +8898,7 @@
 				8AF280D2139126C00095D9A0 /* gl_lightdata.cpp in Sources */,
 				8AB6BB101D4DFD310065FA17 /* gl_postprocess.cpp in Sources */,
 				8AC2EE381D560A3400760879 /* gl_postprocessstate.cpp in Sources */,
+				8A799E3A1D6D865B00A0CEBE /* gl_quaddrawer.cpp in Sources */,
 				8AD515501D4C85B20047C328 /* gl_renderbuffers.cpp in Sources */,
 				8AF280D3139126C00095D9A0 /* gl_renderer.cpp in Sources */,
 				8AF280D4139126C00095D9A0 /* gl_renderstate.cpp in Sources */,
