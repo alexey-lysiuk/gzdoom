@@ -169,6 +169,7 @@ public:
 	void BloomScene();
 	void TonemapScene();
 	void BindTonemapPalette(int texunit);
+	void ClearTonemapPalette();
 	void LensDistortScene();
 	void PostProcessFXAA();
 	void CopyToBackbuffer(const GL_IRECT *bounds, bool applyGamma);
