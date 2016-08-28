@@ -1265,7 +1265,7 @@ void FGLInterface::Precache(BYTE *texhitlist, TMap<PClassActor*, bool> &actorhit
 		}
 
 		precacheProfiler.Unclock();
-		DPrintf(TEXTCOLOR_RED "Textures were precached in %.03f ms\n", precacheProfiler.TimeMS());
+		DPrintf(DMSG_NOTIFY, TEXTCOLOR_RED "Textures were precached in %.03f ms\n", precacheProfiler.TimeMS());
 	}
 
 	delete[] spritehitlist;
