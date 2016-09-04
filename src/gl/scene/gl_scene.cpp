@@ -169,9 +169,8 @@ void FGLRenderer::Reset3DViewport()
 
 void FGLRenderer::Set3DViewport(bool mainview)
 {
-	if (mainview && FGLRenderBuffers::IsEnabled())
+	if (mainview && mBuffers->Setup(mScreenViewport.width, mScreenViewport.height, mSceneViewport.width, mSceneViewport.height))
 	{
-		mBuffers->Setup(mScreenViewport.width, mScreenViewport.height, mSceneViewport.width, mSceneViewport.height);
 		mBuffers->BindSceneFB();
 	}
 
@@ -286,6 +285,7 @@ void FGLRenderer::CreateScene()
 	for(unsigned i=0;i<portals.Size(); i++) portals[i]->glportal = NULL;
 	gl_spriteindex=0;
 	Bsp.Clock();
+	GLRenderer->mVBO->Map();
 	R_SetView();
 	validcount++;	// used for processing sidedefs only once by the renderer.
 	gl_RenderBSPNode (nodes + numnodes - 1);
@@ -297,6 +297,7 @@ void FGLRenderer::CreateScene()
 	gl_drawinfo->HandleMissingTextures();	// Missing upper/lower textures
 	gl_drawinfo->HandleHackedSubsectors();	// open sector hacks for deep water
 	gl_drawinfo->ProcessSectorStacks();		// merge visplanes of sector stacks
+	GLRenderer->mVBO->Unmap();
 
 	ProcessAll.Unclock();
 
@@ -409,7 +410,7 @@ void FGLRenderer::RenderScene(int recursion)
 
 	// this is the only geometry type on which decals can possibly appear
 	gl_drawinfo->drawlists[GLDL_PLAINWALLS].DrawDecals();
-	if (gl.lightmethod == LM_SOFTWARE)
+	if (gl.legacyMode)
 	{
 		// also process the render lists with walls and dynamic lights
         gl_drawinfo->dldrawlists[GLLDL_WALLS_PLAIN].DrawDecals();
@@ -480,7 +481,6 @@ void FGLRenderer::RenderTranslucent()
 // stencil, z-buffer and the projection matrix intact!
 //
 //-----------------------------------------------------------------------------
-EXTERN_CVAR(Bool, gl_draw_sync)
 
 void FGLRenderer::DrawScene(int drawmode)
 {
@@ -502,14 +502,6 @@ void FGLRenderer::DrawScene(int drawmode)
 	}
 	GLRenderer->mClipPortal = NULL;	// this must be reset before any portal recursion takes place.
 
-	// Up to this point in the main draw call no rendering is performed so we can wait
-	// with swapping the render buffer until now.
-	if (!gl_draw_sync && drawmode == DM_MAINVIEW)
-	{
-		All.Unclock();
-		static_cast<OpenGLFrameBuffer*>(screen)->Swap();
-		All.Clock();
-	}
 	RenderScene(recursion);
 
 	// Handle all portals after rendering the opaque objects but before
@@ -527,7 +519,7 @@ void gl_FillScreen()
 	gl_RenderState.EnableTexture(false);
 	gl_RenderState.Apply();
 	// The fullscreen quad is stored at index 4 in the main vertex buffer.
-	glDrawArrays(GL_TRIANGLE_STRIP, FFlatVertexBuffer::FULLSCREEN_INDEX, 4);
+	GLRenderer->mVBO->RenderArray(GL_TRIANGLE_STRIP, FFlatVertexBuffer::FULLSCREEN_INDEX, 4);
 }
 
 //==========================================================================
@@ -644,12 +636,14 @@ void FGLRenderer::DrawBlend(sector_t * viewsector)
 		V_AddBlend (player->BlendR, player->BlendG, player->BlendB, player->BlendA, blend);
 	}
 
+	gl_RenderState.BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	if (blend[3]>0.0f)
 	{
-		gl_RenderState.BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		gl_RenderState.SetColor(blend[0], blend[1], blend[2], blend[3]);
 		gl_FillScreen();
 	}
+	gl_RenderState.ResetColor();
+	gl_RenderState.EnableTexture(true);
 }
 
 
@@ -685,16 +679,17 @@ void FGLRenderer::EndDrawScene(sector_t * viewsector)
 	{
 		DrawPlayerSprites (viewsector, false);
 	}
-	int cm = gl_RenderState.GetFixedColormap();
+	if (gl.legacyMode)
+	{
+		gl_RenderState.DrawColormapOverlay();
+	}
+
 	gl_RenderState.SetFixedColormap(CM_DEFAULT);
 	gl_RenderState.SetSoftLightLevel(-1);
 	DrawTargeterSprites();
-	DrawBlend(viewsector);
-	if (gl.glslversion == 0.0)
+	if (!FGLRenderBuffers::IsEnabled())
 	{
-		gl_RenderState.SetFixedColormap(cm);
-		gl_RenderState.DrawColormapOverlay();
-		gl_RenderState.SetFixedColormap(CM_DEFAULT);
+		DrawBlend(viewsector);
 	}
 
 	// Restore standard rendering state
@@ -828,7 +823,7 @@ sector_t * FGLRenderer::RenderViewpoint (AActor * camera, GL_IRECT * bounds, flo
 
 	// Render (potentially) multiple views for stereo 3d
 	float viewShift[3];
-	const s3d::Stereo3DMode& stereo3dMode = s3d::Stereo3DMode::getCurrentMode();
+	const s3d::Stereo3DMode& stereo3dMode = mainview && toscreen? s3d::Stereo3DMode::getCurrentMode() : s3d::Stereo3DMode::getMonoMode();
 	stereo3dMode.SetUp();
 	for (int eye_ix = 0; eye_ix < stereo3dMode.eye_count(); ++eye_ix)
 	{
@@ -855,13 +850,19 @@ sector_t * FGLRenderer::RenderViewpoint (AActor * camera, GL_IRECT * bounds, flo
 
 		ProcessScene(toscreen);
 		if (mainview && toscreen) EndDrawScene(retval);	// do not call this for camera textures.
-		if (mainview)
+		if (mainview && FGLRenderBuffers::IsEnabled())
 		{
-			if (FGLRenderBuffers::IsEnabled()) mBuffers->BlitSceneToTexture();
+			mBuffers->BlitSceneToTexture();
 			BloomScene();
 			TonemapScene();
+			ColormapScene();
 			LensDistortScene();
 			PostProcessFXAA();
+
+			// This should be done after postprocessing, not before.
+			mBuffers->BindCurrentFB();
+			glViewport(mScreenViewport.left, mScreenViewport.top, mScreenViewport.width, mScreenViewport.height);
+			DrawBlend(viewsector);
 		}
 		mDrawingScene2D = false;
 		eye->TearDown();
@@ -906,7 +907,7 @@ void FGLRenderer::RenderView (player_t* player)
 
 	P_FindParticleSubsectors ();
 
-	if (gl.lightmethod != LM_SOFTWARE) GLRenderer->mLights->Clear();
+	if (!gl.legacyMode) GLRenderer->mLights->Clear();
 
 	// NoInterpolateView should have no bearing on camera textures, but needs to be preserved for the main view below.
 	bool saved_niv = NoInterpolateView;
@@ -961,7 +962,7 @@ void FGLRenderer::WriteSavePic (player_t *player, FILE *file, int width, int hei
 	SetFixedColormap(player);
 	gl_RenderState.SetVertexBuffer(mVBO);
 	GLRenderer->mVBO->Reset();
-	if (gl.lightmethod != LM_SOFTWARE) GLRenderer->mLights->Clear();
+	if (!gl.legacyMode) GLRenderer->mLights->Clear();
 
 	// Check if there's some lights. If not some code can be skipped.
 	TThinkerIterator<ADynamicLight> it(STAT_DLIGHT);
@@ -973,7 +974,10 @@ void FGLRenderer::WriteSavePic (player_t *player, FILE *file, int width, int hei
 	gl_RenderState.SetFixedColormap(CM_DEFAULT);
 	gl_RenderState.SetSoftLightLevel(-1);
 	screen->Begin2D(false);
-	DrawBlend(viewsector);
+	if (!FGLRenderBuffers::IsEnabled())
+	{
+		DrawBlend(viewsector);
+	}
 	CopyToBackbuffer(&bounds, false);
 	glFlush();
 
@@ -1386,7 +1390,7 @@ void FGLInterface::RenderTextureView (FCanvasTexture *tex, AActor *Viewpoint, in
 	gl_fixedcolormap=CM_DEFAULT;
 	gl_RenderState.SetFixedColormap(CM_DEFAULT);
 
-	bool usefb = gl_usefb || gltex->GetWidth() > screen->GetWidth() || gltex->GetHeight() > screen->GetHeight();
+	bool usefb = !gl.legacyMode || gl_usefb || gltex->GetWidth() > screen->GetWidth() || gltex->GetHeight() > screen->GetHeight();
 	if (!usefb)
 	{
 		glFlush();

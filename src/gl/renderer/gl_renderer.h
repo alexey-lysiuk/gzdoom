@@ -23,6 +23,7 @@ class FBloomExtractShader;
 class FBloomCombineShader;
 class FBlurShader;
 class FTonemapShader;
+class FColormapShader;
 class FLensShader;
 class FFXAAShader;
 class FPresentShader;
@@ -94,6 +95,7 @@ public:
 	FBloomCombineShader *mBloomCombineShader;
 	FBlurShader *mBlurShader;
 	FTonemapShader *mTonemapShader;
+	FColormapShader *mColormapShader;
 	FHardwareTexture *mTonemapPalette;
 	FLensShader *mLensShader;
 	FFXAAShader *mFXAAShader;
@@ -168,6 +170,7 @@ public:
 	void EndDrawScene(sector_t * viewsector);
 	void BloomScene();
 	void TonemapScene();
+	void ColormapScene();
 	void BindTonemapPalette(int texunit);
 	void ClearTonemapPalette();
 	void LensDistortScene();

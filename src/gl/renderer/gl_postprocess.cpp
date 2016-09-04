@@ -71,6 +71,7 @@
 #include "gl/shaders/gl_bloomshader.h"
 #include "gl/shaders/gl_blurshader.h"
 #include "gl/shaders/gl_tonemapshader.h"
+#include "gl/shaders/gl_colormapshader.h"
 #include "gl/shaders/gl_lensshader.h"
 #include "gl/shaders/gl_fxaashader.h"
 #include "gl/shaders/gl_presentshader.h"
@@ -118,7 +119,7 @@ void FGLRenderer::RenderScreenQuad()
 {
 	mVBO->BindVBO();
 	gl_RenderState.ResetVertexBuffer();
-	glDrawArrays(GL_TRIANGLE_STRIP, FFlatVertexBuffer::PRESENT_INDEX, 4);
+	GLRenderer->mVBO->RenderArray(GL_TRIANGLE_STRIP, FFlatVertexBuffer::PRESENT_INDEX, 4);
 }
 
 //-----------------------------------------------------------------------------
@@ -130,7 +131,7 @@ void FGLRenderer::RenderScreenQuad()
 void FGLRenderer::BloomScene()
 {
 	// Only bloom things if enabled and no special fixed light mode is active
-	if (!gl_bloom || !FGLRenderBuffers::IsEnabled() || gl_fixedcolormap != CM_DEFAULT)
+	if (!gl_bloom || gl_fixedcolormap != CM_DEFAULT)
 		return;
 
 	FGLDebug::PushGroup("BloomScene");
@@ -216,7 +217,7 @@ void FGLRenderer::BloomScene()
 
 void FGLRenderer::TonemapScene()
 {
-	if (gl_tonemap == 0 || !FGLRenderBuffers::IsEnabled())
+	if (gl_tonemap == 0)
 		return;
 
 	FGLDebug::PushGroup("TonemapScene");
@@ -260,7 +261,7 @@ void FGLRenderer::BindTonemapPalette(int texunit)
 			{
 				for (int b = 0; b < 64; b++)
 				{
-					PalEntry color = GPalette.BaseColors[ColorMatcher.Pick((r << 2) | (r >> 1), (g << 2) | (g >> 1), (b << 2) | (b >> 1))];
+					PalEntry color = GPalette.BaseColors[ColorMatcher.Pick((r << 2) | (r >> 4), (g << 2) | (g >> 4), (b << 2) | (b >> 4))];
 					int index = ((r * 64 + g) * 64 + b) * 4;
 					lut[index] = color.r;
 					lut[index + 1] = color.g;
@@ -290,13 +291,45 @@ void FGLRenderer::ClearTonemapPalette()
 
 //-----------------------------------------------------------------------------
 //
+// Colormap scene texture and place the result in the HUD/2D texture
+//
+//-----------------------------------------------------------------------------
+
+void FGLRenderer::ColormapScene()
+{
+	if (gl_fixedcolormap < CM_FIRSTSPECIALCOLORMAP || gl_fixedcolormap >= CM_MAXCOLORMAP)
+		return;
+
+	FGLDebug::PushGroup("ColormapScene");
+
+	FGLPostProcessState savedState;
+
+	mBuffers->BindNextFB();
+	mBuffers->BindCurrentTexture(0);
+	mColormapShader->Bind();
+	
+	FSpecialColormap *scm = &SpecialColormaps[gl_fixedcolormap - CM_FIRSTSPECIALCOLORMAP];
+	float m[] = { scm->ColorizeEnd[0] - scm->ColorizeStart[0],
+		scm->ColorizeEnd[1] - scm->ColorizeStart[1], scm->ColorizeEnd[2] - scm->ColorizeStart[2], 0.f };
+
+	mColormapShader->MapStart.Set(scm->ColorizeStart[0], scm->ColorizeStart[1], scm->ColorizeStart[2], 0.f);
+	mColormapShader->MapRange.Set(m);
+
+	RenderScreenQuad();
+	mBuffers->NextTexture();
+
+	FGLDebug::PopGroup();
+}
+
+//-----------------------------------------------------------------------------
+//
 // Apply lens distortion and place the result in the HUD/2D texture
 //
 //-----------------------------------------------------------------------------
 
 void FGLRenderer::LensDistortScene()
 {
-	if (gl_lens == 0 || !FGLRenderBuffers::IsEnabled())
+	if (gl_lens == 0)
 		return;
 
 	FGLDebug::PushGroup("LensDistortScene");
@@ -446,6 +479,8 @@ void FGLRenderer::ClearBorders()
 
 	int clientWidth = framebuffer->GetClientWidth();
 	int clientHeight = framebuffer->GetClientHeight();
+	if (clientWidth == 0 || clientHeight == 0)
+		return;
 
 	glViewport(0, 0, clientWidth, clientHeight);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);

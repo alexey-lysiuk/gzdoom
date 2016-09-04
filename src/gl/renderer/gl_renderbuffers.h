@@ -20,7 +20,7 @@ public:
 	FGLRenderBuffers();
 	~FGLRenderBuffers();
 
-	void Setup(int width, int height, int sceneWidth, int sceneHeight);
+	bool Setup(int width, int height, int sceneWidth, int sceneHeight);
 
 	void BindSceneFB();
 	void BlitSceneToTexture();
@@ -53,13 +53,11 @@ private:
 	GLuint CreateFrameBuffer(const FString &name, GLuint colorbuffer);
 	GLuint CreateFrameBuffer(const FString &name, GLuint colorbuffer, GLuint depthstencil, bool colorIsARenderBuffer);
 	GLuint CreateFrameBuffer(const FString &name, GLuint colorbuffer, GLuint depth, GLuint stencil, bool colorIsARenderBuffer);
-	void CheckFrameBufferCompleteness();
+	bool CheckFrameBufferCompleteness();
 	void ClearFrameBuffer(bool stencil, bool depth);
 	void DeleteTexture(GLuint &handle);
 	void DeleteRenderBuffer(GLuint &handle);
 	void DeleteFrameBuffer(GLuint &handle);
-
-	GLuint GetHdrFormat();
 
 	int mWidth = 0;
 	int mHeight = 0;
@@ -84,6 +82,9 @@ private:
 
 	// Back buffer frame buffer
 	GLuint mOutputFB = 0;
+
+	static bool FailedCreate;
+	static bool BuffersActive;
 };
 
 #endif
