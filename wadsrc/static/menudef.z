@@ -194,7 +194,6 @@ OptionMenu "GLTextureGLOptions"
 	Option "Resize mode for sprites",	gl_texture_hqresize_sprites,	"HqResizeModes"
 	Option "Resize mode for fonts",		gl_texture_hqresize_fonts,		"HqResizeModes"
 	Option "$GLTEXMNU_PRECACHETEX",		gl_precache,					"YesNo"
-	Option "$GLTEXMNU_CAMTEXOFFSCR",	gl_usefb,						"OnOff"
 	Option "$GLTEXMNU_TRIMSPREDGE",		gl_trimsprites,					"OnOff"
 	Option "$GLTEXMNU_SORTDRAWLIST", 	gl_sort_textures,				"YesNo"
 
@@ -209,9 +208,6 @@ OptionMenu "GLLightOptions"
 	Option "$GLLIGHTMNU_CLIPLIGHTS",		gl_lights_checkside,			"YesNo"
 	Option "$GLLIGHTMNU_LIGHTSPRITES",		gl_light_sprites,				"YesNo"
 	Option "$GLLIGHTMNU_LIGHTPARTICLES",	gl_light_particles,				"YesNo"
-	Option "$GLLIGHTMNU_FORCEADDITIVE",		gl_lights_additive,				"YesNo"
-	Slider "$GLLIGHTMNU_LIGHTINTENSITY",	gl_lights_intensity, 			0.0, 1.0, 0.1
-	Slider "$GLLIGHTMNU_LIGHTSIZE",			gl_lights_size,					0.0, 2.0, 0.1
 }
 
 OptionMenu "GLPrefOptions"
