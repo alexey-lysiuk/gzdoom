@@ -545,6 +545,8 @@ void gl_FillScreen()
 //==========================================================================
 void FGLRenderer::DrawBlend(sector_t * viewsector)
 {
+	glInsertEventMarkerEXT(0, "FGLRenderer::DrawBlend");
+
 	float blend[4]={0,0,0,0};
 	PalEntry blendv=0;
 	float extra_red;
@@ -954,6 +956,8 @@ void FGLRenderer::RenderView (player_t* player)
 
 void FGLRenderer::WriteSavePic (player_t *player, FileWriter *file, int width, int height)
 {
+	glInsertEventMarkerEXT(0, "FGLRenderer::WriteSavePic");
+
 	GL_IRECT bounds;
 
 	bounds.left=0;

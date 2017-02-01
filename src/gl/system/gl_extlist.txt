@@ -15,3 +15,5 @@ EXT_texture_sRGB
 KHR_debug
 ARB_invalidate_subdata
 EXT_abgr
+EXT_debug_label
+EXT_debug_marker

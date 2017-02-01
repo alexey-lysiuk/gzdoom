@@ -101,6 +101,8 @@ int ogl_ext_EXT_texture_sRGB = ogl_LOAD_FAILED;
 int ogl_ext_KHR_debug = ogl_LOAD_FAILED;
 int ogl_ext_ARB_invalidate_subdata = ogl_LOAD_FAILED;
 int ogl_ext_EXT_abgr = ogl_LOAD_FAILED;
+int ogl_ext_EXT_debug_label = ogl_LOAD_FAILED;
+int ogl_ext_EXT_debug_marker = ogl_LOAD_FAILED;
 
 void (CODEGEN_FUNCPTR *_ptrc_glBufferStorage)(GLenum target, GLsizeiptr size, const void * data, GLbitfield flags) = NULL;
 
@@ -270,6 +272,35 @@ static int Load_ARB_invalidate_subdata(void)
 	if(!_ptrc_glInvalidateTexImage) numFailed++;
 	_ptrc_glInvalidateTexSubImage = (void (CODEGEN_FUNCPTR *)(GLuint, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei))IntGetProcAddress("glInvalidateTexSubImage");
 	if(!_ptrc_glInvalidateTexSubImage) numFailed++;
+	return numFailed;
+}
+
+void (CODEGEN_FUNCPTR *_ptrc_glGetObjectLabelEXT)(GLenum type, GLuint object, GLsizei bufSize, GLsizei * length, GLchar * label) = NULL;
+void (CODEGEN_FUNCPTR *_ptrc_glLabelObjectEXT)(GLenum type, GLuint object, GLsizei length, const GLchar * label) = NULL;
+
+static int Load_EXT_debug_label(void)
+{
+	int numFailed = 0;
+	_ptrc_glGetObjectLabelEXT = (void (CODEGEN_FUNCPTR *)(GLenum, GLuint, GLsizei, GLsizei *, GLchar *))IntGetProcAddress("glGetObjectLabelEXT");
+	if(!_ptrc_glGetObjectLabelEXT) numFailed++;
+	_ptrc_glLabelObjectEXT = (void (CODEGEN_FUNCPTR *)(GLenum, GLuint, GLsizei, const GLchar *))IntGetProcAddress("glLabelObjectEXT");
+	if(!_ptrc_glLabelObjectEXT) numFailed++;
+	return numFailed;
+}
+
+void (CODEGEN_FUNCPTR *_ptrc_glInsertEventMarkerEXT)(GLsizei length, const GLchar * marker) = NULL;
+void (CODEGEN_FUNCPTR *_ptrc_glPopGroupMarkerEXT)(void) = NULL;
+void (CODEGEN_FUNCPTR *_ptrc_glPushGroupMarkerEXT)(GLsizei length, const GLchar * marker) = NULL;
+
+static int Load_EXT_debug_marker(void)
+{
+	int numFailed = 0;
+	_ptrc_glInsertEventMarkerEXT = (void (CODEGEN_FUNCPTR *)(GLsizei, const GLchar *))IntGetProcAddress("glInsertEventMarkerEXT");
+	if(!_ptrc_glInsertEventMarkerEXT) numFailed++;
+	_ptrc_glPopGroupMarkerEXT = (void (CODEGEN_FUNCPTR *)(void))IntGetProcAddress("glPopGroupMarkerEXT");
+	if(!_ptrc_glPopGroupMarkerEXT) numFailed++;
+	_ptrc_glPushGroupMarkerEXT = (void (CODEGEN_FUNCPTR *)(GLsizei, const GLchar *))IntGetProcAddress("glPushGroupMarkerEXT");
+	if(!_ptrc_glPushGroupMarkerEXT) numFailed++;
 	return numFailed;
 }
 
@@ -2380,7 +2411,7 @@ typedef struct ogl_StrToExtMap_s
 	PFN_LOADFUNCPOINTERS LoadExtension;
 } ogl_StrToExtMap;
 
-static ogl_StrToExtMap ExtensionMap[12] = {
+static ogl_StrToExtMap ExtensionMap[14] = {
 	{"GL_APPLE_client_storage", &ogl_ext_APPLE_client_storage, NULL},
 	{"GL_ARB_buffer_storage", &ogl_ext_ARB_buffer_storage, Load_ARB_buffer_storage},
 	{"GL_ARB_shader_storage_buffer_object", &ogl_ext_ARB_shader_storage_buffer_object, Load_ARB_shader_storage_buffer_object},
@@ -2393,9 +2424,11 @@ static ogl_StrToExtMap ExtensionMap[12] = {
 	{"GL_KHR_debug", &ogl_ext_KHR_debug, Load_KHR_debug},
 	{"GL_ARB_invalidate_subdata", &ogl_ext_ARB_invalidate_subdata, Load_ARB_invalidate_subdata},
 	{"GL_EXT_abgr", &ogl_ext_EXT_abgr, NULL},
+	{"GL_EXT_debug_label", &ogl_ext_EXT_debug_label, Load_EXT_debug_label},
+	{"GL_EXT_debug_marker", &ogl_ext_EXT_debug_marker, Load_EXT_debug_marker},
 };
 
-static int g_extensionMapSize = 12;
+static int g_extensionMapSize = 14;
 
 static ogl_StrToExtMap *FindExtEntry(const char *extensionName)
 {
@@ -2424,6 +2457,8 @@ static void ClearExtensionVars(void)
 	ogl_ext_KHR_debug = ogl_LOAD_FAILED;
 	ogl_ext_ARB_invalidate_subdata = ogl_LOAD_FAILED;
 	ogl_ext_EXT_abgr = ogl_LOAD_FAILED;
+	ogl_ext_EXT_debug_label = ogl_LOAD_FAILED;
+	ogl_ext_EXT_debug_marker = ogl_LOAD_FAILED;
 }
 
 

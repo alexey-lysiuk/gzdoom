@@ -165,6 +165,8 @@ extern int ogl_ext_EXT_texture_sRGB;
 extern int ogl_ext_KHR_debug;
 extern int ogl_ext_ARB_invalidate_subdata;
 extern int ogl_ext_EXT_abgr;
+extern int ogl_ext_EXT_debug_label;
+extern int ogl_ext_EXT_debug_marker;
 
 #define GL_UNPACK_CLIENT_STORAGE_APPLE 0x85B2
 
@@ -333,6 +335,15 @@ extern int ogl_ext_EXT_abgr;
 #define GL_VERTEX_ARRAY 0x8074
 
 #define GL_ABGR_EXT 0x8000
+
+#define GL_BUFFER_OBJECT_EXT 0x9151
+#define GL_PROGRAM_OBJECT_EXT 0x8B40
+#define GL_PROGRAM_PIPELINE_OBJECT_EXT 0x8A4F
+#define GL_QUERY_OBJECT_EXT 0x9153
+/*Copied GL_SAMPLER From: KHR_debug*/
+#define GL_SHADER_OBJECT_EXT 0x8B48
+#define GL_TRANSFORM_FEEDBACK 0x8E22
+#define GL_VERTEX_ARRAY_OBJECT_EXT 0x9154
 
 #define GL_2D 0x0600
 #define GL_2_BYTES 0x1407
@@ -1706,6 +1717,24 @@ extern void (CODEGEN_FUNCPTR *_ptrc_glInvalidateTexSubImage)(GLuint texture, GLi
 #define glInvalidateTexSubImage _ptrc_glInvalidateTexSubImage
 #endif /*GL_ARB_invalidate_subdata*/ 
 
+
+#ifndef GL_EXT_debug_label
+#define GL_EXT_debug_label 1
+extern void (CODEGEN_FUNCPTR *_ptrc_glGetObjectLabelEXT)(GLenum type, GLuint object, GLsizei bufSize, GLsizei * length, GLchar * label);
+#define glGetObjectLabelEXT _ptrc_glGetObjectLabelEXT
+extern void (CODEGEN_FUNCPTR *_ptrc_glLabelObjectEXT)(GLenum type, GLuint object, GLsizei length, const GLchar * label);
+#define glLabelObjectEXT _ptrc_glLabelObjectEXT
+#endif /*GL_EXT_debug_label*/ 
+
+#ifndef GL_EXT_debug_marker
+#define GL_EXT_debug_marker 1
+extern void (CODEGEN_FUNCPTR *_ptrc_glInsertEventMarkerEXT)(GLsizei length, const GLchar * marker);
+#define glInsertEventMarkerEXT _ptrc_glInsertEventMarkerEXT
+extern void (CODEGEN_FUNCPTR *_ptrc_glPopGroupMarkerEXT)(void);
+#define glPopGroupMarkerEXT _ptrc_glPopGroupMarkerEXT
+extern void (CODEGEN_FUNCPTR *_ptrc_glPushGroupMarkerEXT)(GLsizei length, const GLchar * marker);
+#define glPushGroupMarkerEXT _ptrc_glPushGroupMarkerEXT
+#endif /*GL_EXT_debug_marker*/ 
 
 extern void (CODEGEN_FUNCPTR *_ptrc_glAccum)(GLenum op, GLfloat value);
 #define glAccum _ptrc_glAccum
