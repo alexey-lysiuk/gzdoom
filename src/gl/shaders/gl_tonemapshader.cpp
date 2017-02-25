@@ -68,6 +68,7 @@ const char *FTonemapShader::GetDefines(int mode)
 	case HejlDawson: return "#define HEJLDAWSON\n";
 	case Uncharted2: return "#define UNCHARTED2\n";
 	case Palette:    return "#define PALETTE\n";
+	case Noir:       return "#define NOIR\n";
 	}
 }
 

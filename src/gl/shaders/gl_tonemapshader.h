@@ -23,6 +23,7 @@ private:
 		Reinhard,
 		Linear,
 		Palette,
+		Noir,
 		NumTonemapModes
 	};
 

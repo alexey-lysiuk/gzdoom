@@ -46,6 +46,7 @@ OptionValue "TonemapModes"
 	3, "$OPTVAL_REINHARD"
 	4, "$OPTVAL_LINEAR"
 	5, "$OPTVAL_PALETTE"
+	6, "$OPTVAL_NOIR"
 }
 
 OptionValue "SSAOModes"
