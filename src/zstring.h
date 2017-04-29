@@ -49,6 +49,7 @@
 #ifdef __clang__
 #define IGNORE_FORMAT_PRE \
 	_Pragma("GCC diagnostic push") \
+	_Pragma("GCC diagnostic ignored \"-Wformat\"") \
 	_Pragma("GCC diagnostic ignored \"-Wformat-invalid-specifier\"") \
 	_Pragma("GCC diagnostic ignored \"-Wformat-extra-args\"")
 #define IGNORE_FORMAT_POST _Pragma("GCC diagnostic pop")

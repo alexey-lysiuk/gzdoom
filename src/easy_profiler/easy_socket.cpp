@@ -53,6 +53,15 @@ limitations under the License.
 #include <sys/ioctl.h>
 #endif
 
+#ifndef MSG_NOSIGNAL
+#define MSG_NOSIGNAL 0
+#ifdef SO_NOSIGPIPE
+#define EASY_USE_NOSIGPIPE
+#else // !SO_NOSIGPIPE
+#error "Both MSG_NOSIGNAL and SO_NOSIGPIPE are not supported"
+#endif // SO_NOSIGPIPE
+#endif // MSG_NOSIGNAL
+
 bool EasySocket::checkSocket(socket_t s) const
 {
     return s > 0;
@@ -264,7 +273,12 @@ int EasySocket::accept()
         int send_buffer = 64*1024*1024;
         int send_buffer_sizeof = sizeof(int);
         setsockopt(m_replySocket, SOL_SOCKET, SO_SNDBUF, (char*)&send_buffer, send_buffer_sizeof);
-        
+
+#ifdef EASY_USE_NOSIGPIPE
+		int nosigpipe = 1;
+		setsockopt(m_replySocket, SOL_SOCKET, SO_NOSIGPIPE, (const void*)&nosigpipe, sizeof(nosigpipe));
+#endif // EASY_USE_NOSIGPIPE
+
         //int flag = 1;
         //int result = setsockopt(m_replySocket,IPPROTO_TCP,TCP_NODELAY,(char *)&flag,sizeof(int));
 

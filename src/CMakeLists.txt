@@ -443,6 +443,25 @@ if( UNIX )
 	endif()
 endif()
 
+# Profiler
+
+set( WITH_EASY_PROFILER 0 CACHE BOOL "Enable Easy Profiler integration")
+
+if( WITH_EASY_PROFILER )
+	add_definitions(
+		-DBUILD_WITH_EASY_PROFILER
+		-DEASY_PROFILER_VERSION_MAJOR=1
+		-DEASY_PROFILER_VERSION_MINOR=1
+		-DEASY_PROFILER_VERSION_PATCH=0 )
+	include_directories( ./easy_profiler )
+	set( PROFILER_SOURCES 
+		easy_profiler/block.cpp
+		easy_profiler/easy_socket.cpp
+		easy_profiler/event_trace_win.cpp
+		easy_profiler/profile_manager.cpp
+		easy_profiler/reader.cpp )
+endif()
+
 # Flags
 
 # Update gitinfo.h
@@ -625,8 +644,11 @@ elseif( APPLE )
 else()
 	set( EXTRA_HEADER_DIRS posix/*.h posix/sdl/*.h )
 endif()
+
 file( GLOB HEADER_FILES
 	${EXTRA_HEADER_DIRS}
+	easy_profiler/*.h
+	easy_profiler/easy/*.h
 	fragglescript/*.h
 	g_shared/*.h
 	g_statusbar/*.h
@@ -1159,6 +1181,7 @@ add_executable( zdoom WIN32 MACOSX_BUNDLE
 	${X86_SOURCES}
 	${FASTMATH_SOURCES}
 	${PCH_SOURCES}
+	${PROFILER_SOURCES}
 	x86.cpp
 	strnatcmp.c
 	zstring.cpp
@@ -1348,3 +1371,4 @@ source_group("Statusbar" REGULAR_EXPRESSION "^${CMAKE_CURRENT_SOURCE_DIR}/g_stat
 source_group("Versioning" FILES version.h win32/zdoom.rc)
 source_group("Xlat" REGULAR_EXPRESSION "^${CMAKE_CURRENT_SOURCE_DIR}/xlat/.+" FILES ${CMAKE_CURRENT_BINARY_DIR}/xlat_parser.c ${CMAKE_CURRENT_BINARY_DIR}/xlat_parser.h)
 source_group("Source Files" FILES ${CMAKE_CURRENT_BINARY_DIR}/sc_man_scanner.h sc_man_scanner.re)
+source_group("Easy Profiler" REGULAR_EXPRESSION "^${CMAKE_CURRENT_SOURCE_DIR}/easy_profiler/.+")

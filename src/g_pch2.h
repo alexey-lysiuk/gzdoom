@@ -20,3 +20,5 @@
 #include <io.h>
 #include <limits>
 #include <fcntl.h>
+
+#include <easy/profiler.h>

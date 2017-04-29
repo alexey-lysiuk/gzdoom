@@ -77,6 +77,11 @@ inline uint32_t getCurrentThreadId()
 {
 #ifdef _WIN32
     return (uint32_t)::GetCurrentThreadId();
+#elif __APPLE__
+    EASY_THREAD_LOCAL static uint64_t threadid;
+    EASY_THREAD_LOCAL static const int gotid = pthread_threadid_np(pthread_self(), &threadid);
+    EASY_THREAD_LOCAL static const uint32_t _id = 0 == gotid ? (uint32_t)threadid : 0;
+    return _id;
 #else
     EASY_THREAD_LOCAL static const pid_t x = syscall(__NR_gettid);
     EASY_THREAD_LOCAL static const uint32_t _id = (uint32_t)x;//std::hash<std::thread::id>()(std::this_thread::get_id());
