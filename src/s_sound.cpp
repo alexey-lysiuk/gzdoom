@@ -166,6 +166,7 @@ CUSTOM_CVAR (Int, snd_channels, 128, CVAR_ARCHIVE|CVAR_GLOBALCONFIG)	// number o
 }
 CVAR (Bool, snd_flipstereo, false, CVAR_ARCHIVE|CVAR_GLOBALCONFIG)
 CVAR(Bool, snd_waterreverb, true, CVAR_ARCHIVE | CVAR_GLOBALCONFIG)
+CVAR(Bool, snd_profileload, false, 0)
 
 // CODE --------------------------------------------------------------------
 
@@ -1397,6 +1398,8 @@ void S_PlaySound(AActor *a, int chan, FSoundID sid, float vol, float atten, bool
 //
 //==========================================================================
 
+extern cycle_t sndDecodeCycles, sndMonoizeCycles, sndBufferCycles;
+
 sfxinfo_t *S_LoadSound(sfxinfo_t *sfx, FSoundLoadBuffer *pBuffer)
 {
 	if (GSnd->IsNull()) return sfx;
@@ -1431,11 +1434,16 @@ sfxinfo_t *S_LoadSound(sfxinfo_t *sfx, FSoundLoadBuffer *pBuffer)
 		int size = Wads.LumpLength(sfx->lumpnum);
 		if (size > 0)
 		{
+			cycle_t cycles;
+			cycles.Reset();
+			cycles.Clock();
+
 			FWadLump wlump = Wads.OpenLumpNum(sfx->lumpnum);
 			uint8_t *sfxdata = new uint8_t[size];
 			wlump.Read(sfxdata, size);
 			int32_t dmxlen = LittleLong(((int32_t *)sfxdata)[1]);
             std::pair<SoundHandle,bool> snd;
+			bool decoded = false;
 
 			// If the sound is voc, use the custom loader.
 			if (strncmp ((const char *)sfxdata, "Creative Voice File", 19) == 0)
@@ -1458,12 +1466,27 @@ sfxinfo_t *S_LoadSound(sfxinfo_t *sfx, FSoundLoadBuffer *pBuffer)
 			else
 			{
 				snd = GSnd->LoadSound(sfxdata, size, false, pBuffer);
+				decoded = true;
 			}
 			delete[] sfxdata;
 
             sfx->data = snd.first;
             if(snd.second)
                 sfx->data3d = sfx->data;
+
+			cycles.Unclock();
+
+			if (snd_profileload)
+			{
+				Printf("%s -> load: %.03f ms", sfx->name.GetChars(), cycles.TimeMS());
+
+				if (decoded)
+				{
+					Printf(", decode: %.03f ms, buffer: %.03f ms", sndDecodeCycles.TimeMS(), sndBufferCycles.TimeMS());
+				}
+
+				Printf("\n");
+			}
 		}
 
 		if (!sfx->data.isValid())
@@ -1492,17 +1515,33 @@ static void S_LoadSound3D(sfxinfo_t *sfx, FSoundLoadBuffer *pBuffer)
 
 	if (pBuffer->mBuffer.Size() > 0)
 	{
+		cycle_t cycles;
+		cycles.Reset();
+		cycles.Clock();
+
 		snd = GSnd->LoadSoundBuffered(pBuffer, true);
+
+		cycles.Unclock();
+
+		if (snd_profileload)
+		{
+			Printf("%s -> load: %.03f ms, mono: %.03f ms, buffer: %.03f ms\n", sfx->name.GetChars(), cycles.TimeMS(), sndMonoizeCycles.TimeMS(), sndBufferCycles.TimeMS());
+		}
 	}
 	else
 	{
 		int size = Wads.LumpLength(sfx->lumpnum);
 		if (size <= 0) return;
 
+		cycle_t cycles;
+		cycles.Reset();
+		cycles.Clock();
+
 		FWadLump wlump = Wads.OpenLumpNum(sfx->lumpnum);
 		uint8_t *sfxdata = new uint8_t[size];
 		wlump.Read(sfxdata, size);
 		int32_t dmxlen = LittleLong(((int32_t *)sfxdata)[1]);
+		bool decoded = false;
 
 		// If the sound is voc, use the custom loader.
 		if (strncmp((const char *)sfxdata, "Creative Voice File", 19) == 0)
@@ -1525,8 +1564,23 @@ static void S_LoadSound3D(sfxinfo_t *sfx, FSoundLoadBuffer *pBuffer)
 		else
 		{
 			snd = GSnd->LoadSound(sfxdata, size, true, pBuffer);
+			decoded = true;
 		}
 		delete[] sfxdata;
+
+		cycles.Unclock();
+
+		if (snd_profileload)
+		{
+			Printf("%s -> load: %.03f ms", sfx->name.GetChars(), cycles.TimeMS());
+
+			if (decoded)
+			{
+				Printf(", decode: %.03f ms, mono: %.03f ms, buffer: %.03f ms", sndDecodeCycles.TimeMS(), sndMonoizeCycles.TimeMS(), sndBufferCycles.TimeMS());
+			}
+
+			Printf("\n");
+		}
 	}
 
 	sfx->data3d = snd.first;

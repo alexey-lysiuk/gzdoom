@@ -1218,6 +1218,8 @@ std::pair<SoundHandle,bool> OpenALSoundRenderer::LoadSoundRaw(uint8_t *sfxdata, 
 
 void FindLoopTags(FileReader *fr, uint32_t *start, bool *startass, uint32_t *end, bool *endass);
 
+cycle_t sndDecodeCycles, sndMonoizeCycles, sndBufferCycles;
+
 std::pair<SoundHandle,bool> OpenALSoundRenderer::LoadSound(uint8_t *sfxdata, int length, bool monoize, FSoundLoadBuffer *pBuffer)
 {
 	SoundHandle retval = { NULL };
@@ -1258,10 +1260,18 @@ std::pair<SoundHandle,bool> OpenALSoundRenderer::LoadSound(uint8_t *sfxdata, int
 		return std::make_pair(retval, true);
 	}
 
+	sndDecodeCycles.Reset();
+	sndDecodeCycles.Clock();
+
 	TArray<uint8_t> data = decoder->readAll();
+
+	sndDecodeCycles.Unclock();
 
 	if(chans != ChannelConfig_Mono && monoize)
 	{
+		sndMonoizeCycles.Reset();
+		sndMonoizeCycles.Clock();
+
 		size_t chancount = GetChannelCount(chans);
 		size_t frames = data.Size() / chancount /
 						(type == SampleType_Int16 ? 2 : 1);
@@ -1288,12 +1298,20 @@ std::pair<SoundHandle,bool> OpenALSoundRenderer::LoadSound(uint8_t *sfxdata, int
 			}
 		}
 		data.Resize(unsigned(data.Size()/chancount));
+
+		sndMonoizeCycles.Unclock();
 	}
+
+	sndBufferCycles.Reset();
+	sndBufferCycles.Clock();
 
 	ALenum err;
 	ALuint buffer = 0;
 	alGenBuffers(1, &buffer);
 	alBufferData(buffer, format, &data[0], data.Size(), srate);
+
+	sndBufferCycles.Unclock();
+
 	if((err=getALError()) != AL_NO_ERROR)
 	{
 		Printf("Failed to buffer data: %s\n", alGetString(err));
@@ -1360,6 +1378,9 @@ std::pair<SoundHandle, bool> OpenALSoundRenderer::LoadSoundBuffered(FSoundLoadBu
 
 	if (pBuffer->chans == ChannelConfig_Stereo && monoize)
 	{
+		sndMonoizeCycles.Reset();
+		sndMonoizeCycles.Clock();
+
 		size_t chancount = GetChannelCount(chans);
 		size_t frames = data.Size() / chancount /
 			(type == SampleType_Int16 ? 2 : 1);
@@ -1386,12 +1407,20 @@ std::pair<SoundHandle, bool> OpenALSoundRenderer::LoadSoundBuffered(FSoundLoadBu
 			}
 		}
 		data.Resize(unsigned(data.Size() / chancount));
+
+		sndMonoizeCycles.Unclock();
 	}
+
+	sndBufferCycles.Reset();
+	sndBufferCycles.Clock();
 
 	ALenum err;
 	ALuint buffer = 0;
 	alGenBuffers(1, &buffer);
 	alBufferData(buffer, format, &data[0], data.Size(), srate);
+
+	sndBufferCycles.Unclock();
+
 	if ((err = getALError()) != AL_NO_ERROR)
 	{
 		Printf("Failed to buffer data: %s\n", alGetString(err));
