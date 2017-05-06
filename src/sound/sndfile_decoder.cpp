@@ -44,6 +44,14 @@
 
 #ifdef HAVE_SNDFILE
 
+//#define USE_STB_VORBIS
+
+#ifdef USE_STB_VORBIS
+#define STB_VORBIS_NO_STDIO
+#define STB_VORBIS_NO_PUSHDATA_API
+#include "stb_vorbis.c"
+#endif
+
 FModule SndFileModule{"SndFile"};
 
 #include "sndload.h"
@@ -183,9 +191,41 @@ TArray<uint8_t> SndFileDecoder::readAll()
     int framesize = 2 * SndInfo.channels;
     TArray<uint8_t> output;
 
-    output.Resize((unsigned)(SndInfo.frames * framesize));
-    size_t got = read((char*)&output[0], output.Size());
-    output.Resize((unsigned)got);
+#ifdef USE_STB_VORBIS
+	if ((SF_FORMAT_OGG | SF_FORMAT_VORBIS) & SndInfo.format)
+	{
+		Reader->Seek(0, SEEK_END);
+		long size = Reader->Tell();
+		Reader->Seek(0, SEEK_SET);
+
+		TArray<uint8_t> input;
+		input.Resize(size);
+		Reader->Read(&input[0], size);
+
+		int error = 0;
+		stb_vorbis* v = stb_vorbis_open_memory(&input[0], size, &error, nullptr);
+
+		output.Resize((unsigned)(SndInfo.frames * framesize));
+
+		int offset = 0;
+		short *data = (short*)&output[0];
+
+		for (;;)
+		{
+			int n = stb_vorbis_get_frame_short_interleaved(v, v->channels, data+offset, size-offset);
+			if (n == 0) break;
+			offset += n * v->channels;
+		}
+
+		stb_vorbis_close(v);
+	}
+	else
+#endif
+	{
+		output.Resize((unsigned)(SndInfo.frames * framesize));
+		size_t got = read((char*)&output[0], output.Size());
+		output.Resize((unsigned)got);
+	}
 
     return output;
 }
