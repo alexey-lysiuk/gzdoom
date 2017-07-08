@@ -167,6 +167,46 @@ EXTERN_CVAR (Int, snd_hrtf)
 #define GET_PTRID(x)  ((uint32_t)(uintptr_t)(x))
 
 
+static bool EqualizerSettingsUpdated;
+
+CVAR(Bool, snd_equalizer, false, CVAR_ARCHIVE | CVAR_GLOBALCONFIG)
+
+#define EQUALIZER_CVAR(SUFFIX, DEFAULT, MINIMUM, MAXIMUM)   \
+	CUSTOM_CVAR(Float, snd_equalizer_##SUFFIX, DEFAULT,     \
+		CVAR_ARCHIVE | CVAR_GLOBALCONFIG | CVAR_NOINITCALL) \
+	{                                                       \
+		if (self < MINIMUM) self = MINIMUM;                 \
+		if (self > MAXIMUM) self = MAXIMUM;                 \
+		EqualizerSettingsUpdated = true;                    \
+	}
+
+#define EQUALIZER_GAIN_CVAR(RANGE) EQUALIZER_CVAR(RANGE##gain, 0.f, -18.f, 18.f)
+#define EQUALIZER_WIDTH_CVAR(RANGE) EQUALIZER_CVAR(RANGE##width, 1.f, 0.01f, 1.f)
+
+EQUALIZER_GAIN_CVAR(low)
+EQUALIZER_CVAR(lowcorner, 200.f, 50.f, 800.f)
+
+EQUALIZER_GAIN_CVAR(lowmid)
+EQUALIZER_CVAR(lowmidcenter, 500.f, 200.f, 3000.f)
+EQUALIZER_WIDTH_CVAR(lowmid)
+
+EQUALIZER_GAIN_CVAR(highmid)
+EQUALIZER_CVAR(highmidcenter, 3000.f, 1000.f, 8000.f)
+EQUALIZER_WIDTH_CVAR(highmid)
+
+EQUALIZER_GAIN_CVAR(high)
+EQUALIZER_CVAR(highcorner, 6000.f, 4000.f, 16000.f)
+
+#undef EQUALIZER_CVAR
+#undef EQUALIZER_GAIN_CVAR
+#undef EQUALIZER_WIDTH_CVAR
+
+inline float dB2Amp(const float decibels)
+{
+	return clamp(powf(10.f, decibels / 20.f), 0.126f, 7.943f);
+}
+
+
 static ALenum checkALError(const char *fn, unsigned int ln)
 {
 	ALenum err = alGetError();
@@ -989,6 +1029,8 @@ OpenALSoundRenderer::OpenALSoundRenderer()
 				getALError();
 			}
 		}
+
+		CreateEqualizer();
 	}
 
 	if(EnvSlot)
@@ -1040,6 +1082,16 @@ OpenALSoundRenderer::~OpenALSoundRenderer()
 	SfxGroup.Clear();
 	PausableSfx.Clear();
 	ReverbSfx.Clear();
+
+	if (0 != EqualizerEffect)
+	{
+		alDeleteEffects(1, &EqualizerEffect);
+	}
+
+	if (0 != EqualizerEffectSlot)
+	{
+		alDeleteAuxiliaryEffectSlots(1, &EqualizerEffectSlot);
+	}
 
 	if(EnvEffects.CountUsed() > 0)
 	{
@@ -2202,6 +2254,8 @@ void OpenALSoundRenderer::UpdateSounds()
 	}
 
 	PurgeStoppedSources();
+
+	UpdateEqualizer();
 }
 
 bool OpenALSoundRenderer::IsValid()
@@ -2468,6 +2522,91 @@ FSoundChan *OpenALSoundRenderer::FindLowestChannel()
 		schan = schan->NextChan;
 	}
 	return lowest;
+}
+
+void OpenALSoundRenderer::CreateEqualizer()
+{
+	if (!snd_equalizer)
+	{
+		return;
+	}
+
+	const auto HasError = [this]()
+	{
+		if (getALError() == AL_NO_ERROR)
+		{
+			return false;
+		}
+
+		for (const ALuint source : Sources)
+		{
+			alSource3i(source, AL_AUXILIARY_SEND_FILTER, AL_EFFECTSLOT_NULL, 1, AL_FILTER_NULL);
+		}
+
+		if (0 != EqualizerEffect)
+		{
+			alDeleteEffects(1, &EqualizerEffect);
+			EqualizerEffect = 0;
+		}
+
+		if (0 != EqualizerEffectSlot)
+		{
+			alDeleteAuxiliaryEffectSlots(1, &EqualizerEffectSlot);
+			EqualizerEffectSlot = 0;
+		}
+
+		getALError();
+
+		return true;
+	};
+
+#define EQ_CHECK_ERROR(OPERATION) OPERATION; if (HasError()) return;
+
+	EQ_CHECK_ERROR(alGenAuxiliaryEffectSlots(1, &EqualizerEffectSlot))
+	EQ_CHECK_ERROR(alAuxiliaryEffectSloti(EqualizerEffectSlot, AL_EFFECTSLOT_AUXILIARY_SEND_AUTO, AL_FALSE))
+	EQ_CHECK_ERROR(alGenEffects(1, &EqualizerEffect))
+	EQ_CHECK_ERROR(alEffecti(EqualizerEffect, AL_EFFECT_TYPE, AL_EFFECT_EQUALIZER))
+
+	for (const ALuint source : Sources)
+	{
+		EQ_CHECK_ERROR(alSource3i(source, AL_AUXILIARY_SEND_FILTER, EqualizerEffectSlot, 1, AL_FILTER_NULL))
+	}
+
+#undef EQ_CHECK_ERROR
+
+	EqualizerSettingsUpdated = true;
+}
+
+void OpenALSoundRenderer::UpdateEqualizer()
+{
+	const bool needsUpdate = EqualizerSettingsUpdated
+		&& 0 != EqualizerEffectSlot
+		&& 0 != EqualizerEffect;
+
+	if (!needsUpdate)
+	{
+		return;
+	}
+
+	alEffectf(EqualizerEffect, AL_EQUALIZER_LOW_GAIN,   dB2Amp(snd_equalizer_lowgain));
+	alEffectf(EqualizerEffect, AL_EQUALIZER_LOW_CUTOFF, snd_equalizer_lowcorner);
+
+	alEffectf(EqualizerEffect, AL_EQUALIZER_MID1_GAIN,   dB2Amp(snd_equalizer_lowmidgain));
+	alEffectf(EqualizerEffect, AL_EQUALIZER_MID1_CENTER, snd_equalizer_lowmidcenter);
+	alEffectf(EqualizerEffect, AL_EQUALIZER_MID1_WIDTH,  snd_equalizer_lowmidwidth);
+
+	alEffectf(EqualizerEffect, AL_EQUALIZER_MID2_GAIN,   dB2Amp(snd_equalizer_highmidgain));
+	alEffectf(EqualizerEffect, AL_EQUALIZER_MID2_CENTER, snd_equalizer_highmidcenter);
+	alEffectf(EqualizerEffect, AL_EQUALIZER_MID2_WIDTH,  snd_equalizer_highmidwidth);
+
+	alEffectf(EqualizerEffect, AL_EQUALIZER_HIGH_GAIN,   dB2Amp(snd_equalizer_highgain));
+	alEffectf(EqualizerEffect, AL_EQUALIZER_HIGH_CUTOFF, snd_equalizer_highcorner);
+
+	alAuxiliaryEffectSloti(EqualizerEffectSlot, AL_EFFECTSLOT_EFFECT, EqualizerEffect);
+
+	getALError();
+
+	EqualizerSettingsUpdated = false;
 }
 
 #endif // NO_OPENAL

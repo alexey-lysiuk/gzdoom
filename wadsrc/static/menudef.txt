@@ -1590,6 +1590,21 @@ OptionMenu OpenALSoundItems protected
 	Option "$OPENALMNU_PLAYBACKDEVICE",		"snd_aldevice",		"ALDevices"
 	Option "$OPENALMNU_ENABLEEFX",			"snd_efx",			"OnOff"
 	Option "$OPENALMNU_RESAMPLER",			"snd_alresampler",	"ALResamplers"
+	Option "$OPENALMNU_EQUALIZER",			"snd_equalizer",	"OnOff",		"snd_efx"
+	StaticText " "
+	Slider "$OPENALMNU_EQLOWGAIN",			"snd_equalizer_lowgain", -18, 18, 0.5
+	Slider "$OPENALMNU_EQLOWCORNER",		"snd_equalizer_lowcorner", 50, 800, 20, 0
+	StaticText " "
+	Slider "$OPENALMNU_EQLOWMIDGAIN",		"snd_equalizer_lowmidgain", -18, 18, 0.5
+	Slider "$OPENALMNU_EQLOWMIDCENTER",		"snd_equalizer_lowmidcenter", 200, 3000, 100, 0
+	Slider "$OPENALMNU_EQLOWMIDWIDTH",		"snd_equalizer_lowmidwidth", 0.01, 1, 0.05, 2
+	StaticText " "
+	Slider "$OPENALMNU_EQHIGHMIDGAIN",		"snd_equalizer_highmidgain", -18, 18, 0.5
+	Slider "$OPENALMNU_EQHIGHMIDCENTER",	"snd_equalizer_highmidcenter", 1000, 8000, 200, 0
+	Slider "$OPENALMNU_EQHIGHMIDWIDTH",		"snd_equalizer_highmidwidth", 0.01, 1, 0.05, 2
+	StaticText " "
+	Slider "$OPENALMNU_EQHIGHGAIN",			"snd_equalizer_highgain", -18, 18, 0.5
+	Slider "$OPENALMNU_EQHIGHCORNER",		"snd_equalizer_highcorner", 4000, 16000, 500, 0
 }
 
 

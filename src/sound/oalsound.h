@@ -249,6 +249,9 @@ private:
 	static FSoundChan *FindLowestChannel();
 	void ForceStopChannel(FISoundChannel *chan);
 
+	void CreateEqualizer();
+	void UpdateEqualizer();
+
     std::thread StreamThread;
     std::mutex StreamLock;
     std::condition_variable StreamWake;
@@ -279,6 +282,9 @@ private:
     ALuint EnvSlot;
     ALuint EnvFilters[2];
     EffectMap EnvEffects;
+
+	ALuint EqualizerEffectSlot = 0;
+	ALuint EqualizerEffect = 0;
 
     bool WasInWater;
 
