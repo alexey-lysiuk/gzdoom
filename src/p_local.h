@@ -363,6 +363,7 @@ struct FRailParams
 	PClassActor *spawnclass = nullptr;
 	int SpiralOffset = 270;
 	int limit = 0;
+	double particleSize = 3.;
 };	// [RH] Shoot a railgun
 
 void P_RailAttack(FRailParams *params);

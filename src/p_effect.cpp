@@ -656,8 +656,23 @@ struct TrailSegment
 
 
 
-void P_DrawRailTrail(AActor *source, TArray<SPortalHit> &portalhits, int color1, int color2, double maxdiff, int flags, PClassActor *spawnclass, DAngle angle, int duration, double sparsity, double drift, int SpiralOffset, DAngle pitch)
+void P_DrawRailTrail(FRailParams &params, TArray<SPortalHit> &portalhits)
 {
+	AActor *source = params.source;
+	assert(nullptr != source);
+	int color1 = params.color1;
+	int color2 = params.color2;
+	const double maxdiff = params.maxdiff;
+	const int flags = params.flags;
+	PClassActor *spawnclass = params.spawnclass;
+	const DAngle angle = source->Angles.Pitch + params.pitchoffset;
+	const int duration = params.duration;
+	double sparsity = params.sparsity;
+	const double drift = params.drift;
+	const int SpiralOffset = params.SpiralOffset;
+	const DAngle pitch = source->Angles.Yaw + params.angleoffset;
+	const double particleSize = clamp(params.particleSize, 0.1, 100.0);
+
 	double length = 0;
 	int steps, i;
 	TArray<TrailSegment> trail;
@@ -767,7 +782,7 @@ void P_DrawRailTrail(AActor *source, TArray<SPortalHit> &portalhits, int color1,
 			p->alpha = 1.f;
 			p->ttl = spiralduration;
 			p->fadestep = FADEFROMTTL(spiralduration);
-			p->size = 3;
+			p->size = particleSize;
 			p->bright = fullbright;
 
 			tempvec = DMatrix3x3(trail[segment].dir, deg) * trail[segment].extend;

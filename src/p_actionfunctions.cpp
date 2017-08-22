@@ -2095,7 +2095,8 @@ DEFINE_ACTION_FUNCTION(AStateProvider, A_RailAttack)
 	PARAM_FLOAT_DEF	(spawnofs_z);
 	PARAM_INT_DEF	(SpiralOffset);
 	PARAM_INT_DEF	(limit);
-	
+	PARAM_FLOAT_DEF	(particleSize)
+
 	if (range == 0) range = 8192;
 	if (sparsity == 0) sparsity=1.0;
 
@@ -2136,6 +2137,7 @@ DEFINE_ACTION_FUNCTION(AStateProvider, A_RailAttack)
 	p.spawnclass = spawnclass;
 	p.SpiralOffset = SpiralOffset;
 	p.limit = limit;
+	p.particleSize = particleSize;
 	P_RailAttack(&p);
 	return 0;
 }
@@ -2175,6 +2177,7 @@ DEFINE_ACTION_FUNCTION(AActor, A_CustomRailgun)
 	PARAM_INT_DEF	(SpiralOffset)		
 	PARAM_INT_DEF	(limit)				
 	PARAM_FLOAT_DEF	(veleffect)
+	PARAM_FLOAT_DEF	(particleSize)
 
 	if (range == 0) range = 8192.;
 	if (sparsity == 0) sparsity = 1;
@@ -2258,6 +2261,7 @@ DEFINE_ACTION_FUNCTION(AActor, A_CustomRailgun)
 	p.spawnclass = spawnclass;
 	p.SpiralOffset = SpiralOffset;
 	p.limit = 0;
+	p.particleSize = particleSize;
 	P_RailAttack(&p);
 
 	self->SetXYZ(savedpos);
