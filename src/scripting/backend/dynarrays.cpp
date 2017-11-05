@@ -53,6 +53,14 @@ typedef TArray<double> FDynArray_F64;
 typedef TArray<void*> FDynArray_Ptr;
 typedef TArray<FString> FDynArray_String;
 
+#define DEFINE_ARRAY_SORT_FUNCTION(cls)         \
+	DEFINE_ACTION_FUNCTION(cls, Sort)           \
+	{                                           \
+		PARAM_SELF_STRUCT_PROLOGUE(cls);        \
+		std::sort(self->begin(), self->end());  \
+		return 0;                               \
+	}
+
 //-----------------------------------------------------
 //
 // Int8 array
@@ -155,6 +163,8 @@ DEFINE_ACTION_FUNCTION(FDynArray_I8, Clear)
 	self->Clear();
 	return 0;
 }
+
+DEFINE_ARRAY_SORT_FUNCTION(FDynArray_I8);
 
 //-----------------------------------------------------
 //
@@ -259,6 +269,8 @@ DEFINE_ACTION_FUNCTION(FDynArray_I16, Clear)
 	return 0;
 }
 
+DEFINE_ARRAY_SORT_FUNCTION(FDynArray_I16);
+
 //-----------------------------------------------------
 //
 // Int32 array
@@ -361,6 +373,8 @@ DEFINE_ACTION_FUNCTION(FDynArray_I32, Clear)
 	self->Clear();
 	return 0;
 }
+
+DEFINE_ARRAY_SORT_FUNCTION(FDynArray_I32);
 
 //-----------------------------------------------------
 //
@@ -465,6 +479,8 @@ DEFINE_ACTION_FUNCTION(FDynArray_F32, Clear)
 	return 0;
 }
 
+DEFINE_ARRAY_SORT_FUNCTION(FDynArray_F32);
+
 //-----------------------------------------------------
 //
 // Float64 array
@@ -567,6 +583,8 @@ DEFINE_ACTION_FUNCTION(FDynArray_F64, Clear)
 	self->Clear();
 	return 0;
 }
+
+DEFINE_ARRAY_SORT_FUNCTION(FDynArray_F64);
 
 //-----------------------------------------------------
 //
@@ -774,6 +792,8 @@ DEFINE_ACTION_FUNCTION(FDynArray_String, Clear)
 	self->Clear();
 	return 0;
 }
+
+DEFINE_ARRAY_SORT_FUNCTION(FDynArray_String);
 
 DEFINE_FIELD_NAMED_X(DynArray_I8, FArray, Count, Size)		
 DEFINE_FIELD_NAMED_X(DynArray_I16, FArray, Count, Size)		
