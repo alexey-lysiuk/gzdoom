@@ -644,12 +644,12 @@ inline int PitchToACS(DAngle ang)
 
 struct CallReturn
 {
-	CallReturn(int pc, ScriptFunction *func, FBehavior *module, const ACSLocalVariables &locals, ACSLocalArrays *arrays, bool discard, unsigned int runaway)
+	CallReturn(uint32_t retofs, ScriptFunction *func, FBehavior *module, const ACSLocalVariables &locals, ACSLocalArrays *arrays, bool discard, unsigned int runaway)
 		: ReturnFunction(func),
 		  ReturnModule(module),
 		  ReturnLocals(locals),
 		  ReturnArrays(arrays),
-		  ReturnAddress(pc),
+		  ReturnAddress(retofs),
 		  bDiscardResult(discard),
 		  EntryInstrCount(runaway)
 	{}
@@ -658,9 +658,130 @@ struct CallReturn
 	FBehavior *ReturnModule;
 	ACSLocalVariables ReturnLocals;
 	ACSLocalArrays *ReturnArrays;
-	int ReturnAddress;
+	uint32_t ReturnAddress;
 	int bDiscardResult;
 	unsigned int EntryInstrCount;
+};
+
+class InstructionPointer
+{
+public:
+	InstructionPointer()
+	: data(nullptr)
+	, size(0)
+	, offset(0)
+	{
+	}
+
+	InstructionPointer(uint8_t *const data, const uint32_t size, const uint32_t offset)
+	: data(data)
+	, size(size)
+	, offset(offset)
+	{
+	}
+
+	void Reset(uint8_t *const data, const uint32_t size, const uint32_t offset)
+	{
+		this->data   = data;
+		this->size   = size;
+		this->offset = offset;
+	}
+
+	uint32_t GetOffset() const { return offset; }
+	void SetOffset(const uint32_t offset) { this->offset = offset; }
+
+	int32_t GetByte (const uint32_t index) const { return Get<uint8_t>(index); }
+	int32_t GetShort(const uint32_t index) const { return Get<int16_t>(index); }
+	int32_t GetWord (const uint32_t index) const { return Get<int32_t>(index); }
+
+	int32_t NextByte () { return Next<uint8_t>(); }
+	int32_t NextShort() { return Next<int16_t>(); }
+	int32_t NextWord () { return Next<int32_t>(); }
+
+	void SkipBytes (const uint32_t count) { Skip<uint8_t>(count); }
+	void SkipShorts(const uint32_t count) { Skip<int16_t>(count); }
+	void SkipWords (const uint32_t count) { Skip<int32_t>(count); }
+
+private:
+	uint8_t *data;
+	uint32_t size;
+	uint32_t offset;
+
+#if defined _M_IX86 || defined _M_X64 || defined __i386__ || defined __x86_64__
+	template <typename T>
+	int32_t Get(const uint32_t index) const
+	{
+		CheckOffset(sizeof(T) * (index + 1));
+		return *reinterpret_cast<T*>(data + offset + sizeof(T) * index);
+	}
+#else // big endian and little endian with strict aligned memory access
+	template <typename T>
+	int32_t Get(const uint32_t index) const;
+
+	template <>
+	int32_t Get<uint8_t>(const uint32_t index) const
+	{
+		CheckOffset(index + 1);
+		return data[offset + index];
+	}
+
+#if __BIG_ENDIAN__
+	template <>
+	int32_t Get<int16_t>(const uint32_t index) const
+	{
+		CheckOffset(index + 2);
+		const uint8_t *const raw = &data[offset + index];
+		return (raw[0] << 8) | raw[1];
+	}
+
+	template <>
+	int32_t Get<int32_t>(const uint32_t index) const
+	{
+		CheckOffset(index + 4);
+		const uint8_t *const raw = &data[offset + index];
+		return (raw[0] << 24) | (raw[1] << 16) | (raw[2] << 8) | raw[3];
+	}
+#else // little endian that allows aligned access only
+	template <>
+	int32_t Get<int16_t>(const uint32_t index) const
+	{
+		CheckOffset(index + 2);
+		const uint8_t *const raw = &data[offset + index];
+		return raw[0] | (raw[1] << 8);
+	}
+
+	template <>
+	int32_t Get<int32_t>(const uint32_t index) const
+	{
+		CheckOffset(index + 4);
+		const uint8_t *const raw = &data[offset + index];
+		return raw[0] | (raw[1] << 8) | (raw[2] << 16) | (raw[3] << 24);
+	}
+#endif // big endian
+
+#endif // x86
+
+	template <typename T>
+	T Next()
+	{
+		const T result = Get<T>(0);
+		Skip<T>(1);
+		return result;
+	}
+
+	template <typename T>
+	void Skip(const uint32_t count)
+	{
+		offset += count * sizeof(T);
+	}
+
+	void CheckOffset(const uint32_t bytes) const
+	{
+		if (offset + bytes > size)
+		{
+			I_Error("Out of bounds instruction pointer in ACS VM");
+		}
+	}
 };
 
 
@@ -714,7 +835,7 @@ protected:
 	DLevelScript	*next, *prev;
 	int				script;
 	TArray<int32_t>	Localvars;
-	int				*pc;
+	InstructionPointer	pc;
 	EScriptState	state;
 	int				statedata;
 	TObjPtr<AActor*>	activator;
@@ -761,6 +882,9 @@ protected:
 private:
 	DLevelScript();
 
+	void ExecuteSpecialBytes(size_t count, InstructionPointer& pc);
+	void ExecuteSpecialWords(size_t count, int32_t specialargmask, InstructionPointer& pc);
+
 	friend class DACSThinker;
 };
 
@@ -806,27 +930,6 @@ TArray<FString> ACS_StringBuilderStack;
 
 #define STRINGBUILDER_START(Builder) if (Builder.IsNotEmpty() || ACS_StringBuilderStack.Size()) { ACS_StringBuilderStack.Push(Builder); Builder = ""; }
 #define STRINGBUILDER_FINISH(Builder) if (!ACS_StringBuilderStack.Pop(Builder)) { Builder = ""; }
-
-//============================================================================
-//
-// uallong
-//
-// Read a possibly unaligned four-byte little endian integer from memory.
-//
-//============================================================================
-
-#if defined(_M_IX86) || defined(_M_X64) || defined(__i386__) || defined(__x86_64__)
-inline int uallong(const int &foo)
-{
-	return foo;
-}
-#else
-inline int uallong(const int &foo)
-{
-	const unsigned char *bar = (const unsigned char *)&foo;
-	return bar[0] | (bar[1] << 8) | (bar[2] << 16) | (bar[3] << 24);
-}
-#endif
 
 //============================================================================
 //
@@ -877,6 +980,14 @@ struct FACSStack
 
 	FACSStack();
 	~FACSStack();
+
+	void PushBytes(const size_t count, InstructionPointer& pc)
+	{
+		for (size_t i = 0; i < count; ++i)
+		{
+			buffer[sp++] = pc.NextByte();
+		}
+	}
 };
 
 FACSStack *FACSStack::head;
@@ -2709,7 +2820,8 @@ bool FBehavior::Init(int lumpnum, FileReader * fr, int len)
 				// First byte is version, it should be 0
 				if(*chunkData++ == 0)
 				{
-					int arraynum = MapVarStore[uallong(LittleLong(*(const int*)(chunkData)))];
+					const int varindex = chunkData[0] | (chunkData[1] << 8) | (chunkData[2] << 16) | (chunkData[3] << 24);
+					const int arraynum = MapVarStore[LittleLong(varindex)];
 					chunkData += 4;
 					if ((unsigned)arraynum < (unsigned)NumArrays)
 					{
@@ -3494,6 +3606,26 @@ void FBehavior::StaticStopMyScripts (AActor *actor)
 	}
 }
 
+void FBehavior::GetInstructionPointer (const uint32_t offset, InstructionPointer& pc) const
+{
+	pc.Reset(Data, DataSize, offset);
+}
+
+void FBehavior::GetInstructionPointer (const ScriptPtr *ptr, InstructionPointer& pc) const
+{
+	GetInstructionPointer(ptr->Address, pc);
+}
+
+uint32_t FBehavior::Jump2Offset (const uint32_t jumpPoint) const
+{
+	if (jumpPoint >= JumpPoints.Size())
+	{
+		I_Error("Invalid jump point in ACS module %s\n", ModuleName);
+	}
+
+	return JumpPoints[jumpPoint];
+}
+
 
 //---- The ACS Interpreter ----//
 
@@ -3657,7 +3789,7 @@ void DLevelScript::Serialize(FSerializer &arc)
 	if (arc.isWriting())
 	{
 		lib = activeBehavior->GetLibraryID() >> LIBRARYID_SHIFT;
-		pcofs = activeBehavior->PC2Ofs(pc);
+		pcofs = pc.GetOffset();
 	}
 
 	arc.ScriptNum("scriptnum", script)
@@ -3690,7 +3822,7 @@ void DLevelScript::Serialize(FSerializer &arc)
 			I_Error("Could not find ACS module");
 		}
 
-		pc = activeBehavior->Ofs2PC(pcofs);
+		activeBehavior->GetInstructionPointer(pcofs, pc);
 	}
 }
 
@@ -6896,9 +7028,9 @@ enum
 };
 
 
-#define NEXTWORD	(LittleLong(*pc++))
-#define NEXTBYTE	(fmt==ACS_LittleEnhanced?getbyte(pc):NEXTWORD)
-#define NEXTSHORT	(fmt==ACS_LittleEnhanced?getshort(pc):NEXTWORD)
+#define NEXTWORD	(pc.NextWord())
+#define NEXTBYTE	(fmt == ACS_LittleEnhanced ? pc.NextByte () : NEXTWORD)
+#define NEXTSHORT	(fmt == ACS_LittleEnhanced ? pc.NextShort() : NEXTWORD)
 #define STACK(a)	(Stack[sp - (a)])
 #define PushToStack(a)	(Stack[sp++] = (a))
 // Direct instructions that take strings need to have the tag applied.
@@ -6962,6 +7094,36 @@ static void SetMarineSprite(AActor *marine, PClassActor *source)
 		VMValue params[2] = { marine, source };
 		VMCall(sms, params, 2, nullptr, 0);
 	}
+}
+
+void DLevelScript::ExecuteSpecialBytes(const size_t count, InstructionPointer& pc)
+{
+	const ACSFormat fmt = activeBehavior->GetFormat();
+	const int32_t special = NEXTBYTE;
+	int32_t args[5];
+
+	for (size_t i = 0; i < 5; ++i)
+	{
+		args[i] = i < count ? pc.NextByte() : 0;
+	}
+
+	P_ExecuteSpecial(special, activationline, activator, backSide,
+		args[0], args[1], args[2], args[3], args[4]);
+}
+
+void DLevelScript::ExecuteSpecialWords(const size_t count, const int32_t specialargmask, InstructionPointer& pc)
+{
+	const ACSFormat fmt = activeBehavior->GetFormat();
+	const int32_t special = NEXTBYTE;
+	int32_t args[5];
+
+	for (size_t i = 0; i < 5; ++i)
+	{
+		args[i] = i < count ? (NEXTWORD & specialargmask) : 0;
+	}
+
+	P_ExecuteSpecial(special, activationline, activator, backSide,
+		args[0], args[1], args[2], args[3], args[4]);
 }
 
 int DLevelScript::RunScript ()
@@ -7044,7 +7206,7 @@ int DLevelScript::RunScript ()
 	FACSStackMemory& Stack = stackobj.buffer;
 	int &sp = stackobj.sp;
 
-	int *pc = this->pc;
+	InstructionPointer pc = this->pc;
 	ACSFormat fmt = activeBehavior->GetFormat();
 	FBehavior* const savedActiveBehavior = activeBehavior;
 	unsigned int runaway = 0;	// used to prevent infinite loops
@@ -7052,7 +7214,6 @@ int DLevelScript::RunScript ()
 	FString work;
 	const char *lookup;
 	int optstart = -1;
-	int temp;
 
 	while (state == SCRIPT_Running)
 	{
@@ -7065,10 +7226,10 @@ int DLevelScript::RunScript ()
 
 		if (fmt == ACS_LittleEnhanced)
 		{
-			pcd = getbyte(pc);
+			pcd = pc.NextByte();
 			if (pcd >= 256-16)
 			{
-				pcd = (256-16) + ((pcd - (256-16)) << 8) + getbyte(pc);
+				pcd = (256-16) + ((pcd - (256-16)) << 8) + pc.NextByte();
 			}
 		}
 		else
@@ -7100,56 +7261,31 @@ int DLevelScript::RunScript ()
 			break;
 
 		case PCD_PUSHNUMBER:
-			PushToStack (uallong(pc[0]));
-			pc++;
+			PushToStack (NEXTWORD);
 			break;
 
 		case PCD_PUSHBYTE:
-			PushToStack (*(uint8_t *)pc);
-			pc = (int *)((uint8_t *)pc + 1);
+			stackobj.PushBytes(1, pc);
 			break;
 
 		case PCD_PUSH2BYTES:
-			Stack[sp] = ((uint8_t *)pc)[0];
-			Stack[sp+1] = ((uint8_t *)pc)[1];
-			sp += 2;
-			pc = (int *)((uint8_t *)pc + 2);
+			stackobj.PushBytes(2, pc);
 			break;
 
 		case PCD_PUSH3BYTES:
-			Stack[sp] = ((uint8_t *)pc)[0];
-			Stack[sp+1] = ((uint8_t *)pc)[1];
-			Stack[sp+2] = ((uint8_t *)pc)[2];
-			sp += 3;
-			pc = (int *)((uint8_t *)pc + 3);
+			stackobj.PushBytes(3, pc);
 			break;
 
 		case PCD_PUSH4BYTES:
-			Stack[sp] = ((uint8_t *)pc)[0];
-			Stack[sp+1] = ((uint8_t *)pc)[1];
-			Stack[sp+2] = ((uint8_t *)pc)[2];
-			Stack[sp+3] = ((uint8_t *)pc)[3];
-			sp += 4;
-			pc = (int *)((uint8_t *)pc + 4);
+			stackobj.PushBytes(4, pc);
 			break;
 
 		case PCD_PUSH5BYTES:
-			Stack[sp] = ((uint8_t *)pc)[0];
-			Stack[sp+1] = ((uint8_t *)pc)[1];
-			Stack[sp+2] = ((uint8_t *)pc)[2];
-			Stack[sp+3] = ((uint8_t *)pc)[3];
-			Stack[sp+4] = ((uint8_t *)pc)[4];
-			sp += 5;
-			pc = (int *)((uint8_t *)pc + 5);
+			stackobj.PushBytes(5, pc);
 			break;
 
 		case PCD_PUSHBYTES:
-			temp = *(uint8_t *)pc;
-			pc = (int *)((uint8_t *)pc + temp + 1);
-			for (temp = -temp; temp; temp++)
-			{
-				PushToStack (*((uint8_t *)pc + temp));
-			}
+			stackobj.PushBytes(pc.NextByte(), pc);
 			break;
 
 		case PCD_DUP:
@@ -7232,81 +7368,44 @@ int DLevelScript::RunScript ()
 			break;
 
 		case PCD_LSPEC1DIRECT:
-			temp = NEXTBYTE;
-			P_ExecuteSpecial(temp, activationline, activator, backSide,
-								uallong(pc[0]) & specialargmask ,0, 0, 0, 0);
-			pc += 1;
+			ExecuteSpecialWords(1, specialargmask, pc);
 			break;
 
 		case PCD_LSPEC2DIRECT:
-			temp = NEXTBYTE;
-			P_ExecuteSpecial(temp, activationline, activator, backSide,
-								uallong(pc[0]) & specialargmask,
-								uallong(pc[1]) & specialargmask, 0, 0, 0);
-			pc += 2;
+			ExecuteSpecialWords(2, specialargmask, pc);
 			break;
 
 		case PCD_LSPEC3DIRECT:
-			temp = NEXTBYTE;
-			P_ExecuteSpecial(temp, activationline, activator, backSide,
-								uallong(pc[0]) & specialargmask,
-								uallong(pc[1]) & specialargmask,
-								uallong(pc[2]) & specialargmask, 0, 0);
-			pc += 3;
+			ExecuteSpecialWords(3, specialargmask, pc);
 			break;
 
 		case PCD_LSPEC4DIRECT:
-			temp = NEXTBYTE;
-			P_ExecuteSpecial(temp, activationline, activator, backSide,
-								uallong(pc[0]) & specialargmask,
-								uallong(pc[1]) & specialargmask,
-								uallong(pc[2]) & specialargmask,
-								uallong(pc[3]) & specialargmask, 0);
-			pc += 4;
+			ExecuteSpecialWords(4, specialargmask, pc);
 			break;
 
 		case PCD_LSPEC5DIRECT:
-			temp = NEXTBYTE;
-			P_ExecuteSpecial(temp, activationline, activator, backSide,
-								uallong(pc[0]) & specialargmask,
-								uallong(pc[1]) & specialargmask,
-								uallong(pc[2]) & specialargmask,
-								uallong(pc[3]) & specialargmask,
-								uallong(pc[4]) & specialargmask);
-			pc += 5;
+			ExecuteSpecialWords(5, specialargmask, pc);
 			break;
 
 		// Parameters for PCD_LSPEC?DIRECTB are by definition bytes so never need and-ing.
 		case PCD_LSPEC1DIRECTB:
-			P_ExecuteSpecial(((uint8_t *)pc)[0], activationline, activator, backSide,
-				((uint8_t *)pc)[1], 0, 0, 0, 0);
-			pc = (int *)((uint8_t *)pc + 2);
+			ExecuteSpecialBytes(1, pc);
 			break;
 
 		case PCD_LSPEC2DIRECTB:
-			P_ExecuteSpecial(((uint8_t *)pc)[0], activationline, activator, backSide,
-				((uint8_t *)pc)[1], ((uint8_t *)pc)[2], 0, 0, 0);
-			pc = (int *)((uint8_t *)pc + 3);
+			ExecuteSpecialBytes(2, pc);
 			break;
 
 		case PCD_LSPEC3DIRECTB:
-			P_ExecuteSpecial(((uint8_t *)pc)[0], activationline, activator, backSide,
-				((uint8_t *)pc)[1], ((uint8_t *)pc)[2], ((uint8_t *)pc)[3], 0, 0);
-			pc = (int *)((uint8_t *)pc + 4);
+			ExecuteSpecialBytes(3, pc);
 			break;
 
 		case PCD_LSPEC4DIRECTB:
-			P_ExecuteSpecial(((uint8_t *)pc)[0], activationline, activator, backSide,
-				((uint8_t *)pc)[1], ((uint8_t *)pc)[2], ((uint8_t *)pc)[3],
-				((uint8_t *)pc)[4], 0);
-			pc = (int *)((uint8_t *)pc + 5);
+			ExecuteSpecialBytes(4, pc);
 			break;
 
 		case PCD_LSPEC5DIRECTB:
-			P_ExecuteSpecial(((uint8_t *)pc)[0], activationline, activator, backSide,
-				((uint8_t *)pc)[1], ((uint8_t *)pc)[2], ((uint8_t *)pc)[3],
-				((uint8_t *)pc)[4], ((uint8_t *)pc)[5]);
-			pc = (int *)((uint8_t *)pc + 6);
+			ExecuteSpecialBytes(5, pc);
 			break;
 
 		case PCD_CALLFUNC:
@@ -7372,10 +7471,10 @@ int DLevelScript::RunScript ()
 					Stack[sp+i] = 0;
 				}
 				sp += i;
-				::new(&Stack[sp]) CallReturn(activeBehavior->PC2Ofs(pc), activeFunction,
+				::new(&Stack[sp]) CallReturn(pc.GetOffset(), activeFunction,
 					activeBehavior, mylocals, localarrays, pcd == PCD_CALLDISCARD, runaway);
 				sp += (sizeof(CallReturn) + sizeof(int) - 1) / sizeof(int);
-				pc = module->Ofs2PC (func->Address);
+				module->GetInstructionPointer(func->Address, pc);
 				localarrays = &func->LocalArrays;
 				activeFunction = func;
 				activeBehavior = module;
@@ -7405,7 +7504,7 @@ int DLevelScript::RunScript ()
 				retsp = &Stack[sp];
 				activeBehavior->GetFunctionProfileData(activeFunction)->AddRun(runaway - ret->EntryInstrCount);
 				sp = int(locals.GetPointer() - &Stack[0]);
-				pc = ret->ReturnModule->Ofs2PC(ret->ReturnAddress);
+				ret->ReturnModule->GetInstructionPointer(ret->ReturnAddress, pc);
 				activeFunction = ret->ReturnFunction;
 				activeBehavior = ret->ReturnModule;
 				fmt = activeBehavior->GetFormat();
@@ -8290,19 +8389,23 @@ int DLevelScript::RunScript ()
 			break;
 
 		case PCD_GOTO:
-			pc = activeBehavior->Ofs2PC (LittleLong(*pc));
+			pc.SetOffset(pc.GetWord(0));
 			break;
 
 		case PCD_GOTOSTACK:
-			pc = activeBehavior->Jump2PC (STACK(1));
+			pc.SetOffset(activeBehavior->Jump2Offset(STACK(1)));
 			sp--;
 			break;
 
 		case PCD_IFGOTO:
 			if (STACK(1))
-				pc = activeBehavior->Ofs2PC (LittleLong(*pc));
+			{
+				pc.SetOffset(pc.GetWord(0));
+			}
 			else
-				pc++;
+			{
+				pc.SkipWords(1);
+			}
 			sp--;
 			break;
 
@@ -8322,8 +8425,7 @@ int DLevelScript::RunScript ()
 			break;
 
 		case PCD_DELAYDIRECT:
-			statedata = uallong(pc[0]) + (fmt == ACS_Old && gameinfo.gametype == GAME_Hexen);
-			pc++;
+			statedata = NEXTWORD + (fmt == ACS_Old && gameinfo.gametype == GAME_Hexen);
 			if (statedata > 0)
 			{
 				state = SCRIPT_Delayed;
@@ -8331,12 +8433,11 @@ int DLevelScript::RunScript ()
 			break;
 
 		case PCD_DELAYDIRECTB:
-			statedata = *(uint8_t *)pc + (fmt == ACS_Old && gameinfo.gametype == GAME_Hexen);
+			statedata = pc.NextByte() + (fmt == ACS_Old && gameinfo.gametype == GAME_Hexen);
 			if (statedata > 0)
 			{
 				state = SCRIPT_Delayed;
 			}
-			pc = (int *)((uint8_t *)pc + 1);
 			break;
 
 		case PCD_RANDOM:
@@ -8345,13 +8446,11 @@ int DLevelScript::RunScript ()
 			break;
 
 		case PCD_RANDOMDIRECT:
-			PushToStack (Random (uallong(pc[0]), uallong(pc[1])));
-			pc += 2;
+			PushToStack (Random (NEXTWORD, NEXTWORD));
 			break;
 
 		case PCD_RANDOMDIRECTB:
-			PushToStack (Random (((uint8_t *)pc)[0], ((uint8_t *)pc)[1]));
-			pc = (int *)((uint8_t *)pc + 2);
+			PushToStack (Random (pc.NextByte(), pc.NextByte()));
 			break;
 
 		case PCD_THINGCOUNT:
@@ -8360,8 +8459,8 @@ int DLevelScript::RunScript ()
 			break;
 
 		case PCD_THINGCOUNTDIRECT:
-			PushToStack (ThingCount (uallong(pc[0]), -1, uallong(pc[1]), -1));
-			pc += 2;
+			PushToStack (ThingCount (pc.GetWord(0), -1, pc.GetWord(1), -1));
+			pc.SkipWords(2);
 			break;
 
 		case PCD_THINGCOUNTNAME:
@@ -8387,8 +8486,7 @@ int DLevelScript::RunScript ()
 
 		case PCD_TAGWAITDIRECT:
 			state = SCRIPT_TagWait;
-			statedata = uallong(pc[0]);
-			pc++;
+			statedata = NEXTWORD;
 			break;
 
 		case PCD_POLYWAIT:
@@ -8399,8 +8497,7 @@ int DLevelScript::RunScript ()
 
 		case PCD_POLYWAITDIRECT:
 			state = SCRIPT_PolyWait;
-			statedata = uallong(pc[0]);
-			pc++;
+			statedata = NEXTWORD;
 			break;
 
 		case PCD_CHANGEFLOOR:
@@ -8409,8 +8506,8 @@ int DLevelScript::RunScript ()
 			break;
 
 		case PCD_CHANGEFLOORDIRECT:
-			ChangeFlat (uallong(pc[0]), TAGSTR(uallong(pc[1])), 0);
-			pc += 2;
+			ChangeFlat (pc.GetWord(0), pc.GetWord(1), 0);
+			pc.SkipWords(2);
 			break;
 
 		case PCD_CHANGECEILING:
@@ -8419,8 +8516,8 @@ int DLevelScript::RunScript ()
 			break;
 
 		case PCD_CHANGECEILINGDIRECT:
-			ChangeFlat (uallong(pc[0]), TAGSTR(uallong(pc[1])), 1);
-			pc += 2;
+			ChangeFlat (pc.GetWord(0), pc.GetWord(1), 1);
+			pc.SkipWords(2);
 			break;
 
 		case PCD_RESTART:
@@ -8428,7 +8525,7 @@ int DLevelScript::RunScript ()
 				const ScriptPtr *scriptp;
 
 				scriptp = activeBehavior->FindScript (script);
-				pc = activeBehavior->GetScriptAddress (scriptp);
+				activeBehavior->GetInstructionPointer (scriptp, pc);
 			}
 			break;
 
@@ -8483,10 +8580,14 @@ int DLevelScript::RunScript ()
 			break;
 
 		case PCD_IFNOTGOTO:
-			if (!STACK(1))
-				pc = activeBehavior->Ofs2PC (LittleLong(*pc));
+			if (STACK(1))
+			{
+				pc.SkipWords(1);
+			}
 			else
-				pc++;
+			{
+				pc.SetOffset(pc.GetWord(0));
+			}
 			sp--;
 			break;
 
@@ -8506,8 +8607,7 @@ scriptwait:
 			break;
 
 		case PCD_SCRIPTWAITDIRECT:
-			statedata = uallong(pc[0]);
-			pc++;
+			statedata = NEXTWORD;
 			goto scriptwait;
 
 		case PCD_SCRIPTWAITNAMED:
@@ -8524,30 +8624,30 @@ scriptwait:
 			break;
 
 		case PCD_CASEGOTO:
-			if (STACK(1) == uallong(pc[0]))
+			if (STACK(1) == pc.GetWord(0))
 			{
-				pc = activeBehavior->Ofs2PC (uallong(pc[1]));
+				pc.SetOffset(pc.GetWord(1));
 				sp--;
 			}
 			else
 			{
-				pc += 2;
+				pc.SkipWords(2);
 			}
 			break;
 
 		case PCD_CASEGOTOSORTED:
 			// The count and jump table are 4-byte aligned
-			pc = (int *)(((size_t)pc + 3) & ~3);
+			pc.SetOffset((pc.GetOffset() + 3) & ~3);
 			{
-				int numcases = uallong(pc[0]); pc++;
+				int numcases = NEXTWORD;
 				int min = 0, max = numcases-1;
 				while (min <= max)
 				{
 					int mid = (min + max) / 2;
-					int32_t caseval = LittleLong(pc[mid*2]);
+					int32_t caseval = pc.GetWord(mid * 2);
 					if (caseval == STACK(1))
 					{
-						pc = activeBehavior->Ofs2PC (LittleLong(pc[mid*2+1]));
+						pc.SetOffset(pc.GetWord(mid * 2 + 1));
 						sp--;
 						break;
 					}
@@ -8563,7 +8663,7 @@ scriptwait:
 				if (min > max)
 				{
 					// The case was not found, so go to the next instruction.
-					pc += numcases * 2;
+					pc.SkipWords(numcases * 2);
 				}
 			}
 			break;
@@ -8932,8 +9032,7 @@ scriptwait:
 			break;
 
 		case PCD_SETFONTDIRECT:
-			DoSetFont (TAGSTR(uallong(pc[0])));
-			pc++;
+			DoSetFont (TAGSTR(NEXTWORD));
 			break;
 
 		case PCD_PLAYERCOUNT:
@@ -9262,8 +9361,7 @@ scriptwait:
 			break;
 
 		case PCD_SETGRAVITYDIRECT:
-			level.gravity = ACSToDouble(uallong(pc[0]));
-			pc++;
+			level.gravity = ACSToDouble(NEXTWORD);
 			break;
 
 		case PCD_SETAIRCONTROL:
@@ -9273,8 +9371,7 @@ scriptwait:
 			break;
 
 		case PCD_SETAIRCONTROLDIRECT:
-			level.aircontrol = ACSToDouble(uallong(pc[0]));
-			pc++;
+			level.aircontrol = ACSToDouble(NEXTWORD);
 			G_AirControlChanged ();
 			break;
 
@@ -9284,8 +9381,8 @@ scriptwait:
 			break;
 
 		case PCD_SPAWNDIRECT:
-			PushToStack (DoSpawn (TAGSTR(uallong(pc[0])), uallong(pc[1]), uallong(pc[2]), uallong(pc[3]), uallong(pc[4]), uallong(pc[5]), false));
-			pc += 6;
+			PushToStack (DoSpawn (TAGSTR(pc.GetWord(0)), pc.GetWord(1), pc.GetWord(2), pc.GetWord(3), pc.GetWord(4), pc.GetWord(5), false));
+			pc.SkipWords(6);
 			break;
 
 		case PCD_SPAWNSPOT:
@@ -9294,8 +9391,8 @@ scriptwait:
 			break;
 
 		case PCD_SPAWNSPOTDIRECT:
-			PushToStack (DoSpawnSpot (TAGSTR(uallong(pc[0])), uallong(pc[1]), uallong(pc[2]), uallong(pc[3]), false));
-			pc += 4;
+			PushToStack (DoSpawnSpot (TAGSTR(pc.GetWord(0)), pc.GetWord(1), pc.GetWord(2), pc.GetWord(3), false));
+			pc.SkipWords(4);
 			break;
 
 		case PCD_SPAWNSPOTFACING:
@@ -9350,8 +9447,8 @@ scriptwait:
 			break;
 
 		case PCD_GIVEINVENTORYDIRECT:
-			GiveInventory (activator, FBehavior::StaticLookupString (TAGSTR(uallong(pc[0]))), uallong(pc[1]));
-			pc += 2;
+			GiveInventory (activator, FBehavior::StaticLookupString (TAGSTR(pc.GetWord(0))), pc.GetWord(1));
+			pc.SkipWords(2);
 			break;
 
 		case PCD_TAKEINVENTORY:
@@ -9380,8 +9477,8 @@ scriptwait:
 			break;
 
 		case PCD_TAKEINVENTORYDIRECT:
-			TakeInventory (activator, FBehavior::StaticLookupString (TAGSTR(uallong(pc[0]))), uallong(pc[1]));
-			pc += 2;
+			TakeInventory (activator, FBehavior::StaticLookupString (TAGSTR(pc.GetWord(0))), pc.GetWord(1));
+			pc.SkipWords(2);
 			break;
 
 		case PCD_CHECKINVENTORY:
@@ -9395,8 +9492,7 @@ scriptwait:
 			break;
 
 		case PCD_CHECKINVENTORYDIRECT:
-			PushToStack (CheckInventory (activator, FBehavior::StaticLookupString (TAGSTR(uallong(pc[0]))), false));
-			pc += 1;
+			PushToStack (CheckInventory (activator, FBehavior::StaticLookupString (TAGSTR(NEXTWORD)), false));
 			break;
 
 		case PCD_USEINVENTORY:
@@ -9502,8 +9598,8 @@ scriptwait:
 			break;
 
 		case PCD_SETMUSICDIRECT:
-			S_ChangeMusic (FBehavior::StaticLookupString (TAGSTR(uallong(pc[0]))), uallong(pc[1]));
-			pc += 3;
+			S_ChangeMusic (FBehavior::StaticLookupString (TAGSTR(pc.GetWord(0))), pc.GetWord(1));
+			pc.SkipWords(3);
 			break;
 
 		case PCD_LOCALSETMUSIC:
@@ -9517,9 +9613,9 @@ scriptwait:
 		case PCD_LOCALSETMUSICDIRECT:
 			if (activator == players[consoleplayer].mo)
 			{
-				S_ChangeMusic (FBehavior::StaticLookupString (TAGSTR(uallong(pc[0]))), uallong(pc[1]));
+				S_ChangeMusic (FBehavior::StaticLookupString (TAGSTR(pc.GetWord(0))), pc.GetWord(1));
 			}
-			pc += 3;
+			pc.SkipWords(3);
 			break;
 
 		case PCD_FADETO:
@@ -10488,7 +10584,7 @@ scriptwait:
 			if (pcd == PCD_CONSOLECOMMAND)
 				sp -= 3;
 			else
-				pc += 3;
+				pc.SkipWords(3);
 			break;
  		}
  	}
@@ -10535,7 +10631,7 @@ scriptwait:
 	return resultValue;
 }
 
-#undef PushtoStack
+#undef PushToStack
 
 static DLevelScript *P_GetScriptGoing (AActor *who, line_t *where, int num, const ScriptPtr *code, FBehavior *module,
 	const int *args, int argcount, int flags)
@@ -10571,7 +10667,7 @@ DLevelScript::DLevelScript (AActor *who, line_t *where, int num, const ScriptPtr
 	{
 		Localvars[i] = args[i];
 	}
-	pc = module->GetScriptAddress(code);
+	module->GetInstructionPointer(code, pc);
 	InModuleScriptNumber = module->GetScriptIndex(code);
 	activator = who;
 	activationline = where;

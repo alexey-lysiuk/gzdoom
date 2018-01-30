@@ -295,6 +295,8 @@ struct ScriptFunction
 	ACSLocalArrays LocalArrays;
 };
 
+class InstructionPointer;
+
 // Script types
 enum
 {
@@ -336,9 +338,7 @@ public:
 	uint8_t *NextChunk (uint8_t *chunk) const;
 	const ScriptPtr *FindScript (int number) const;
 	void StartTypedScripts (uint16_t type, AActor *activator, bool always, int arg1, bool runNow);
-	uint32_t PC2Ofs (int *pc) const { return (uint32_t)((uint8_t *)pc - Data); }
-	int *Ofs2PC (uint32_t ofs) const {	return (int *)(Data + ofs); }
-	int *Jump2PC (uint32_t jumpPoint) const { return Ofs2PC(JumpPoints[jumpPoint]); }
+	uint32_t Jump2Offset (uint32_t jumpPoint) const;
 	ACSFormat GetFormat() const { return Format; }
 	ScriptFunction *GetFunction (int funcnum, FBehavior *&module) const;
 	int GetArrayVal (int arraynum, int index) const;
@@ -349,7 +349,8 @@ public:
 	int FindMapVarName (const char *varname) const;
 	int FindMapArray (const char *arrayname) const;
 	int GetLibraryID () const { return LibraryID; }
-	int *GetScriptAddress (const ScriptPtr *ptr) const { return (int *)(ptr->Address + Data); }
+	void GetInstructionPointer (const uint32_t offset, InstructionPointer& pc) const;
+	void GetInstructionPointer (const ScriptPtr *ptr, InstructionPointer& pc) const;
 	int GetScriptIndex (const ScriptPtr *ptr) const { ptrdiff_t index = ptr - Scripts; return index >= NumScripts ? -1 : (int)index; }
 	ScriptPtr *GetScriptPtr(int index) const { return index >= 0 && index < NumScripts ? &Scripts[index] : NULL; }
 	int GetLumpNum() const { return LumpNum; }
