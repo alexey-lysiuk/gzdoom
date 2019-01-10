@@ -55,6 +55,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <cmath>
 #ifdef _WIN32
 #include <io.h>
 #endif
@@ -804,17 +805,12 @@ static void CalcPosVel( int type, const AActor *actor, const sector_t *sector,
 //
 //==========================================================================
 
-inline bool Validate(const float value, const float limit)
+static bool Validate(const FVector3 &value, const char *const name, const AActor *const actor)
 {
-	return value >= -limit && value <= limit;
-}
-
-static bool Validate(const FVector3 &value, const float limit, const char *const name, const AActor *const actor)
-{
-	const bool valid = 
-		   Validate(value.X, limit)
-		&& Validate(value.Y, limit)
-		&& Validate(value.Z, limit);
+	const bool valid =
+		   std::isfinite(value.X)
+		&& std::isfinite(value.Y)
+		&& std::isfinite(value.Z);
 
 	if (!valid)
 	{
@@ -836,13 +832,8 @@ static bool Validate(const FVector3 &value, const float limit, const char *const
 
 static bool ValidatePosVel(const AActor *actor, const FVector3 &pos, const FVector3 &vel)
 {
-	// The actual limit for map coordinates
-	static const float POSITION_LIMIT = 1024.f * 1024.f;
-	const bool valid = Validate(pos, POSITION_LIMIT, "position", actor);
-
-	// The maximum velocity is enough to travel through entire map in one tic
-	static const float VELOCITY_LIMIT = 2 * POSITION_LIMIT * TICRATE;
-	return Validate(vel, VELOCITY_LIMIT, "velocity", actor) && valid;
+	return Validate(pos, "position", actor)
+		&& Validate(vel, "velocity", actor);
 }
 
 static bool ValidatePosVel(const FSoundChan *const chan, const FVector3 &pos, const FVector3 &vel)
