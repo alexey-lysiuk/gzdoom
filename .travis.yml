@@ -136,8 +136,8 @@ script:
       -DFORCE_INTERNAL_GME=YES   \
       -DPK3_QUIET_ZIPDIR=YES     \
       ..
-  - if [[ $TRAVIS_OS_NAME == 'windows' ]]; msbuild -m; fi
-  - if [[ $TRAVIS_OS_NAME != 'windows' ]]; make -j2; fi
+  - if [[ $TRAVIS_OS_NAME == 'windows' ]]; then msbuild -m; fi
+  - if [[ $TRAVIS_OS_NAME != 'windows' ]]; then make -j2; fi
 
 notifications:
   email: false
