@@ -10,117 +10,118 @@ git:
 
 matrix:
   include:
-    # - os: osx
-      # osx_image: xcode8
-      # env:
-        # - CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=Debug -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9"
+    - os: osx
+      osx_image: xcode8
+      env:
+        - CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=Debug -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9"
 
-    # - os: osx
-      # osx_image: xcode10.1
-      # env:
-        # - CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9"
+    - os: osx
+      osx_image: xcode10.1
+      env:
+        - CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9"
 
-    # - os: linux
-      # compiler: gcc
-      # env:
-        # - GCC_VERSION=4.9
-        # - CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-Wno-maybe-uninitialized"
-      # addons:
-        # apt:
-          # sources:
-            # - ubuntu-toolchain-r-test
-          # packages:
-            # - g++-4.9
-            # - libsdl2-dev
-            # - libgtk2.0-dev
+    - os: linux
+      compiler: gcc
+      env:
+        - GCC_VERSION=4.9
+        - CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-Wno-maybe-uninitialized"
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-4.9
+            - libsdl2-dev
+            - libgtk2.0-dev
 
-    # - os: linux
-      # compiler: gcc
-      # env:
-        # - GCC_VERSION=5
-        # - CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-Wno-maybe-uninitialized"
-      # addons:
-        # apt:
-          # sources:
-            # - ubuntu-toolchain-r-test
-          # packages:
-            # - g++-5
-            # - libsdl2-dev
-            # - libgtk-3-dev
+    - os: linux
+      compiler: gcc
+      env:
+        - GCC_VERSION=5
+        - CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-Wno-maybe-uninitialized"
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-5
+            - libsdl2-dev
+            - libgtk-3-dev
 
-    # - os: linux
-      # compiler: gcc
-      # env:
-        # - GCC_VERSION=6
-        # - CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_CXX_FLAGS=-Wno-maybe-uninitialized"
-      # addons:
-        # apt:
-          # sources:
-            # - ubuntu-toolchain-r-test
-          # packages:
-            # - g++-6
-            # - libsdl2-dev
-            # - libgtk2.0-dev
+    - os: linux
+      compiler: gcc
+      env:
+        - GCC_VERSION=6
+        - CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_CXX_FLAGS=-Wno-maybe-uninitialized"
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-6
+            - libsdl2-dev
+            - libgtk2.0-dev
 
-    # - os: linux
-      # compiler: gcc
-      # env:
-        # - GCC_VERSION=7
-        # - CMAKE_OPTIONS="-DCMAKE_CXX_FLAGS=-Wno-implicit-fallthrough"
-      # addons:
-        # apt:
-          # sources:
-            # - ubuntu-toolchain-r-test
-          # packages:
-            # - g++-7
-            # - libsdl2-dev
-            # - libgtk-3-dev
+    - os: linux
+      compiler: gcc
+      env:
+        - GCC_VERSION=7
+        - CMAKE_OPTIONS="-DCMAKE_CXX_FLAGS=-Wno-implicit-fallthrough"
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-7
+            - libsdl2-dev
+            - libgtk-3-dev
 
-    # - os: linux
-      # compiler: gcc
-      # env:
-        # - GCC_VERSION=8
-        # - CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=MinSizeRel -DCMAKE_CXX_FLAGS=-Wno-implicit-fallthrough"
-      # addons:
-        # apt:
-          # sources:
-            # - ubuntu-toolchain-r-test
-          # packages:
-            # - g++-8
-            # - libsdl2-dev
-            # - libgtk-3-dev
+    - os: linux
+      compiler: gcc
+      env:
+        - GCC_VERSION=8
+        - CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=MinSizeRel -DCMAKE_CXX_FLAGS=-Wno-implicit-fallthrough"
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-8
+            - libsdl2-dev
+            - libgtk-3-dev
 
-    # - os: linux
-      # compiler: clang
-      # env:
-        # - CLANG_VERSION=7
-        # - CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=MinSizeRel -DDYN_OPENAL=NO -DDYN_SNDFILE=NO -DDYN_MPG123=NO -DDYN_FLUIDSYNTH=NO"
-      # addons:
-        # apt:
-          # sources:
-            # - ubuntu-toolchain-r-test
-            # - llvm-toolchain-trusty-7
-          # packages:
-            # - clang-7
-            # - libsdl2-dev
-            # - libgme-dev
-            # - libopenal-dev
-            # - libmpg123-dev
-            # - libsndfile-dev
-            # - libfluidsynth-dev
-            # - libgtk-3-dev
+    - os: linux
+      compiler: clang
+      env:
+        - CLANG_VERSION=7
+        - CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=MinSizeRel -DDYN_OPENAL=NO -DDYN_SNDFILE=NO -DDYN_MPG123=NO -DDYN_FLUIDSYNTH=NO"
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-trusty-7
+          packages:
+            - clang-7
+            - libsdl2-dev
+            - libgme-dev
+            - libopenal-dev
+            - libmpg123-dev
+            - libsndfile-dev
+            - libfluidsynth-dev
+            - libgtk-3-dev
+
     - os: windows
       env:
         - CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=Debug -A Win32"
+
     - os: windows
       env:
         - CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=Debug -A x64"
 
-# before_install:
-  # - if [ -n "$GCC_VERSION" ]; then export CC="gcc-${GCC_VERSION}" CXX="g++-${GCC_VERSION}"; fi
-  # - if [ -n "$CLANG_VERSION" ]; then export CC="clang-${CLANG_VERSION}" CXX="clang++-${CLANG_VERSION}"; fi
-  # - $CC --version
-  # - $CXX --version
+before_install:
+  - if [ -n "$GCC_VERSION" ]; then export CC="gcc-${GCC_VERSION}" CXX="g++-${GCC_VERSION}"; fi
+  - if [ -n "$CLANG_VERSION" ]; then export CC="clang-${CLANG_VERSION}" CXX="clang++-${CLANG_VERSION}"; fi
+  - if [[ $TRAVIS_OS_NAME == 'windows' ]]; then $CC --version && $CXX --version; fi
 
 script:
   - echo ${TRAVIS_BUILD_DIR}
@@ -134,8 +135,7 @@ script:
       -DFORCE_INTERNAL_GME=YES   \
       -DPK3_QUIET_ZIPDIR=YES     \
       ..
-  # - make -j2 -k
-  - cmake --build .
+  - cmake --build --parallel 2 .
 
 notifications:
   email: false
