@@ -111,7 +111,10 @@ matrix:
             # - libgtk-3-dev
     - os: windows
       env:
-        - CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=Debug"
+        - CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=Debug -A Win32"
+    - os: windows
+      env:
+        - CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=Debug -A x64"
 
 # before_install:
   # - if [ -n "$GCC_VERSION" ]; then export CC="gcc-${GCC_VERSION}" CXX="g++-${GCC_VERSION}"; fi
@@ -132,7 +135,7 @@ script:
       -DPK3_QUIET_ZIPDIR=YES     \
       ..
   # - make -j2 -k
-  - cmake --build
+  - cmake --build .
 
 notifications:
   email: false
