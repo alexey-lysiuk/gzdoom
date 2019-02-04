@@ -121,7 +121,8 @@ matrix:
 before_install:
   - if [ -n "$GCC_VERSION" ]; then export CC="gcc-${GCC_VERSION}" CXX="g++-${GCC_VERSION}"; fi
   - if [ -n "$CLANG_VERSION" ]; then export CC="clang-${CLANG_VERSION}" CXX="clang++-${CLANG_VERSION}"; fi
-  - if [[ $TRAVIS_OS_NAME == 'windows' ]]; then $CC --version && $CXX --version; fi
+  - $CC --version
+  - $CXX --version
 
 script:
   - echo ${TRAVIS_BUILD_DIR}
@@ -135,7 +136,8 @@ script:
       -DFORCE_INTERNAL_GME=YES   \
       -DPK3_QUIET_ZIPDIR=YES     \
       ..
-  - cmake --build --parallel 2 .
+  - if [[ $TRAVIS_OS_NAME == 'windows' ]]; msbuild -m; fi
+  - if [[ $TRAVIS_OS_NAME != 'windows' ]]; make -j2; fi
 
 notifications:
   email: false
