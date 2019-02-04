@@ -1,5 +1,5 @@
 language: cpp
-dist: trusty
+dist: xenial
 
 branches:
   except:
@@ -27,8 +27,6 @@ matrix:
         - CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-Wno-maybe-uninitialized"
       addons:
         apt:
-          sources:
-            - ubuntu-toolchain-r-test
           packages:
             - g++-4.9
             - libsdl2-dev
@@ -41,8 +39,6 @@ matrix:
         - CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-Wno-maybe-uninitialized"
       addons:
         apt:
-          sources:
-            - ubuntu-toolchain-r-test
           packages:
             - g++-5
             - libsdl2-dev
@@ -99,7 +95,7 @@ matrix:
         apt:
           sources:
             - ubuntu-toolchain-r-test
-            - llvm-toolchain-trusty-7
+            - llvm-toolchain-xenial-7
           packages:
             - clang-7
             - libsdl2-dev
@@ -136,7 +132,7 @@ script:
       -DFORCE_INTERNAL_GME=YES   \
       -DPK3_QUIET_ZIPDIR=YES     \
       ..
-  - if [[ $TRAVIS_OS_NAME == 'windows' ]]; then msbuild -m; fi
+  - if [[ $TRAVIS_OS_NAME == 'windows' ]]; then cmake --build . -- -m; fi
   - if [[ $TRAVIS_OS_NAME != 'windows' ]]; then make -j2; fi
 
 notifications:
