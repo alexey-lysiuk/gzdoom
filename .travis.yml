@@ -24,7 +24,7 @@ script:
   - echo ${TRAVIS_BUILD_DIR}
   - mkdir build
   - cd build
-  - cmake -G "MinGW Makefiles" ..
+  - cmake -G "MSYS Makefiles" -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ ..
   #- cat CMakeFiles/CMakeOutput.log
   #- if [[ $TRAVIS_OS_NAME == 'windows' ]]; then cmake --build . -- -m; fi
   #- if [[ $TRAVIS_OS_NAME != 'windows' ]]; then cmake --build . -- -j2; fi
