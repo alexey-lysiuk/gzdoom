@@ -179,7 +179,7 @@ void DPolyAction::OnDestroy()
 
 	if (poly->specialdata == this)
 	{
-		poly->specialdata = NULL;
+		poly->specialdata = nullptr;
 	}
 
 	StopInterpolation();
@@ -204,7 +204,7 @@ void DPolyAction::StopInterpolation ()
 	if (m_Interpolation != NULL)
 	{
 		m_Interpolation->DelRef();
-		m_Interpolation = NULL;
+		m_Interpolation = nullptr;
 	}
 }
 
@@ -780,9 +780,9 @@ FPolyObj::FPolyObj()
 	seqType = 0;
 	Size = 0;
 	bBlocked = false;
-	subsectorlinks = NULL;
-	specialdata = NULL;
-	interpolation = NULL;
+	subsectorlinks = nullptr;
+	specialdata = nullptr;
+	interpolation = nullptr;
 }
 
 //==========================================================================

@@ -13,18 +13,21 @@ matrix:
     - os: osx
       osx_image: xcode8
       env:
-        - CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=Debug -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9"
+        - CMAKE_CONFIGURE_OPTIONS="-DCMAKE_BUILD_TYPE=Debug -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9"
+        - CMAKE_BUILD_OPTIONS="-j2 -k"
 
     - os: osx
       osx_image: xcode10.1
       env:
-        - CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9"
+        - CMAKE_CONFIGURE_OPTIONS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9"
+        - CMAKE_BUILD_OPTIONS="-j2 -k"
 
     - os: linux
       compiler: gcc
       env:
         - GCC_VERSION=4.9
-        - CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-Wno-maybe-uninitialized"
+        - CMAKE_CONFIGURE_OPTIONS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-Wno-maybe-uninitialized"
+        - CMAKE_BUILD_OPTIONS="-j2 -k"
       addons:
         apt:
           packages:
@@ -36,7 +39,8 @@ matrix:
       compiler: gcc
       env:
         - GCC_VERSION=5
-        - CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-Wno-maybe-uninitialized"
+        - CMAKE_CONFIGURE_OPTIONS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-Wno-maybe-uninitialized"
+        - CMAKE_BUILD_OPTIONS="-j2 -k"
       addons:
         apt:
           packages:
@@ -48,7 +52,8 @@ matrix:
       compiler: gcc
       env:
         - GCC_VERSION=6
-        - CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_CXX_FLAGS=-Wno-maybe-uninitialized"
+        - CMAKE_CONFIGURE_OPTIONS="-DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_CXX_FLAGS=-Wno-maybe-uninitialized"
+        - CMAKE_BUILD_OPTIONS="-j2 -k"
       addons:
         apt:
           sources:
@@ -62,7 +67,8 @@ matrix:
       compiler: gcc
       env:
         - GCC_VERSION=7
-        - CMAKE_OPTIONS="-DCMAKE_CXX_FLAGS=-Wno-implicit-fallthrough"
+        - CMAKE_CONFIGURE_OPTIONS="-DCMAKE_CXX_FLAGS=-Wno-implicit-fallthrough"
+        - CMAKE_BUILD_OPTIONS="-j2 -k"
       addons:
         apt:
           sources:
@@ -76,7 +82,8 @@ matrix:
       compiler: gcc
       env:
         - GCC_VERSION=8
-        - CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=MinSizeRel -DCMAKE_CXX_FLAGS=-Wno-implicit-fallthrough"
+        - CMAKE_CONFIGURE_OPTIONS="-DCMAKE_BUILD_TYPE=MinSizeRel -DCMAKE_CXX_FLAGS=-Wno-implicit-fallthrough"
+        - CMAKE_BUILD_OPTIONS="-j2 -k"
       addons:
         apt:
           sources:
@@ -90,7 +97,8 @@ matrix:
       compiler: clang
       env:
         - CLANG_VERSION=7
-        - CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=MinSizeRel -DDYN_OPENAL=NO -DDYN_SNDFILE=NO -DDYN_MPG123=NO -DDYN_FLUIDSYNTH=NO"
+        - CMAKE_CONFIGURE_OPTIONS="-DCMAKE_BUILD_TYPE=MinSizeRel -DDYN_OPENAL=NO -DDYN_SNDFILE=NO -DDYN_MPG123=NO -DDYN_FLUIDSYNTH=NO"
+        - CMAKE_BUILD_OPTIONS="-j2 -k"
       addons:
         apt:
           sources:
@@ -108,11 +116,18 @@ matrix:
 
     - os: windows
       env:
-        - CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=Release -A Win32"
+        - CMAKE_CONFIGURE_OPTIONS="-DCMAKE_BUILD_TYPE=Release -A Win32"
+        - CMAKE_BUILD_OPTIONS="-m"
 
     - os: windows
       env:
-        - CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=Release -A x64"
+        - CMAKE_CONFIGURE_OPTIONS="-DCMAKE_BUILD_TYPE=Release -A x64"
+        - CMAKE_BUILD_OPTIONS="-m"
+
+    - os: windows
+      env:
+        - CMAKE_CONFIGURE_OPTIONS="-G 'MSYS Makefiles' -DCMAKE_MAKE_PROGRAM=/c/ProgramData/chocolatey/bin/make -DCMAKE_AR=/c/ProgramData/chocolatey/bin/ar -DCMAKE_CXX_FLAGS=-Wno-class-memaccess"
+        - CMAKE_BUILD_OPTIONS="-j2 -k"
 
 before_install:
   - if [ -n "$GCC_VERSION" ]; then export CC="gcc-${GCC_VERSION}" CXX="g++-${GCC_VERSION}"; fi
@@ -121,19 +136,20 @@ before_install:
   - $CXX --version
 
 script:
+  - if [[ $TRAVIS_OS_NAME == 'windows' ]]; then choco install make; fi
   - echo ${TRAVIS_BUILD_DIR}
   - mkdir build
   - cd build
   - >
-    cmake ${CMAKE_OPTIONS}       \
+    cmake                        \
+      ${CMAKE_CONFIGURE_OPTIONS} \
       -DFORCE_INTERNAL_ZLIB=YES  \
       -DFORCE_INTERNAL_JPEG=YES  \
       -DFORCE_INTERNAL_BZIP2=YES \
       -DFORCE_INTERNAL_GME=YES   \
       -DPK3_QUIET_ZIPDIR=YES     \
       ..
-  - if [[ $TRAVIS_OS_NAME == 'windows' ]]; then cmake --build . -- -m; fi
-  - if [[ $TRAVIS_OS_NAME != 'windows' ]]; then cmake --build . -- -j2 -k; fi
+  - cmake --build . -- ${CMAKE_BUILD_OPTIONS}
 
 notifications:
   email: false
