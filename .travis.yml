@@ -34,7 +34,7 @@ script:
   #- cat CMakeFiles/CMakeOutput.log
   #- if [[ $TRAVIS_OS_NAME == 'windows' ]]; then cmake --build . -- -m; fi
   #- if [[ $TRAVIS_OS_NAME != 'windows' ]]; then cmake --build . -- -j2; fi
-  #- cmake --build . -- -j2 -k
+  - cmake --build . -- -j2 -k
 
 notifications:
   email: false
