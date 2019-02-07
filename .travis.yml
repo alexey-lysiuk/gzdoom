@@ -29,7 +29,8 @@ script:
   #- which make
   #- which ar
   - choco install make 
-  - cmake -G "MSYS Makefiles" -DCMAKE_C_COMPILER=/c/ProgramData/chocolatey/bin/gcc -DCMAKE_CXX_COMPILER=/c/ProgramData/chocolatey/bin/g++ -DCMAKE_MAKE_PROGRAM=/c/ProgramData/chocolatey/bin/make -DCMAKE_AR=/c/ProgramData/chocolatey/bin/ar ..
+  # -DCMAKE_C_COMPILER=/c/ProgramData/chocolatey/bin/gcc -DCMAKE_CXX_COMPILER=/c/ProgramData/chocolatey/bin/g++
+  - cmake -G "MSYS Makefiles" -DCMAKE_MAKE_PROGRAM=/c/ProgramData/chocolatey/bin/make -DCMAKE_AR=/c/ProgramData/chocolatey/bin/ar ..
   #- cat CMakeFiles/CMakeOutput.log
   #- if [[ $TRAVIS_OS_NAME == 'windows' ]]; then cmake --build . -- -m; fi
   #- if [[ $TRAVIS_OS_NAME != 'windows' ]]; then cmake --build . -- -j2; fi
