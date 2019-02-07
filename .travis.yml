@@ -25,7 +25,7 @@ script:
   - mkdir build
   - cd build
   - >
-    cmake -G "Unix Makefiles"\
+    cmake -G "Unix Makefiles" \
     ${CMAKE_OPTIONS}       \
       -DFORCE_INTERNAL_ZLIB=YES  \
       -DFORCE_INTERNAL_JPEG=YES  \
