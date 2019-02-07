@@ -24,15 +24,16 @@ script:
   - echo ${TRAVIS_BUILD_DIR}
   - mkdir build
   - cd build
-  - which gcc
-  - which g++
-  - which make
-  - which ar
-  - cmake -G "MSYS Makefiles" -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ ..
+  #- which gcc
+  #- which g++
+  #- which make
+  #- which ar
+  - choco install make 
+  - cmake -G "MSYS Makefiles" -DCMAKE_C_COMPILER=/c/ProgramData/chocolatey/bin/gcc -DCMAKE_CXX_COMPILER=/c/ProgramData/chocolatey/bin/g++ -DCMAKE_MAKE_PROGRAM=/c/ProgramData/chocolatey/bin/make -DCMAKE_AR=/c/ProgramData/chocolatey/bin/ar ..
   #- cat CMakeFiles/CMakeOutput.log
   #- if [[ $TRAVIS_OS_NAME == 'windows' ]]; then cmake --build . -- -m; fi
   #- if [[ $TRAVIS_OS_NAME != 'windows' ]]; then cmake --build . -- -j2; fi
-  - cmake --build . -- -j2 -k
+  #- cmake --build . -- -j2 -k
 
 notifications:
   email: false
