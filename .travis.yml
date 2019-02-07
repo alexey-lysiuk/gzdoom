@@ -24,7 +24,7 @@ script:
   - echo ${TRAVIS_BUILD_DIR}
   - mkdir build
   - cd build
-  - cmake -G "Unix Makefiles" -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -DFORCE_INTERNAL_ZLIB=YES -DFORCE_INTERNAL_JPEG=YES -DFORCE_INTERNAL_BZIP2=YES -DFORCE_INTERNAL_GME=YES -DPK3_QUIET_ZIPDIR=YES ..
+  - cmake -G "Unix Makefiles" ..
   - if [[ $TRAVIS_OS_NAME == 'windows' ]]; then cmake --build . -- -m; fi
   - if [[ $TRAVIS_OS_NAME != 'windows' ]]; then cmake --build . -- -j2; fi
 
