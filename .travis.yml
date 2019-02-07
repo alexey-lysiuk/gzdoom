@@ -24,10 +24,11 @@ script:
   - echo ${TRAVIS_BUILD_DIR}
   - mkdir build
   - cd build
-  - cmake -G "Unix Makefiles" ..
-  - cat CMakeFiles/CMakeOutput.log
-  - if [[ $TRAVIS_OS_NAME == 'windows' ]]; then cmake --build . -- -m; fi
-  - if [[ $TRAVIS_OS_NAME != 'windows' ]]; then cmake --build . -- -j2; fi
+  - cmake -G "MinGW Makefiles" ..
+  #- cat CMakeFiles/CMakeOutput.log
+  #- if [[ $TRAVIS_OS_NAME == 'windows' ]]; then cmake --build . -- -m; fi
+  #- if [[ $TRAVIS_OS_NAME != 'windows' ]]; then cmake --build . -- -j2; fi
+  - cmake --build . -- -j2 -k
 
 notifications:
   email: false
