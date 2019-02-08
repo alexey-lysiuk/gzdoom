@@ -13,7 +13,7 @@ matrix:
     - os: windows
       env:
 #         - GENERATOR="MSYS Makefiles"
-        - CMAKE_OPTIONS='-G "MSYS Makefiles" -DCMAKE_MAKE_PROGRAM=/c/ProgramData/chocolatey/bin/make -DCMAKE_AR=/c/ProgramData/chocolatey/bin/ar'
+        - CMAKE_OPTIONS='-G MSYS\ Makefiles -DCMAKE_MAKE_PROGRAM=/c/ProgramData/chocolatey/bin/make -DCMAKE_AR=/c/ProgramData/chocolatey/bin/ar'
 
 before_install:
   - if [ -n "$GCC_VERSION" ]; then export CC="gcc-${GCC_VERSION}" CXX="g++-${GCC_VERSION}"; fi
