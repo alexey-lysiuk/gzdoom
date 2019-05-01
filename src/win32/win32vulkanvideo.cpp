@@ -5,7 +5,7 @@
 #define VK_USE_PLATFORM_WIN32_KHR
 #endif
 
-#include "volk/volk.h"
+#include "vulkan/vk_header.h"
 
 
 extern HWND Window;

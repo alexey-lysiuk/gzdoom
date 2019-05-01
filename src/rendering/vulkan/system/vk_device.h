@@ -1,6 +1,6 @@
 #pragma once
 
-#include "volk/volk.h"
+#include "vulkan/vk_header.h"
 #include "vk_mem_alloc/vk_mem_alloc.h"
 #include <mutex>
 #include <vector>

@@ -158,6 +158,18 @@ if( ${ZDOOM_TARGET_ARCH} MATCHES "x86_64" )
 	set( HAVE_VULKAN ON )
 endif()
 
+if( HAVE_VULKAN )
+	option( DYN_VULKAN "Dynamically load Vulkan library" ON )
+
+	if( NOT DYN_VULKAN )
+		find_package( Vulkan )
+
+		if( NOT Vulkan_FOUND )
+			set( HAVE_VULKAN OFF )
+		endif()
+	endif()
+endif()
+
 # no, we're not using external asmjit for now, we made too many modifications to our's.
 # if the asmjit author uses our changes then we'll update this.
 

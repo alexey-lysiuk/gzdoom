@@ -20,7 +20,7 @@
 //--------------------------------------------------------------------------
 //
 
-#include "volk/volk.h"
+#include "vulkan/vk_header.h"
 
 #include "v_video.h"
 #include "m_png.h"

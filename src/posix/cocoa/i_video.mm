@@ -35,7 +35,7 @@
 
 #ifdef HAVE_VULKAN
 #define VK_USE_PLATFORM_MACOS_MVK
-#include "volk/volk.h"
+#include "vulkan/vk_header.h"
 #endif
 
 #include "i_common.h"

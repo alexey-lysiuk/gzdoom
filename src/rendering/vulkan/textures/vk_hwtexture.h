@@ -9,7 +9,7 @@
 
 #include "tarray.h"
 #include "hwrenderer/textures/hw_ihwtexture.h"
-#include "volk/volk.h"
+#include "vulkan/vk_header.h"
 
 struct FMaterialState;
 class VulkanDescriptorSet;

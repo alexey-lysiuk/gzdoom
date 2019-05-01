@@ -490,6 +490,11 @@ if( NOT DYN_FLUIDSYNTH )
 	endif()
 endif()
 
+if( Vulkan_FOUND )
+	set( ZDOOM_LIBS ${ZDOOM_LIBS} "${Vulkan_LIBRARIES}" )
+	include_directories( "${Vulkan_INCLUDE_DIR}" )
+endif()
+
 # Start defining source files for ZDoom
 set( PLAT_WIN32_SOURCES
 	sound/mididevices/music_win_mididevice.cpp
@@ -640,6 +645,12 @@ if( DYN_FLUIDSYNTH )
 	add_definitions( -DHAVE_FLUIDSYNTH -DDYN_FLUIDSYNTH )
 elseif( FLUIDSYNTH_FOUND )
 	add_definitions( -DHAVE_FLUIDSYNTH )
+endif()
+
+if( DYN_VULKAN )
+	add_definitions( -DHAVE_VULKAN -DDYN_VULKAN )
+elseif( Vulkan_FOUND )
+	add_definitions( -DHAVE_VULKAN )
 endif()
 
 option( SEND_ANON_STATS "Enable sending of anonymous hardware statistics" ON )
@@ -918,9 +929,15 @@ set (VULKAN_SOURCES
 	rendering/vulkan/shaders/vk_shader.cpp
 	rendering/vulkan/textures/vk_samplers.cpp
 	rendering/vulkan/textures/vk_hwtexture.cpp
-	rendering/vulkan/thirdparty/volk/volk.c
 	rendering/vulkan/thirdparty/vk_mem_alloc/vk_mem_alloc.cpp
 )
+
+if( DYN_VULKAN )
+	set (VULKAN_SOURCES
+		${VULKAN_SOURCES}
+		rendering/vulkan/thirdparty/volk/volk.c
+	)
+endif()
 
 if (HAVE_VULKAN)
 	set (FASTMATH_SOURCES ${FASTMATH_SOURCES} ${VULKAN_SOURCES})

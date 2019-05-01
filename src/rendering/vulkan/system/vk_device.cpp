@@ -21,7 +21,7 @@
 //--------------------------------------------------------------------------
 //
 
-#include "volk/volk.h"
+#include "vulkan/vk_header.h"
 
 #ifdef _WIN32
 #undef max
@@ -252,7 +252,9 @@ void VulkanDevice::CreateDevice()
 	if (result != VK_SUCCESS)
 		I_Error("Could not create vulkan device");
 
+#ifdef DYN_VULKAN
 	volkLoadDevice(device);
+#endif // DYN_VULKAN
 
 	vkGetDeviceQueue(device, graphicsFamily, 0, &graphicsQueue);
 	vkGetDeviceQueue(device, presentFamily, 0, &presentQueue);
@@ -317,7 +319,9 @@ void VulkanDevice::CreateInstance()
 	if (result != VK_SUCCESS)
 		I_Error("Could not create vulkan instance");
 
+#ifdef DYN_VULKAN
 	volkLoadInstance(instance);
+#endif // DYN_VULKAN
 
 	if (debugLayerFound)
 	{
@@ -477,6 +481,7 @@ std::vector<const char *> VulkanDevice::GetPlatformExtensions()
 
 void VulkanDevice::InitVolk()
 {
+#ifdef DYN_VULKAN
 	if (volkInitialize() != VK_SUCCESS)
 	{
 		I_Error("Unable to find Vulkan");
@@ -486,6 +491,7 @@ void VulkanDevice::InitVolk()
 	{
 		I_Error("Vulkan not supported");
 	}
+#endif // DYN_VULKAN
 }
 
 void VulkanDevice::ReleaseResources()
