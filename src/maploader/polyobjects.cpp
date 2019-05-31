@@ -147,7 +147,7 @@ static int posicmp(const void *a, const void *b)
 	return (*(const side_t **)a)->linedef->args[1] - (*(const side_t **)b)->linedef->args[1];
 }
 
-void MapLoader::SpawnPolyobj (int index, int tag, int type)
+bool MapLoader::SpawnPolyobj (int index, int tag, int type)
 {
 	unsigned int ii;
 	int i;
@@ -172,7 +172,7 @@ void MapLoader::SpawnPolyobj (int index, int tag, int type)
 			if (po->Sidedefs.Size() > 0)
 			{
 				Printf (TEXTCOLOR_RED "SpawnPolyobj: Polyobj %d already spawned.\n", tag);
-				return;
+				return false;
 			}
 			else
 			{
@@ -210,7 +210,7 @@ void MapLoader::SpawnPolyobj (int index, int tag, int type)
 				if (!Level->sides[i].linedef->args[1])
 				{
 					Printf(TEXTCOLOR_RED "SpawnPolyobj: Explicit line missing order number in poly %d, linedef %d.\n", tag, Index(Level->sides[i].linedef));
-					return;
+					return false;
 				}
 				else
 				{
@@ -218,9 +218,11 @@ void MapLoader::SpawnPolyobj (int index, int tag, int type)
 				}
 			}
 		}
-		qsort(&po->Sidedefs[0], po->Sidedefs.Size(), sizeof(po->Sidedefs[0]), posicmp);
+
 		if (po->Sidedefs.Size() > 0)
 		{
+			qsort(&po->Sidedefs[0], po->Sidedefs.Size(), sizeof(po->Sidedefs[0]), posicmp);
+
 			po->crush = (type != SMT_PolySpawn) ? 3 : 0;
 			po->bHurtOnTouch = (type == SMT_PolySpawnHurt);
 			po->tag = tag;
@@ -230,7 +232,7 @@ void MapLoader::SpawnPolyobj (int index, int tag, int type)
 		else
 		{
 			Printf(TEXTCOLOR_RED "SpawnPolyobj: Poly %d does not exist\n", tag);
-			return;
+			return false;
 		}
 	}
 
@@ -270,6 +272,8 @@ void MapLoader::SpawnPolyobj (int index, int tag, int type)
 	po->Sidedefs.ShrinkToFit();
 	po->Linedefs.ShrinkToFit();
 	po->Vertices.ShrinkToFit();
+
+	return true;
 }
 
 //==========================================================================
@@ -365,9 +369,15 @@ void MapLoader::PO_Init (void)
 			// Polyobj StartSpot Pt.
 			Level->Polyobjects[polyIndex].StartSpot.pos = polythings[i]->pos;
 			SpawnPolyobj(polyIndex, polythings[i]->angle, type);
-			polyIndex++;
+			//if (SpawnPolyobj(polyIndex, polythings[i]->angle, type))
+			{
+				polyIndex++;
+			}
 		} 
 	}
+
+	Level->Polyobjects.Resize(polyIndex);
+
 	for (int i = polythings.Size() - 1; i >= 0; i--)
 	{
 		int type = polythings[i]->info->Special;

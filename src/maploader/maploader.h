@@ -152,7 +152,7 @@ private:
 	// Polyobjects
 	void InitSideLists();
 	void IterFindPolySides(FPolyObj *po, side_t *side);
-	void SpawnPolyobj(int index, int tag, int type);
+	bool SpawnPolyobj(int index, int tag, int type);
 	void TranslateToStartSpot(int tag, const DVector2 &origin);
 	void InitPolyBlockMap(void);
 
