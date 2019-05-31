@@ -35,6 +35,7 @@
 
 #include "files.h"
 #include "templates.h"
+#include "doomerrors.h"
 
 
 FILE *myfopen(const char *filename, const char *flags)
@@ -356,12 +357,54 @@ public:
 //
 //==========================================================================
 
+class FileErrorReader : public FileReaderInterface
+{
+public:
+	explicit FileErrorReader(const char *filename)
+	: filename(filename)
+	{
+	}
+	
+	long Tell() const override
+	{
+		ThrowError();
+		return -1;
+	}
+
+	long Seek(long offset, int origin)
+	{
+		ThrowError();
+		return -1;
+	}
+
+	long Read(void *buffer, long len)
+	{
+		ThrowError();
+		return 0;
+	}
+
+	char *Gets(char *strbuf, int len)
+	{
+		ThrowError();
+		return nullptr;
+	}
+
+private:
+	FString filename;
+
+	void ThrowError() const
+	{
+		I_Error("Cannot access file %s\n", filename.GetChars());
+	}
+};
+
 bool FileReader::OpenFile(const char *filename, FileReader::Size start, FileReader::Size length)
 {
 	auto reader = new StdFileReader;
 	if (!reader->Open(filename, (long)start, (long)length))
 	{
 		delete reader;
+		mReader = new FileErrorReader(filename);
 		return false;
 	}
 	Close();
