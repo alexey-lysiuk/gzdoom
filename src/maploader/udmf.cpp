@@ -250,9 +250,14 @@ double UDMFParserBase::CheckCoordinate(const char *key)
 	{
 		sc.ScriptMessage("Floating point value expected for key '%s'", key);
 	}
-	if (sc.Float < -32768 || sc.Float > 32768)
+
+	// The current limit of node builder
+	static const double COORD_MIN = FIXED2DBL(fixed_t(0x8000'0000));
+	static const double COORD_MAX = FIXED2DBL(fixed_t(0x7fff'ffff));
+
+	if (sc.Float < COORD_MIN || sc.Float > COORD_MAX)
 	{
-		sc.ScriptMessage("Value %f out of range for a coordinate '%s'. Valid range is ]-32768 .. 32768]", sc.Float, key);
+		sc.ScriptMessage("Value %f out of range for a coordinate '%s'. Valid range is [%f .. %f]", sc.Float, key, COORD_MIN, COORD_MAX);
 		BadCoordinates = true;	// If this happens the map must not allowed to be started.
 	}
 	return sc.Float;
