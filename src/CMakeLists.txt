@@ -1,6 +1,6 @@
 cmake_minimum_required( VERSION 2.8.7 )
 
-include(precompiled_headers)
+include(PrecompiledHeader)
 
 if( COMMAND cmake_policy )
 	cmake_policy( SET CMP0003 NEW )
@@ -967,6 +967,7 @@ set (PCH_SOURCES
 	g_game.cpp
 	g_hub.cpp
 	g_level.cpp
+	g_pch.cpp
 	gameconfigfile.cpp
 	gitinfo.cpp
 	hu_scores.cpp
@@ -1328,13 +1329,6 @@ else()
 	set( NOT_COMPILED_SOURCE_FILES ${NOT_COMPILED_SOURCE_FILES} ${VM_JIT_SOURCES} )
 endif()
 
-if( MSVC )
-	enable_precompiled_headers( g_pch.h PCH_SOURCES )
-else()
-	# Temporary solution for compilers other than MSVC
-	set_source_files_properties( ${PCH_SOURCES} PROPERTIES COMPILE_FLAGS "-include g_pch.h" )
-endif()
-
 add_executable( zdoom WIN32 MACOSX_BUNDLE
 	${HEADER_FILES}
 	${NOT_COMPILED_SOURCE_FILES}
@@ -1365,6 +1359,8 @@ add_executable( zdoom WIN32 MACOSX_BUNDLE
 	utility/math/fastsin.cpp
 	zzautozend.cpp
 )
+
+add_precompiled_header( zdoom g_pch.h FORCEINCLUDE g_pch.h SOURCE_FILES ${PCH_SOURCES} )
 
 set_source_files_properties( ${FASTMATH_SOURCES} PROPERTIES COMPILE_FLAGS ${ZD_FASTMATH_FLAG} )
 set_source_files_properties( xlat/parse_xlat.cpp PROPERTIES OBJECT_DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/xlat_parser.c" )
