@@ -76,7 +76,7 @@ function(export_all_flags _filename)
 endfunction()
 
 function(add_precompiled_header _target _input)
-  cmake_parse_arguments(_PCH "FORCEINCLUDE" "SOURCE_CXX;SOURCE_C" "" ${ARGN})
+  cmake_parse_arguments(_PCH "FORCEINCLUDE" "SOURCE_CXX;SOURCE_C" "SOURCE_FILES" ${ARGN})
 
   get_filename_component(_input_we ${_input} NAME_WE)
   if(NOT _PCH_SOURCE_CXX)
@@ -90,7 +90,12 @@ function(add_precompiled_header _target _input)
     set(_pch_cxx_pch "${CMAKE_CFG_INTDIR}/cxx_${_input_we}.pch")
     set(_pch_c_pch "${CMAKE_CFG_INTDIR}/c_${_input_we}.pch")
 
-    get_target_property(sources ${_target} SOURCES)
+    if(_PCH_SOURCE_FILES)
+        set(sources ${_PCH_SOURCE_FILES})
+    else()
+        get_target_property(sources ${_target} SOURCES)
+    endif()
+
     foreach(_source ${sources})
       set(_pch_compile_flags "")
       if(_source MATCHES \\.\(cc|cxx|cpp|c\)$)
@@ -147,7 +152,7 @@ function(add_precompiled_header _target _input)
     endif()
   endif(MSVC)
 
-  if(CMAKE_COMPILER_IS_GNUCXX)
+  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     get_filename_component(_name ${_input} NAME)
     set(_pch_header "${CMAKE_CURRENT_SOURCE_DIR}/${_input}")
     set(_pch_binary_dir "${CMAKE_CURRENT_BINARY_DIR}/${_target}_pch")
@@ -167,16 +172,21 @@ function(add_precompiled_header _target _input)
       COMMENT "Updating ${_name}")
     add_custom_command(
       OUTPUT "${_output_cxx}"
-      COMMAND "${CMAKE_CXX_COMPILER}" ${_compiler_FLAGS} -x c++-header -o "${_output_cxx}" "${_pchfile}"
+      COMMAND "${CMAKE_CXX_COMPILER}" ${_compiler_FLAGS} $(CXX_FLAGS) -x c++-header -o "${_output_cxx}" "${_pchfile}"
       DEPENDS "${_pchfile}" "${_pch_flags_file}"
       COMMENT "Precompiling ${_name} for ${_target} (C++)")
     add_custom_command(
       OUTPUT "${_output_c}"
-      COMMAND "${CMAKE_C_COMPILER}" ${_compiler_FLAGS} -x c-header -o "${_output_c}" "${_pchfile}"
+      COMMAND "${CMAKE_C_COMPILER}" ${_compiler_FLAGS} $(C_FLAGS) -x c-header -o "${_output_c}" "${_pchfile}"
       DEPENDS "${_pchfile}" "${_pch_flags_file}"
       COMMENT "Precompiling ${_name} for ${_target} (C)")
 
-    get_property(_sources TARGET ${_target} PROPERTY SOURCES)
+    if(_PCH_SOURCE_FILES)
+        set(_sources ${_PCH_SOURCE_FILES})
+    else()
+        get_property(_sources TARGET ${_target} PROPERTY SOURCES)
+    endif()
+
     foreach(_source ${_sources})
       set(_pch_compile_flags "")
 
@@ -210,5 +220,5 @@ function(add_precompiled_header _target _input)
           OBJECT_DEPENDS "${_object_depends}")
       endif()
     endforeach()
-  endif(CMAKE_COMPILER_IS_GNUCXX)
+  endif()
 endfunction()
