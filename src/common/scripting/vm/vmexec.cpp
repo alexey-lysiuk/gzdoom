@@ -57,9 +57,9 @@ void ThrowVMException(VMException *x);
 
 #define IMPLEMENT_VMEXEC
 
-#if !defined(COMPGOTO) && defined(__GNUC__)
-#define COMPGOTO 1
-#endif
+//#if !defined(COMPGOTO) && defined(__GNUC__)
+//#define COMPGOTO 1
+//#endif
 
 #if COMPGOTO
 #define OP(x)	x
