@@ -1216,13 +1216,6 @@ add_executable( zdoom WIN32 MACOSX_BUNDLE
 # Order include directories to place internal paths before external
 get_target_property(UNORDERED_INCLUDE_DIRS zdoom INCLUDE_DIRECTORIES)
 
-# tmp
-message("================")
-foreach(INC_DIR ${UNORDERED_INCLUDE_DIRS})
-	message("${INC_DIR}")
-endforeach()
-# tmp
-
 foreach(INCLUDE_DIR ${UNORDERED_INCLUDE_DIRS})
 	string(FIND "${INCLUDE_DIR}" "${CMAKE_SOURCE_DIR}" SOURCE_DIR_POS)
 
@@ -1236,14 +1229,6 @@ endforeach()
 foreach(EXTERNAL_DIR ${EXTERNAL_INCLUDE_DIRS})
 	list(APPEND ORDERED_INCLUDE_DIRS "${EXTERNAL_DIR}")
 endforeach()
-
-# tmp
-message("================")
-foreach(INC_DIR ${ORDERED_INCLUDE_DIRS})
-	message("${INC_DIR}")
-endforeach()
-message("================")
-# tmp
 
 set_target_properties(zdoom PROPERTIES INCLUDE_DIRECTORIES "${ORDERED_INCLUDE_DIRS}")
 
