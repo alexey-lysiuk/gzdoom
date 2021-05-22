@@ -1286,6 +1286,7 @@ include_directories( .
 	scripting/zscript
 	rendering
 	../libraries/gdtoa
+	../libraries/glslang
 	../libraries/glslang/glslang/Public
 	../libraries/glslang/spirv
 	${CMAKE_BINARY_DIR}/libraries/gdtoa
