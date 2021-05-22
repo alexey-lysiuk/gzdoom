@@ -315,6 +315,7 @@ FStartupInfo GameStartupInfo;
 FString lastIWAD;
 int restart = 0;
 bool AppActive = true;
+bool playedtitlemusic;
 
 cycle_t FrameCycles;
 
@@ -1573,7 +1574,8 @@ void D_DoAdvanceDemo (void)
 		gamestate = GS_DEMOSCREEN;
 		pagename = gameinfo.TitlePage;
 		pagetic = (int)(gameinfo.titleTime * TICRATE);
-		S_ChangeMusic (gameinfo.titleMusic, gameinfo.titleOrder, false);
+		if (!playedtitlemusic) S_ChangeMusic (gameinfo.titleMusic, gameinfo.titleOrder, false);
+		playedtitlemusic = true;
 		demosequence = 3;
 		pagecount = 0;
 		C_HideConsole ();
@@ -1606,6 +1608,7 @@ void D_DoAdvanceDemo (void)
 
 void D_StartTitle (void)
 {
+	playedtitlemusic = false;
 	gameaction = ga_nothing;
 	demosequence = -1;
 	D_AdvanceDemo ();
