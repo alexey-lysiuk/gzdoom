@@ -1286,11 +1286,32 @@ include_directories( .
 	scripting/zscript
 	rendering
 	../libraries/gdtoa
+	../libraries/glslang
 	../libraries/glslang/glslang/Public
 	../libraries/glslang/spirv
 	${CMAKE_BINARY_DIR}/libraries/gdtoa
 	${SYSTEM_SOURCES_DIR}
 )
+
+# Reorder include directories to place internal paths before external
+get_target_property(UNORDERED_INCLUDE_DIRS zdoom INCLUDE_DIRECTORIES)
+
+foreach(INCLUDE_DIR ${UNORDERED_INCLUDE_DIRS})
+	get_filename_component(INCLUDE_DIR ${INCLUDE_DIR} ABSOLUTE)
+	string(FIND "${INCLUDE_DIR}" "${CMAKE_SOURCE_DIR}" SOURCE_DIR_POS)
+
+	if(${SOURCE_DIR_POS} EQUAL 0)
+		list(APPEND ORDERED_INCLUDE_DIRS "${INCLUDE_DIR}")
+	else()
+		list(APPEND EXTERNAL_INCLUDE_DIRS "${INCLUDE_DIR}")
+	endif()
+endforeach()
+
+foreach(EXTERNAL_DIR ${EXTERNAL_INCLUDE_DIRS})
+	list(APPEND ORDERED_INCLUDE_DIRS "${EXTERNAL_DIR}")
+endforeach()
+
+set_target_properties(zdoom PROPERTIES INCLUDE_DIRECTORIES "${ORDERED_INCLUDE_DIRS}")
 
 add_dependencies( zdoom revision_check )
 
