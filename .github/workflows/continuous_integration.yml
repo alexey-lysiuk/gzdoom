@@ -74,16 +74,16 @@ jobs:
           eval ${{ matrix.config.deps_cmdline }}
         fi
         mkdir build
-        if [[ "${{ runner.os }}" == 'Windows' ]]; then
-          exit
-        fi
-        cd build
         if [[ "${{ runner.os }}" == 'macOS' ]]; then
-          wget https://github.com/coelckers/gzdoom/releases/download/ci_deps/zmusic-1.1.7-macos.tar.bz2
+          export ZMUSIC_PACKAGE=zmusic-1.1.7-macos.tar.bz2
         elif [[ "${{ runner.os }}" == 'Linux' ]]; then
-          wget https://github.com/coelckers/gzdoom/releases/download/ci_deps/zmusic-1.1.7-linux.tar.bz2
+          export ZMUSIC_PACKAGE=zmusic-1.1.7-linux.tar.bz2
         fi
-        tar -xf *.tar.bz2
+        if [[ ! -z "${ZMUSIC_PACKAGE}" ]]; then
+          cd build
+          wget "https://github.com/coelckers/gzdoom/releases/download/ci_deps/${ZMUSIC_PACKAGE}"
+          tar -xf "${ZMUSIC_PACKAGE}"
+        fi
 
     - name: Configure
       shell: bash
